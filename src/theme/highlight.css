@@ -1,0 +1,12 @@
+/* Linked highlighting: \htmlClass{hl-KEY}{...} parts of formulas, coloured as their 3D objects (see palette.ts). */
+.tex [class*="hl-"], .tex-block [class*="hl-"] { cursor: help; border-radius: 3px; outline-offset: 1px; transition: background-color 0.12s; }
+.hl-du { color: #E69F00; }
+.hl-dv { color: #56B4E9; }
+.hl-V { color: #CC79A7; }
+.hl-p { color: #F0E442; }
+.hl-g { color: #B9A3FF; }
+.hl-du.hl-on { background: #E69F0040; box-shadow: 0 0 0 2px #E69F0040; }
+.hl-dv.hl-on { background: #56B4E940; box-shadow: 0 0 0 2px #56B4E940; }
+.hl-V.hl-on { background: #CC79A740; box-shadow: 0 0 0 2px #CC79A740; }
+.hl-p.hl-on { background: #F0E44240; box-shadow: 0 0 0 2px #F0E44240; }
+.hl-g.hl-on { background: #B9A3FF40; box-shadow: 0 0 0 2px #B9A3FF40; }

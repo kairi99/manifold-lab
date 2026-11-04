@@ -13,7 +13,7 @@ const setRange = (app: import('@playwright/test').Page, label: string, v: number
 test('Schwarzschild r=6: Kretschmann 48/6^6 and vacuum Einstein equation', async ({ app }) => {
   await open(app)
   expect(await num(readout(app, 'Kretschmann K'))).toBeCloseTo(48 / 6 ** 6, 6)
-  await expect(readout(app, 'Kretschmann K')).toHaveText('1.029e-3')
+  await expect(readout(app, 'Kretschmann K')).toHaveText('1.029×10⁻³')
   await expect(readout(app, 'Einstein equation')).toHaveText('Gμν = 0 ✓')
   await expect(readout(app, 'Ricci scalar R')).toHaveText('0')
 })
@@ -23,7 +23,12 @@ test('closed forms agree with the computed invariants for every spacetime', asyn
   for (const name of ['Kerr (Boyer–Lindquist)', 'Reissner–Nordström', 'de Sitter (flat slicing)', 'Flat ΛCDM FLRW', 'Schwarzschild']) {
     await app.getByLabel('Spacetime', { exact: true }).selectOption({ label: name })
     const cell = app.locator('.readout > span').filter({ hasText: /^closed form / }).first().locator('xpath=following-sibling::span[1]')
-    const [a, b] = ((await cell.textContent())!.match(/-?[\d.]+e?-?\d*/g) ?? []).map(Number)
+    const sup: Record<string, string> = { '⁻': '-', '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9' }
+    // numbers print as 1.029×10⁻³ (or plain decimals, true minus)
+    const [a, b] = ((await cell.textContent())!.match(/[-−]?[\d.]+(?:×10[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)?/g) ?? []).map((s) => {
+      const [m, e] = s.replace('−', '-').split('×10')
+      return parseFloat(m) * (e ? 10 ** Number([...e].map((c) => sup[c]).join('')) : 1)
+    })
     expect(a, name).toBeCloseTo(b, 8)
     if (name !== 'Schwarzschild' && name !== 'Kerr (Boyer–Lindquist)') await expect(readout(app, 'Einstein equation')).toContainText('✓')
   }
@@ -45,7 +50,7 @@ test('Schwarzschild event r slider updates K', async ({ app }) => {
 
 test('tidal: horizon of a 10 solar-mass hole gives 2.06e8 m/s^2 across 2 m', async ({ app }) => {
   await open(app, 'Tidal')
-  await expect(readout(app, 'tidal accel. across L at horizon, radial')).toContainText('2.061e+8 m/s²')
+  await expect(readout(app, 'tidal accel. across L at horizon, radial')).toContainText('2.061×10⁸ m/s²')
   await expect(readout(app, 'τ / M')).toContainText('of 97.97')
   await app.getByLabel('Black hole', { exact: true }).selectOption({ label: 'Sagittarius A*' })
   await expect(app.getByText(/Nothing dramatic at the horizon/)).toBeVisible()

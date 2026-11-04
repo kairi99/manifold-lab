@@ -1,4 +1,5 @@
 import { useFrame, type ThreeEvent } from '@react-three/fiber';
+import { DriftNote, DriftRows, maxRelDrift } from '../panels/Drift';
 import { SurfacePicker } from '../panels/SurfacePicker';
 import { TransportControls } from '../panels/TransportControls';
 import { Tex, fmt, fmtDeg, coordText } from '../panels/Tex';
@@ -6,8 +7,9 @@ import SurfaceMesh from '../scene/SurfaceMesh';
 import TransportPath, {
   STEPS, availableKinds, frame, loopSlider, useDraw, useTransportData,
 } from '../scene/TransportPath';
-import { holonomyAngle, normSq } from '../math/transport';
+import { foldSample, holonomyAngle, normSq } from '../math/transport';
 import type { Vec2 } from '../math/types';
+import { SumsToggle } from './MetricModule';
 import { useStore, type PathKind } from '../state/store';
 import { T, useTr } from '../i18n';
 
@@ -47,7 +49,7 @@ const KIND_LABEL_ES: Record<PathKind, string> = { latitude: 'Lazo coordenado', t
 export function TransportPanel() {
   const t = useTr();
   const { surface, kind, curve, start, V0, samples } = useTransportData();
-  const { surfaceId, latitude, progress, freePoints, set } = useStore();
+  const { surfaceId, latitude, progress, freePoints, expandSums, set } = useStore();
   const { drawing, setDrawing } = useDraw();
   const sl = loopSlider(surfaceId);
   const isSphere = surfaceId === 'sphere';
@@ -74,7 +76,8 @@ export function TransportPanel() {
     }
   }
 
-  const measured = samples && start ? holonomyAngle(surface, start, V0, samples[STEPS].V) : null;
+  const drift = samples ? maxRelDrift(samples.map((s) => Math.sqrt(normSq(surface, s.uv, s.V)))) : NaN;
+  const measured = samples && start ? holonomyAngle(surface, start, V0, foldSample(surface, samples[STEPS]).V) : null;
   let predicted: number | null = null;
   if (isSphere && kind === 'latitude') predicted = wrap(2 * Math.PI * (1 - Math.cos(latitude)));
   if (isSphere && kind === 'triangle') predicted = wrap((Math.PI / 2) * Math.cos(0.05));
@@ -118,7 +121,10 @@ export function TransportPanel() {
       <TransportControls />
 
       <h2><T en="Transport equation" es="Ecuación del transporte" /></h2>
-      <Tex block>{String.raw`\frac{dV^k}{dt} + \Gamma^k_{ij}\,V^i\,\frac{du^j}{dt} = 0`}</Tex>
+      <SumsToggle />
+      <Tex block>{expandSums
+        ? String.raw`\frac{dV^k}{dt} + \Gamma^k_{11}\htmlClass{hl-V}{V^1}\dot u^1 + \Gamma^k_{12}\htmlClass{hl-V}{V^1}\dot u^2 + \Gamma^k_{21}\htmlClass{hl-V}{V^2}\dot u^1 + \Gamma^k_{22}\htmlClass{hl-V}{V^2}\dot u^2 = 0`
+        : String.raw`\frac{d\htmlClass{hl-V}{V^k}}{dt} + \Gamma^k_{ij}\,\htmlClass{hl-V}{V^i}\,\frac{du^j}{dt} = 0`}</Tex>
       {cur ? (
         <div className="readout">
           <span>({coordText(cu)}, {coordText(cv)})</span><span>({fmt(cur.uv[0])}, {fmt(cur.uv[1])})</span>
@@ -126,8 +132,10 @@ export function TransportPanel() {
           <span>V<sup>k</sup></span><span>({fmt(cur.V[0])}, {fmt(cur.V[1])})</span>
           <span>dV<sup>k</sup>/dt</span><span>({fmt(dV[0])}, {fmt(dV[1])})</span>
           <span>g(V,V)</span><span>{fmt(normSq(surface, cur.uv, cur.V), 5)}</span>
+          <DriftRows label="|V|_g, max over loop" labelEs="|V|_g, máx. en el lazo" value={drift} />
         </div>
       ) : <p>{t('Draw at least 3 points to define a loop.', 'Dibuja al menos 3 puntos para definir un lazo.')}</p>}
+      {cur && <DriftNote />}
 
       <h2 data-tour="holonomy"><T en="Holonomy" es="Holonomía" /></h2>
       {measured !== null ? (

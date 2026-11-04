@@ -12,6 +12,7 @@ function load<M>(imp: () => Promise<M>, scene: keyof M, panel: keyof M): { Scene
 }
 
 export const MODULE_VIEWS: Record<ModuleId, { Scene: View; Panel: View }> = {
+  curves: load(() => import('./CurvesModule'), 'CurvesScene', 'CurvesPanel'),
   metric: load(() => import('./MetricModule'), 'MetricScene', 'MetricPanel'),
   transport: load(() => import('./TransportModule'), 'TransportScene', 'TransportPanel'),
   geodesics: load(() => import('./GeodesicModule'), 'GeodesicScene', 'GeodesicPanel'),

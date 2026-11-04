@@ -1,5 +1,5 @@
 import { useStore } from '../state/store';
-import { Tex, fmt, Rich } from './Tex';
+import { Tex, fmt, fmtSci, Rich } from './Tex';
 import { BLACK_HOLES, fmtDuration, infallState, massSeconds, probeAt } from './PenroseModel';
 import { infallGeodesic } from '../math/penrose';
 import { useTr, useLang } from '../i18n';
@@ -35,9 +35,10 @@ export function PenrosePanel() {
   const st = infallState(r0, progress);
   const Msec = massSeconds(body);
   const inside = st.eta > g.etaHorizon;
-  const dur = (m: number) => (Msec ? `${fmtDuration(m * Msec)}` : '—');
+  const es = useLang() === 'es';
+  const dur = (m: number) => (Msec ? `${fmtDuration(m * Msec, es)}` : '—');
   const xMin = sch ? -PI : 0;
-  const t = useTr(), es = useLang() === 'es';
+  const t = useTr();
 
   return (
     <div>
@@ -85,7 +86,7 @@ export function PenrosePanel() {
             <span>{t('τ to singularity', 'τ hasta la singularidad')}</span><span>{fmt(g.tauSingularity, 3)} M{Msec ? ` = ${dur(g.tauSingularity)}` : ''}</span>
             <span>{t('τ from horizon to r = 0', 'τ del horizonte a r = 0')}</span><span>{fmt(g.tauSingularity - g.tauHorizon, 3)} M{Msec ? ` = ${dur(g.tauSingularity - g.tauHorizon)}` : ''}</span>
           </div>
-          <p style={{ fontSize: 12 }}>{t('Schwarzschild t → ∞ as the observer reaches the horizon, but proper time τ stays finite and the worldline crosses U = 0 smoothly in Kruskal coordinates.', 'La t de Schwarzschild → ∞ cuando el observador llega al horizonte, pero el tiempo propio τ sigue siendo finito y la línea de universo cruza U = 0 suavemente en coordenadas de Kruskal.')} {Msec && t(`One M of time is GM/c³ = ${Msec.toExponential(3)} s for this black hole.`, `Una M de tiempo es GM/c³ = ${Msec.toExponential(3)} s para este agujero negro.`)}</p>
+          <p style={{ fontSize: 12 }}>{t('Schwarzschild t → ∞ as the observer reaches the horizon, but proper time τ stays finite and the worldline crosses U = 0 smoothly in Kruskal coordinates.', 'La t de Schwarzschild → ∞ cuando el observador llega al horizonte, pero el tiempo propio τ sigue siendo finito y la línea de universo cruza U = 0 suavemente en coordenadas de Kruskal.')} {Msec && t(`One M of time is GM/c³ = ${fmtSci(Msec, 3)} s for this black hole.`, `Una M de tiempo es GM/c³ = ${fmtSci(Msec, 3)} s para este agujero negro.`)}</p>
           <Tex block>{String.raw`\tau_{\rm sing}=\pi\sqrt{\frac{r_0^3}{8M}}=${fmt(g.tauSingularity, 2)}\,M`}</Tex>
         </>
       )}

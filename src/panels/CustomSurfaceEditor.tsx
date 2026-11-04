@@ -58,10 +58,12 @@ export function CustomSurfaceEditor() {
       </div>
     );
   };
+  // a bending preset restricts `a` (e.g. the rolling sheet degenerates at a = 0)
+  const bend = PRESETS.find((p) => p.bend && p.spec.x === draft.x && p.spec.y === draft.y && p.spec.z === draft.z)?.bend;
   const slider = (k: 'a' | 'b') => (
     <label className="field">
       <span>{t('parameter', 'parámetro')} {k} = {fmt(draft.params[k], 2)}</span>
-      <input type="range" min={-3} max={3} step={0.05} value={draft.params[k]}
+      <input type="range" min={k === 'a' && bend ? bend[0] : -3} max={k === 'a' && bend ? bend[1] : 3} step={0.05} value={draft.params[k]}
         onChange={(e) => {
           const next = { ...draft, params: { ...draft.params, [k]: +e.target.value } };
           setDraft(next);
@@ -78,7 +80,10 @@ export function CustomSurfaceEditor() {
         <span>{t('Preset', 'Predefinida')}</span>
         <select value="" aria-label={t('Preset surface', 'Superficie predefinida')} onChange={(e) => {
           const p = PRESETS.find((q) => q.id === e.target.value);
-          if (p) { setDraft(p.spec); setNote(es ? p.noteEs : p.note); applyCustomSpec(p.spec); }
+          if (p) {
+            const spec = es ? { ...p.spec, name: p.labelEs } : p.spec;
+            setDraft(spec); setNote(es ? p.noteEs : p.note); applyCustomSpec(spec);
+          }
         }}>
           <option value="">{t('choose a classic surface…', 'elige una superficie clásica…')}</option>
           {PRESETS.map((p) => <option key={p.id} value={p.id}>{t(p.label, p.labelEs)}</option>)}
@@ -97,6 +102,10 @@ export function CustomSurfaceEditor() {
           'Variables u, v; parámetros a, b; constantes pi, e; operadores + - * / ^ y ( ); funciones sin cos tan exp log sqrt abs sinh cosh tanh asin acos atan. Escribe 2*u, no 2u.')}
       </p>
       {range('u')}{range('v')}
+      <label className="field">
+        <input type="checkbox" checked={!!draft.twistU} disabled={draft.periodicU}
+          onChange={(ev) => patch({ twistU: ev.target.checked })} /> {t('twisted u seam (u + P, v) ~ (u, −v), Möbius', 'costura retorcida en u (u + P, v) ~ (u, −v), Möbius')}
+      </label>
       <div style={{ display: 'flex', gap: 8 }}>
         {([0, 1] as const).map((i) => (
           <label key={i} className="field" style={{ flex: 1 }}>

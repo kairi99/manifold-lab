@@ -26,7 +26,7 @@ describe('grTests data', () => {
     expect(rel(G * J / (2 * C ** 2 * a ** 3) * MAS, t.predicted.frameDragging)).toBeLessThan(0.05); // ~4% high: formula is the idealised polar-orbit value (40.8); 39.2 includes the IM Peg geometry
   });
   it('Pound-Rebka gh/c^2 and Sirius B redshift', () => {
-    expect(rel(9.80665 * 22.5 / C ** 2, 2.46e-15)).toBeLessThan(0.01);
+    expect(rel(9.80665 * 22.5 / C ** 2, 4.905e-15 / 2)).toBeLessThan(0.01); // paper: 2gh/c^2 = 4.905e-15
     const sb = bodyOf('sirius-b'), t = REDSHIFT_TESTS.find((x) => x.id === 'sirius-b')!;
     expect(rel(sb.gm / (t.r1M * C) / 1e3, 80)).toBeLessThan(0.05);
   });

@@ -4,6 +4,8 @@ import { Label } from './Label';
 import { coordText } from '../panels/Tex';
 import type { Surface, Vec2 } from '../math/types';
 import Arrow from './Arrow';
+import { PAL } from '../theme/palette';
+import { useMarkerScale } from './markerScale';
 import { add, cross, norm, normalize, scale } from './geom';
 
 export interface TangentPlaneProps {
@@ -18,6 +20,7 @@ export interface TangentPlaneProps {
 
 export default function TangentPlane({ surface: s, uv, size = 0.4, opacity = 0.25, showLabels = true }: TangentPlaneProps) {
   const [u, v] = uv;
+  const k = useMarkerScale(s);
   const p = s.position(u, v), a = s.du(u, v), b = s.dv(u, v);
   const key = [...p, ...a, ...b].join();
   const quat = useMemo(() => {
@@ -34,16 +37,16 @@ export default function TangentPlane({ surface: s, uv, size = 0.4, opacity = 0.2
     <group>
       <group position={p} quaternion={quat}>
         <mesh>
-          <planeGeometry args={[2 * size, 2 * size]} />
+          <planeGeometry args={[2 * size * k, 2 * size * k]} />
           <meshStandardMaterial color="#ffffff" side={2} transparent opacity={opacity} depthWrite={false} />
         </mesh>
       </group>
-      <Arrow origin={p} dir={a} color="#ff6b6b" />
-      <Arrow origin={p} dir={b} color="#5be37d" />
+      <Arrow origin={p} dir={a} color={PAL.du} hlKey="du" radius={0.015 * k} />
+      <Arrow origin={p} dir={b} color={PAL.dv} hlKey="dv" radius={0.015 * k} />
       {showLabels && (
         <>
-          <Label position={add(p, scale(a, 1.15))} text={`∂${coordText(s.coords[0])}`} color="#ff9b9b" />
-          <Label position={add(p, scale(b, 1.15))} text={`∂${coordText(s.coords[1])}`} color="#8af0a6" />
+          <Label position={add(p, scale(a, 1.15))} text={`∂${coordText(s.coords[0])}`} color={PAL.du} height={0.09 * k} />
+          <Label position={add(p, scale(b, 1.15))} text={`∂${coordText(s.coords[1])}`} color={PAL.dv} height={0.09 * k} />
         </>
       )}
     </group>

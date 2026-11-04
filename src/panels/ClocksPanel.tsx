@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useStore } from '../state/store';
 import { T, tr, useLang, useTr } from '../i18n';
-import { Tex, fmt, Rich } from './Tex';
-import { REDSHIFT_TESTS, SHAPIRO_TESTS, FRAME_DRAG_TESTS } from '../data/grTests';
+import { Tex, fmt, fmtSci, Rich } from './Tex';
+import { REDSHIFT_TESTS, SHAPIRO_TESTS, FRAME_DRAG_TESTS, unitEs } from '../data/grTests';
 import { bodyById, C, YEAR } from '../data/celestial';
 import type { Source } from '../data/celestial';
 import { gravRedshift, redshiftWeakSI, shapiroDelaySI, geodeticPrecessionSI, lenseThirringPolarSI } from '../math/grEffects';
 
 const MAS = (180 / Math.PI) * 3600e3 * YEAR; // rad/s -> mas/yr
-const sci = (x: number, d = 3) => (x !== 0 && (Math.abs(x) >= 1e4 || Math.abs(x) < 1e-2) ? x.toExponential(d - 1) : fmt(x, d));
+const sci = (x: number, d = 3) => (x !== 0 && (Math.abs(x) >= 1e4 || Math.abs(x) < 1e-2) ? fmtSci(x, d - 1) : fmt(x, d));
 const Src = ({ s }: { s: Source }) => (s.url ? <a href={s.url} target="_blank" rel="noreferrer"><Rich>{s.label}</Rich></a> : <Rich>{s.label}</Rich>);
 const ALL = [...REDSHIFT_TESTS, ...SHAPIRO_TESTS, ...FRAME_DRAG_TESTS];
 
@@ -22,7 +22,7 @@ export function ClocksPanel() {
   const rs = REDSHIFT_TESTS.find((t) => t.id === id), sh = SHAPIRO_TESTS.find((t) => t.id === id), fd = FRAME_DRAG_TESTS.find((t) => t.id === id);
   const test = (rs ?? sh ?? fd)!;
   const body = bodyById(test.centralId)!;
-  const unc = (o: { value: number; uncertainty?: number; unit: string }) => `${sci(o.value)}${o.uncertainty !== undefined ? ` ± ${sci(o.uncertainty)}` : ''} ${o.unit}`;
+  const unc = (o: { value: number; uncertainty?: number; unit: string }) => `${sci(o.value)}${o.uncertainty !== undefined ? ` ± ${sci(o.uncertainty)}` : ''} ${lang === 'es' ? unitEs(o.unit) : o.unit}`;
 
   return (
     <div data-tour="gr-clocks">

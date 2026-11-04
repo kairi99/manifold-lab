@@ -6,6 +6,11 @@ export { toWorld, fromWorld } from '../math/metric';
 import { cross, normalize } from '../math/vec';
 
 export function clampWrap(s: Surface, u: number, v: number): Vec2 {
+  // twisted seams (Möbius): fold across the identification first
+  if (s.chartWrap && (u < s.domain.u[0] || u > s.domain.u[1])) {
+    const w = s.chartWrap({ uv: [u, v], vel: [0, 0] });
+    if (w) [u, v] = w.uv;
+  }
   const f = (x: number, [a, b]: [number, number], per: boolean) =>
     per ? a + ((((x - a) % (b - a)) + (b - a)) % (b - a)) : Math.min(b, Math.max(a, x));
   return [f(u, s.domain.u, s.domain.periodicU), f(v, s.domain.v, s.domain.periodicV)];

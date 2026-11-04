@@ -7,6 +7,9 @@ export interface ModuleInfo { id: ModuleId; label: string; labelEs: string; blur
 
 /** Nav order; `blurb` is the one-line description on the start page. */
 export const MODULES: ModuleInfo[] = [
+  { id: 'curves', label: 'Curves & Charts', labelEs: 'Curvas y cartas', group: 'surfaces',
+    blurb: 'Walk along a space curve with its Frenet frame, and see how charts give a surface coordinates.',
+    blurbEs: 'Recorre una curva alabeada con su triedro de Frenet y mira cómo las cartas dan coordenadas a una superficie.' },
   { id: 'metric', label: 'Metric & Tangent Spaces', labelEs: 'Métrica y espacios tangentes', group: 'surfaces',
     blurbEs: 'Arrastra un punto sobre una superficie y observa cómo cambian su plano tangente, la métrica y los símbolos de Christoffel.',
     blurb: 'Drag a point over a surface and watch its tangent plane, the metric and the Christoffel symbols change.' },
@@ -35,6 +38,6 @@ export const MODULES: ModuleInfo[] = [
 
 /** `#metric` → 'metric'; anything else (including no hash) means the start page. */
 export function moduleFromHash(hash: string): ModuleId | null {
-  const id = hash.replace(/^#/, '');
+  const id = hash.replace(/^#/, '').split('?')[0]; // '#metric?s=…' carries a shared state
   return MODULES.some((m) => m.id === id) ? (id as ModuleId) : null;
 }

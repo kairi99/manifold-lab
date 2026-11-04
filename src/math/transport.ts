@@ -39,6 +39,12 @@ export function transport(surface: Surface, curve: ParamCurve, V0: Vec2, steps =
   return out;
 }
 
+/** A transport sample re-expressed in the base chart: undoes the surface's chart identification (Möbius seam, pole), V included. */
+export function foldSample(surface: Surface, s: TransportSample): TransportSample {
+  const w = surface.chartWrap?.({ uv: s.uv, vel: s.V });
+  return w ? { t: s.t, uv: w.uv, V: w.vel } : s;
+}
+
 /**
  * Signed angle from V0 to V1 in (-π, π], measured in the orthonormal frame
  * e1 = ∂_u/|∂_u|, e2 = unit part of ∂_v orthogonal to e1. Positive = from e1 toward e2.

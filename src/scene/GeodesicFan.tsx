@@ -12,7 +12,9 @@ import { Label } from './Label';
 import SurfaceMesh from './SurfaceMesh';
 import VectorArrow from './VectorArrow';
 import { frame } from './TransportPath';
+import { PAL } from '../theme/palette';
 import { unitNormal } from './geom';
+import { markerScale } from './markerScale';
 
 const SECONDS = 4;
 const OFFSET = 0.012;
@@ -49,8 +51,9 @@ export const revealCount = (p: GeodesicPath, target: number) => {
 };
 
 const lift = (s: Surface, uv: Vec2): Vec3 => {
+  const h = OFFSET * markerScale(s);
   const p = s.position(uv[0], uv[1]), n = unitNormal(s, uv[0], uv[1]);
-  return [p[0] + n[0] * OFFSET, p[1] + n[1] * OFFSET, p[2] + n[2] * OFFSET];
+  return [p[0] + n[0] * h, p[1] + n[1] * h, p[2] + n[2] * h];
 };
 
 export default function GeodesicFan() {
@@ -65,6 +68,7 @@ export default function GeodesicFan() {
   const end = center.samples[revealCount(center, target) - 1];
   const p3 = surface.position(uv[0], uv[1]);
   const unit = unitVelocity(surface, uv, angle0);
+  const k = markerScale(surface);
 
   useFrame((_, dt) => {
     const st = useStore.getState();
@@ -81,20 +85,20 @@ export default function GeodesicFan() {
         return pts.length > 1 ? <Line key={i} points={pts} color={color(i)} lineWidth={2} /> : null;
       })}
       <mesh position={lift(surface, end.uv)}>
-        <sphereGeometry args={[0.035, 16, 12]} />
+        <sphereGeometry args={[0.035 * k, 16, 12]} />
         <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={0.6} />
       </mesh>
       {surfaceId === 'sphere' && (
         <>
           <mesh position={[-p3[0], -p3[1], -p3[2]]}>
-            <torusGeometry args={[0.06, 0.012, 8, 24]} />
-            <meshBasicMaterial color="#ff6b9d" />
+            <torusGeometry args={[0.06 * k, 0.012 * k, 8, 24]} />
+            <meshBasicMaterial color={PAL.warn} />
           </mesh>
-          <Label text={t('−p (conjugate point)', '−p (punto conjugado)')} position={[-p3[0] * 1.12, -p3[1] * 1.12 - 0.1, -p3[2] * 1.12]} color="#ff9dbd" />
+          <Label text={t('−p (conjugate point)', '−p (punto conjugado)')} position={[-p3[0] * 1.12, -p3[1] * 1.12 - 0.1 * k, -p3[2] * 1.12]} color={PAL.warn} height={0.09 * k} />
         </>
       )}
       {/* only the direction matters (geodesics are unit speed); draw short so it does not dominate */}
-      <VectorArrow surface={surface} uv={uv} V={[0.4 * unit[0], 0.4 * unit[1]]} editable color="#ffb347"
+      <VectorArrow surface={surface} uv={uv} V={[0.4 * unit[0], 0.4 * unit[1]]} editable color={PAL.V}
         onChange={(W) => set({ vector: W })} />
       <DraggablePoint surface={surface} uv={uv} onChange={(u) => set({ uv: u })} />
     </group>

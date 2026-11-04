@@ -1,5 +1,5 @@
 import { useStore } from '../state/store';
-import { Tex, fmt, Rich } from './Tex';
+import { Tex, fmt, fmtSci, Rich } from './Tex';
 import { COSMO_OBJECTS, COSMO_SETS } from '../data/cosmology';
 import { curvature, hubbleTimeGyr } from '../math/cosmology';
 import { objById, objectNumbers, setById, useCosmoParams, validity } from './CosmoModel';
@@ -8,7 +8,7 @@ import { COSMO_COLORS } from '../scene/CosmoScene';
 import { useTr, useLang } from '../i18n';
 
 const Src = ({ s }: { s: { label: string; url?: string } }) => s.url ? <a href={s.url} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}><Rich>{s.label}</Rich></a> : <Rich>{s.label}</Rich>;
-const big = (x: number, d = 3) => (Math.abs(x) >= 1e5 ? x.toExponential(2) : fmt(x, d));
+const big = (x: number, d = 3) => (Math.abs(x) >= 1e5 ? fmtSci(x, 2) : fmt(x, d));
 const LEGEND: [string, string, string][] = [['observer worldline', 'línea de universo del observador', COSMO_COLORS.observer], ['past light cone', 'cono de luz pasado', COSMO_COLORS.cone], ['particle horizon', 'horizonte de partículas', COSMO_COLORS.particle],
   ['event horizon', 'horizonte de sucesos', COSMO_COLORS.event], ['Hubble sphere', 'esfera de Hubble', COSMO_COLORS.hubble], ['galaxy worldlines (comoving)', 'líneas de universo de galaxias (comóviles)', COSMO_COLORS.galaxy], ['selected object', 'objeto seleccionado', COSMO_COLORS.pick]];
 
@@ -37,7 +37,7 @@ export function CosmoPanel() {
       <Slider label={`Ω_m = ${fmt(csOm, 3)}`} value={csOm} min={0.05} max={1.5} step={0.005} onChange={(v) => set({ csOm: v })} />
       <Slider label={`Ω_Λ = ${fmt(csOL, 3)}`} value={csOL} min={-0.5} max={1.5} step={0.005} onChange={(v) => set({ csOL: v })} />
       <div className="readout">
-        <span>Ω<sub>r</sub> {t('(from set)', '(del conjunto)')}</span><span>{p.Or.toExponential(2)}</span>
+        <span>Ω<sub>r</sub> {t('(from set)', '(del conjunto)')}</span><span>{fmtSci(p.Or, 2)}</span>
         <span>Ω<sub>k</sub> = 1 − Ω<sub>m</sub> − Ω<sub>r</sub> − Ω<sub>Λ</sub></span><span>{fmt(ok, 4)} ({Math.abs(ok) < 1e-3 ? t('flat', 'plano') : ok > 0 ? t('open', 'abierto') : t('closed', 'cerrado')})</span>
         <span>{t('Hubble time 1/H₀', 'tiempo de Hubble 1/H₀')}</span><span>{fmt(hubbleTimeGyr(p), 2)} Gyr</span>
       </div>

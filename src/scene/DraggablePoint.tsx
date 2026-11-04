@@ -2,6 +2,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree, type ThreeEvent } from '@react-three/fiber';
 import type { Surface, Vec2 } from '../math/types';
+import { PAL } from '../theme/palette';
+import { useStore } from '../state/store';
+import { useMarkerScale } from './markerScale';
 import { buildSurfaceGeometry, uvToDomain } from './geom';
 
 export interface DraggablePointProps {
@@ -13,9 +16,11 @@ export interface DraggablePointProps {
 }
 
 /** Marker dragged along the surface; picks against an internal low-res copy of the surface. */
-export default function DraggablePoint({ surface: s, uv, onChange, color = '#ffd24a', radius = 0.05 }: DraggablePointProps) {
+export default function DraggablePoint({ surface: s, uv, onChange, color = PAL.p, radius = 0.05 }: DraggablePointProps) {
+  radius *= useMarkerScale(s);
   const { gl, camera, controls } = useThree();
   const [drag, setDrag] = useState(false);
+  const lit = useStore((st) => st.hl === 'p');
   const cb = useRef(onChange);
   cb.current = onChange;
   const pickMesh = useMemo(
@@ -51,11 +56,11 @@ export default function DraggablePoint({ surface: s, uv, onChange, color = '#ffd
     <mesh
       position={s.position(uv[0], uv[1])}
       onPointerDown={(e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); setDrag(true); }}
-      onPointerOver={() => (gl.domElement.style.cursor = 'grab')}
-      onPointerOut={() => (gl.domElement.style.cursor = '')}
+      onPointerOver={() => { gl.domElement.style.cursor = 'grab'; useStore.getState().set({ hl: 'p' }); }}
+      onPointerOut={() => { gl.domElement.style.cursor = ''; useStore.getState().set({ hl: null }); }}
     >
-      <sphereGeometry args={[radius, 24, 16]} />
-      <meshStandardMaterial color={drag ? '#fff2a8' : color} emissive={color} emissiveIntensity={0.4} />
+      <sphereGeometry args={[lit ? radius * 1.5 : radius, 24, 16]} />
+      <meshStandardMaterial color={drag ? '#fff2a8' : color} emissive={color} emissiveIntensity={lit ? 0.9 : 0.4} />
     </mesh>
   );
 }

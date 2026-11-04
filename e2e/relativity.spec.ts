@@ -50,7 +50,7 @@ test('Clocks: Pound-Rebka, Gravity Probe B, Cassini predictions', async ({ app }
   await view(app, 'Clocks')
   const pick = (label: string | RegExp) => app.getByLabel('Test').selectOption({ label: label as string })
   await pick('Pound-Rebka / Pound-Snider (Harvard tower)')
-  await expect(readout(app, 'GR predicted |Δν/ν|')).toContainText('2.45e-15')
+  await expect(readout(app, 'GR predicted |Δν/ν|')).toContainText('2.45×10⁻¹⁵')
   await pick('Gravity Probe B')
   const row = (n: string) => app.getByRole('row', { name: new RegExp(`^${n}`) })
   await expect(row('geodetic')).toContainText('6606.1')

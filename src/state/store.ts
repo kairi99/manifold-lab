@@ -5,7 +5,7 @@ import { compileSpec, type CustomSpec } from '../math/surfaces/custom';
 import { DEFAULT_CUSTOM } from '../math/surfaces/presets';
 import { moduleFromHash } from './modules';
 
-export type ModuleId = 'metric' | 'transport' | 'geodesics' | 'curvature' | 'fields' | 'relativity' | 'spacetime' | 'cosmos';
+export type ModuleId = 'curves' | 'metric' | 'transport' | 'geodesics' | 'curvature' | 'fields' | 'relativity' | 'spacetime' | 'cosmos';
 export type Lang = 'en' | 'es';
 export type Theme = 'dark' | 'light';
 export type InfoPage = 'technical' | 'legal';
@@ -33,6 +33,12 @@ export interface AppState {
   lang: Lang;
   theme: Theme;
   infoOpen: InfoPage | null;
+  /** linked highlight between equations and the 3D scene: 'du' | 'dv' | 'V' | 'p' | 'g' | null */
+  hl: string | null;
+  /** chart (u,v) inset visible in surface modules */
+  chartOpen: boolean;
+  /** write Einstein sums out explicitly in equations */
+  expandSums: boolean;
   // geodesics
   geoCount: number; // geodesics in the fan (1 = single)
   geoSpread: number; // total fan opening angle, radians
@@ -105,7 +111,7 @@ const isSpec = (o: unknown): o is CustomSpec => {
   return !!s && typeof s === 'object' && ['x', 'y', 'z', 'f', 'name'].every((k) => typeof (s as unknown as Record<string, unknown>)[k] === 'string')
     && (s.mode === 'parametric' || s.mode === 'graph') && Array.isArray(s.uRange) && Array.isArray(s.vRange) && Array.isArray(s.coords)
     && typeof s.params?.a === 'number' && typeof s.params?.b === 'number'
-    && typeof s.periodicU === 'boolean' && typeof s.periodicV === 'boolean';
+    && typeof s.periodicU === 'boolean' && typeof s.periodicV === 'boolean' && (s.twistU === undefined || typeof s.twistU === 'boolean');
 };
 
 /** Stored spec, or the default if missing, corrupted or no longer compiles. */
@@ -155,6 +161,9 @@ export const useStore = create<AppState>((set) => ({
   lang: startLang === 'es' ? 'es' : 'en',
   theme: startTheme === 'light' ? 'light' : 'dark',
   infoOpen: null,
+  hl: null,
+  chartOpen: typeof window === 'undefined' || window.innerWidth > 900, // phones: collapsed, it would cover half the 3D view
+  expandSums: false,
   geoCount: 9,
   geoSpread: Math.PI / 6,
   geoLength: Math.PI,

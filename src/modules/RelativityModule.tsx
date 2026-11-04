@@ -3,9 +3,10 @@ import { T, tr, useLang, useTr } from '../i18n';
 import { KerrPanel } from './KerrPanel';
 import { BlackHoleImage } from '../panels/BlackHoleImage';
 import { ClocksPanel } from '../panels/ClocksPanel';
-import { Tex, fmt, Rich } from '../panels/Tex';
+import { Tex, fmt, fmtSci, Rich } from '../panels/Tex';
 import { PotentialPlot } from '../panels/PotentialPlot';
 import { RelativityScene, bodyMass, lightModel, orbitModel, periapsides, sampleAt } from '../scene/RelativityScene';
+import { DriftNote, DriftRows, maxRelDrift } from '../panels/Drift';
 import { BODIES, LIGHT, ORBITS, GM_SUN, YEAR, bodyById } from '../data/celestial';
 import type { CelestialBody, LightPreset, OrbitPreset } from '../data/celestial';
 import {
@@ -16,7 +17,7 @@ export { RelativityScene };
 
 const RAD = 180 / Math.PI, ARCSEC = RAD * 3600;
 const VIEWS = [['orbits', 'Orbits', 'Órbitas'], ['light', 'Light', 'Luz'], ['flamm', 'Flamm', 'Flamm'], ['kerr', 'Kerr', 'Kerr'], ['image', 'Image', 'Imagen'], ['clocks', 'Clocks', 'Relojes']] as const;
-const sci = (x: number, d = 3) => (Math.abs(x) >= 1e4 || (x !== 0 && Math.abs(x) < 1e-2) ? x.toExponential(d - 1) : fmt(x, d));
+const sci = (x: number, d = 3) => (Math.abs(x) >= 1e4 || (x !== 0 && Math.abs(x) < 1e-2) ? fmtSci(x, d - 1) : fmt(x, d));
 const Src = ({ s }: { s: { label: string; url?: string } }) =>
   s.url ? <a href={s.url} target="_blank" rel="noreferrer"><Rich>{s.label}</Rich></a> : <Rich>{s.label}</Rich>;
 
@@ -258,14 +259,19 @@ export function RelativityPanel() {
       {view === 'orbits' && (
         <>
           <h2>{t('Orbit', 'Órbita')}</h2>
-          {om.orb ? (
+          {om.orb && om.traj ? (
+            <>
             <div className="readout">
               <span>E</span><span>{fmt(om.orb.E, 5)}</span>
               <span>L</span><span>{fmt(om.orb.L, 4)} M</span>
+              <DriftRows label="E along the orbit" labelEs="E a lo largo de la órbita" value={maxRelDrift(om.traj!.samples.map((s) => (1 - 2 / s.r) * s.tdot))} />
+              <DriftRows label="L along the orbit" labelEs="L a lo largo de la órbita" value={maxRelDrift(om.traj!.samples.map((s) => s.r * s.r * s.phidot))} />
               <span>{t('fate', 'destino')}</span><span>{om.traj?.fate}</span>
               <span>r<sub>p</sub>, r<sub>a</sub></span><span>{fmt(om.rp, 2)}, {fmt(om.ra, 2)} M</span>
               <span>{t('measured shift / orbit', 'avance medido / órbita')}</span><span>{avg === null ? t('n/a (< 2 periapsides)', 'n/d (< 2 periapsis)') : `${fmt(avg * RAD, 2)}°`}</span>
             </div>
+            <DriftNote />
+            </>
           ) : <p>{t('No bound orbit with these apsides (unbound, or inside the stability limit).', 'No hay órbita ligada con estos ápsides (no ligada, o dentro del límite de estabilidad).')}</p>}
           <h2>{t('Clocks at', 'Relojes en')} r = {fmt(rNow, 2)} M</h2>
           <div className="readout">

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 
 import { getSurface } from '../math';
 import { useStore, type AppState } from '../state/store';
 import { coordText, fmt } from '../panels/Tex';
+import { useCurves } from '../modules/curvesState';
 import { SURFACE_MODULES } from '../state/modules';
 import { tr, useTr, type Lang } from '../i18n';
 
@@ -15,12 +16,20 @@ export const keysHelp = (lang: Lang) => tr(lang, KEYS_HELP, KEYS_HELP_ES);
 
 const MOVE: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowDown: [0, -1], ArrowUp: [0, 1] };
 
+const pctOf = (x: number) => `${Math.round(x * 100)}%`;
+
 /** One-line spoken summary of the current state. Returns a string so the store selector can skip equal renders. */
 function describe(s: AppState): string {
   const t = (en: string, es: string) => tr(s.lang, en, es);
   if (s.module === 'relativity') return t('Relativity: Schwarzschild spacetime. Use the controls panel to change the view.', 'Relatividad: espaciotiempo de Schwarzschild. Usa el panel de controles para cambiar la vista.');
   if (s.module === 'spacetime') return t(`Curvature in 4D, ${s.stView} view. Use the controls panel to change the view.`, `Curvatura en 4D, vista ${s.stView}. Usa el panel de controles para cambiar la vista.`);
   if (s.module === 'cosmos') return t(`Causal structure and cosmology, ${s.csView} view. Use the controls panel to change the view.`, `Estructura causal y cosmología, vista ${s.csView}. Usa el panel de controles para cambiar la vista.`);
+  if (s.module === 'curves') {
+    const c = useCurves.getState();
+    return c.view === 'charts'
+      ? t(`Spherical and stereographic charts of the sphere; point at θ = ${fmt(c.th, 2)}, φ = ${fmt(c.ph, 2)}. Use the controls panel to change the point.`, `Cartas esférica y estereográfica de la esfera; punto en θ = ${fmt(c.th, 2)}, φ = ${fmt(c.ph, 2)}. Usa el panel de controles para cambiar el punto.`)
+      : t(`Space curve ${c.preset} with its Frenet frame (T, N, B) at parameter ${pctOf(c.u)}. Use the controls panel to change the curve or move the point.`, `Curva espacial ${c.preset} con su triedro de Frenet (T, N, B) en el parámetro ${pctOf(c.u)}. Usa el panel de controles para cambiar la curva o mover el punto.`);
+  }
   const surf = getSurface(s.surfaceId);
   const [cu, cv] = surf.coords.map(coordText);
   const pct = (x: number) => `${Math.round(x * 10) * 10}%`;
@@ -84,6 +93,8 @@ function onKeyDown(e: KeyboardEvent<HTMLDivElement>) {
 /** Focusable, labelled wrapper around the 3D canvas: keyboard control of p and V plus a throttled live description. */
 export function CanvasAccess({ children }: { children: ReactNode }) {
   const t = useTr();
+  // describe() reads the curves store directly; subscribing here re-renders (and re-runs the selector) when it changes
+  useCurves((c) => `${c.view}|${c.preset}|${Math.round(c.u * 100)}|${c.th.toFixed(2)}|${c.ph.toFixed(2)}`);
   const text = useThrottled(useStore(describe));
   return (
     <div

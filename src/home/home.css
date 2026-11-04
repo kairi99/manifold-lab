@@ -20,6 +20,12 @@
 .home-card strong { font-size: 16px; }
 .home-card span { font-size: 14px; line-height: 1.5; color: var(--muted); }
 .home-card .home-num { font: 12px ui-monospace, monospace; color: var(--accent); }
+.home-card .home-num em { font-style: normal; margin-left: 8px; padding: 1px 8px; border-radius: 9px; background: var(--accent); color: #0f1117; }
+.home-card .home-needs { font-size: 12px; color: var(--muted); margin-top: auto; padding-top: 4px; }
+.home-card .home-prog { display: flex; align-items: center; gap: 8px; }
+.home-bar { flex: 1; height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; }
+.home-bar > span { display: block; height: 100%; background: var(--accent); }
+.home-card .home-count { font: 12px ui-monospace, monospace; }
 .home-hint { color: var(--muted); font-size: 13px; margin: 12px 0 0; }
 @media (max-width: 600px) {
   .home { padding: 28px 16px 48px; }

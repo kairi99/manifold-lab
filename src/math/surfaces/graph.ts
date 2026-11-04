@@ -49,7 +49,7 @@ export const saddle = makeGraph(
   (x, y) => (x * x - y * y) / 2, (x) => x, (_x, y) => -y,
   () => 1, () => 0, () => -1,
   { param: String.raw`\mathbf r(x,y)=\big(x,\ \tfrac12(x^2-y^2),\ y\big)`, metric: metricLatex,
-    christoffel: String.raw`\Gamma^x_{xx}=\frac{x}{1+x^2+y^2},\ \Gamma^y_{yy}=\frac{y}{1+x^2+y^2},\ \text{(others }0\text{)}` },
+    christoffel: String.raw`\Gamma^x_{xx}=\frac{x}{w},\ \Gamma^y_{xx}=\frac{-y}{w},\ \Gamma^x_{yy}=\frac{-x}{w},\ \Gamma^y_{yy}=\frac{y}{w},\ w=1+x^2+y^2` },
   1.2, 'Silla',
 );
 
@@ -58,6 +58,6 @@ export const paraboloid = makeGraph(
   (x, y) => (x * x + y * y) / 2, (x) => x, (_x, y) => y,
   () => 1, () => 0, () => 1,
   { param: String.raw`\mathbf r(x,y)=\big(x,\ \tfrac12(x^2+y^2),\ y\big)`, metric: metricLatex,
-    christoffel: gammaLatex + String.raw`\ \Rightarrow\ \Gamma^x_{xx}=\frac{x}{1+x^2+y^2},\ \Gamma^y_{yy}=\frac{y}{1+x^2+y^2}` },
+    christoffel: gammaLatex + String.raw`\ \Rightarrow\ \Gamma^x_{xx}=\Gamma^x_{yy}=\frac{x}{w},\ \Gamma^y_{xx}=\Gamma^y_{yy}=\frac{y}{w},\ w=1+x^2+y^2` },
   1.2, 'Paraboloide',
 );

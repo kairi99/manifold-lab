@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { useStore } from '../state/store';
 import { MODULES } from '../state/modules';
-import { MathText, Tex } from '../panels/Tex';
+import { Tex } from '../panels/Tex';
+import { GlossaryText } from './Glossary';
 import { THEORY, THEORY_ES } from './theory';
 import { tr } from '../i18n';
 import './tour.css';
@@ -10,7 +11,7 @@ import './tour.css';
 function Prose({ text }: { text: string }) {
   return <>{text.split(/\n\s*\n/).map((p, i) => {
     const d = p.trim().match(/^\$\$([\s\S]+)\$\$$/);
-    return d ? <Tex key={i} block>{d[1]}</Tex> : <p key={i}><MathText text={p} /></p>;
+    return d ? <Tex key={i} block>{d[1]}</Tex> : <p key={i}><GlossaryText text={p} /></p>;
   })}</>;
 }
 

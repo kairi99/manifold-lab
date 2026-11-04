@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from 'react';
+import { Suspense, lazy, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { useStore } from './state/store';
@@ -12,6 +12,10 @@ import { WebGLGuard } from './scene/WebGLGuard';
 import { FitCamera } from './scene/FitCamera';
 import { SURFACE_MODULES, MODULES, moduleFromHash } from './state/modules';
 import { Home } from './home/Home';
+import { parseShareHash, decodeShare } from './state/share';
+import { applyCustomSpec } from './state/store';
+// lazy: it pulls the scene helpers (three, drei) that the module chunks already load
+const ChartInset = lazy(() => import('./scene/ChartInset'));
 import { TopBar, useAppearance } from './chrome/TopBar';
 import { InfoDialog } from './chrome/InfoDialog';
 import { useTr } from './i18n';
@@ -26,6 +30,13 @@ export default function App() {
   // the URL hash is the source of truth: '' = start page, '#metric' = that module (back button works)
   useEffect(() => {
     const sync = () => {
+      // shared link '#module?s=…': decodeShare validates and clamps everything, unknown keys are dropped
+      const sh = parseShareHash(location.hash);
+      if (sh) {
+        const { customSpec, ...rest } = decodeShare(sh.s);
+        if (customSpec) applyCustomSpec(customSpec, false);
+        set({ ...rest, module: sh.module, onHome: false });
+      }
       const m = moduleFromHash(location.hash), s = useStore.getState();
       if (!m) set({ onHome: true, tourOpen: false, theoryOpen: false });
       else if (s.onHome || s.module !== m) set({ module: m, onHome: false, playing: false, geoPlaying: false });
@@ -64,6 +75,7 @@ export default function App() {
         </Canvas>
         </WebGLGuard>
         </CanvasAccess>
+        {SURFACE_MODULES.has(module) && <Suspense fallback={null}><ChartInset /></Suspense>}
       </main>
       <aside id="controls" className="panel" data-tour="panel" tabIndex={-1} aria-label={t('Controls and equations', 'Controles y ecuaciones')}>
         <TheoryButton />

@@ -1,6 +1,14 @@
-import type { ModuleId } from '../state/store';
+import { CURVES_TASKS, CURVES_TASKS_ES } from './curves.content';
+import type { AppState, ModuleId } from '../state/store';
 
-export interface Task { id: string; module: ModuleId; prompt: string; hint: string; answer: string }
+/** Predict-then-reveal: the user types a number first; `answer` may read the live state. */
+export interface Predict { label: string; labelEs: string; unit?: string; answer: (s: AppState) => number; tol: number }
+export interface Task {
+  id: string; module: ModuleId; prompt: string; hint: string; answer: string;
+  /** auto-detects completion from the live store */
+  check?: (s: AppState) => boolean;
+  predict?: Predict;
+}
 
 // LaTeX allowed inside $...$ segments (rendered by SuggestedTasks)
 export const TASKS: Task[] = [
@@ -169,6 +177,69 @@ TASKS.push(
     answer: '$a=b=1$ gives the unit sphere in the $(\\theta,\\varphi)$ chart: $g=\\mathrm{diag}(1,\\sin^2\\theta)$, $K=1$. For $a\\ne1$ the surface is stretched, $g_{12}\\ne0$ and $K$ varies but stays positive.' },
 );
 
+// Auto-detection and predictions, merged by id (TASKS_ES inherits them).
+const near = (x: number, y: number, e: number) => Math.abs(x - y) <= e;
+const deg = Math.PI / 180;
+const onSphere = (s: AppState) => s.surfaceId === 'sphere';
+const customNamed = (s: AppState, n: string) => s.surfaceId === 'custom' && s.customSpec.name.toLowerCase().includes(n);
+/** Bardeen–Press–Teukolsky prograde ISCO radius, M = 1. */
+const kerrIsco = (a: number) => {
+  const z1 = 1 + Math.cbrt(1 - a * a) * (Math.cbrt(1 + a) + Math.cbrt(1 - a)), z2 = Math.sqrt(3 * a * a + z1 * z1);
+  return 3 + z2 - Math.sqrt((3 - z1) * (3 + z1 + 2 * z2));
+};
+export const chirpMass = (m1: number, m2: number) => (m1 * m2) ** 0.6 / (m1 + m2) ** 0.2;
+export { kerrIsco };
+
+const EXTRA: Record<string, Pick<Task, 'check' | 'predict'>> = {
+  'm-pole': { check: (s) => onSphere(s) && (s.uv[0] < 0.15 || s.uv[0] > Math.PI - 0.15) },
+  'm-torus': {
+    check: (s) => s.surfaceId === 'torus' && Math.abs(Math.cos(s.uv[1])) < 0.08,
+    predict: { label: 'Predict K on the outer equator ($v=0$) of the default torus ($R=1$, $r=0.4$).', labelEs: 'Predice K en el ecuador exterior ($v=0$) del toro por defecto ($R=1$, $r=0.4$).', answer: () => 1 / (0.4 * 1.4), tol: 0.1 },
+  },
+  'm-ellipsoid': { check: (s) => customNamed(s, 'ellipsoid') && near(s.customSpec.params.a, 1, 0.02) && near(s.customSpec.params.b, 1, 0.02) },
+  't-pi': {
+    check: (s) => onSphere(s) && s.pathKind === 'latitude' && near(s.latitude, Math.PI / 3, deg) && s.progress >= 0.99,
+    predict: { label: 'Predict the holonomy angle of a latitude loop at $\\theta_0=45^\\circ$.', labelEs: 'Predice el ángulo de holonomía de un lazo de latitud en $\\theta_0=45^\\circ$.', unit: '°', answer: () => 360 * (1 - Math.cos(Math.PI / 4)), tol: 4 },
+  },
+  't-equator': { check: (s) => onSphere(s) && s.pathKind === 'latitude' && near(s.latitude, Math.PI / 2, deg) && s.progress >= 0.99 },
+  't-gb': { check: (s) => onSphere(s) && s.progress >= 0.99 && (s.pathKind === 'triangle' || (s.pathKind === 'free' && s.freePoints.length >= 3)) },
+  'g-conjugate': { check: (s) => onSphere(s) && s.geoCount > 1 && near(s.geoLength, Math.PI, 0.05) && near(s.geoSpread, Math.PI / 3, 0.05) && s.geoProgress >= 0.99 },
+  'g-saddle': { check: (s) => s.surfaceId === 'saddle' && s.geoCount > 1 && s.geoProgress >= 0.99 },
+  'g-torus': { check: (s) => s.surfaceId === 'torus' && Math.cos(s.uv[1]) > 0.9 && s.geoProgress >= 0.99 },
+  'g-pole': { check: (s) => onSphere(s) && Math.abs(s.vector[0]) > 1e-3 && Math.abs(s.vector[1]) < 0.02 * Math.abs(s.vector[0]) && s.geoProgress >= 0.99 },
+  'g-pseudo': { check: (s) => customNamed(s, 'pseudosphere') && s.geoCount > 1 },
+  'c-saddle': {
+    check: (s) => s.surfaceId === 'saddle' && Math.hypot(s.uv[0], s.uv[1]) < 0.06,
+    predict: { label: 'Predict K at the origin of the saddle.', labelEs: 'Predice K en el origen de la silla.', answer: () => -1, tol: 0.15 },
+  },
+  'c-sphere': { check: (s) => onSphere(s) && s.curvShow.circle && near(s.curvRho, 1, 0.06) },
+  'c-bour': { check: (s) => customNamed(s, 'catenoid') },
+  'f-torus': { check: (s) => s.surfaceId === 'torus' && s.fieldId === 'gradSide' },
+  'f-so3': { check: (s) => onSphere(s) && new Set([s.fieldId, s.fieldId2]).size === 2 && ['Lx', 'Ly'].every((f) => [s.fieldId, s.fieldId2].includes(f)) },
+  'f-killing': { check: (s) => onSphere(s) && s.fieldId === 'gradHeight' },
+  'r-mercury': {
+    check: (s) => s.grBody === 'sun' && s.grOrbit === 'mercury',
+    predict: { label: 'Predict the GR perihelion advance of Mercury per century.', labelEs: 'Predice el avance del perihelio de Mercurio por siglo según la RG.', unit: '″/century', answer: () => 43, tol: 5 },
+  },
+  'r-isco': { check: (s) => s.grBody === '' && s.grOrbit === 'custom' && s.grRp < 6 && s.grRp >= 2.5 },
+  'r-photon': { check: (s) => s.grView === 'light' && near(s.grB, 3 * Math.sqrt(3), 0.05) },
+  'r-flamm': { check: (s) => s.grView === 'flamm' },
+  'r-kerr-isco': {
+    check: (s) => s.grView === 'kerr' && s.grSpin >= 0.99 && !s.grRetro,
+    predict: { label: 'Predict the prograde ISCO radius $r_{\\rm ISCO}/M$ for the current spin $a$ (set it in the panel).', labelEs: 'Predice el radio de la ISCO prógrada $r_{\\rm ISCO}/M$ para el espín actual $a$ (fíjalo en el panel).', unit: 'M', answer: (s) => kerrIsco(s.grSpin), tol: 0.15 },
+  },
+  'r-shadow': { check: (s) => s.grView === 'image' && s.grSpin >= 0.98 && s.grIncl >= 85 },
+  'r-gpb': { check: (s) => s.grView === 'clocks' && s.grClockPreset === 'gpb' },
+  's-spaghetti': { check: (s) => s.stView === 'tidal' && s.stBody === 'sgr-a' },
+  's-gw': {
+    check: (s) => s.stView === 'waves' && s.stPol === 'cross',
+    predict: { label: 'Predict the chirp mass of GW150914 ($m_1=36$, $m_2=29\\,M_\\odot$).', labelEs: 'Predice la masa de chirp de GW150914 ($m_1=36$, $m_2=29\\,M_\\odot$).', unit: 'M☉', answer: () => chirpMass(36, 29), tol: 1.5 },
+  },
+  'c-infall': { check: (s) => s.csView === 'penrose' && s.csSpace === 'schwarzschild' && s.csProgress >= 0.95 },
+  'c-superluminal': { check: (s) => s.csView === 'cosmology' && s.csObj === 'jades-gs-z14-0' },
+};
+for (const t of TASKS) Object.assign(t, EXTRA[t.id]);
+
 // Spanish twin, keyed by task id; TASKS_ES has the same ids and order as TASKS
 type TaskText = Pick<Task, 'prompt' | 'hint' | 'answer'>;
 const ES: Record<string, TaskText> = {
@@ -314,6 +385,8 @@ const ES: Record<string, TaskText> = {
     answer: '$a=b=1$ da la esfera unidad en la carta $(\\theta,\\varphi)$: $g=\\mathrm{diag}(1,\\sin^2\\theta)$, $K=1$. Para $a\\ne1$ la superficie se estira, $g_{12}\\ne0$ y $K$ varía pero sigue siendo positiva.' },
 };
 
-export const TASKS_ES: Task[] = TASKS.map((t) => ({ ...t, ...ES[t.id] }));
+TASKS.unshift(...CURVES_TASKS);
+const CURVES_ES = new Map(CURVES_TASKS_ES.map((t) => [t.id, t]));
+export const TASKS_ES: Task[] = TASKS.map((t) => CURVES_ES.get(t.id) ?? { ...t, ...ES[t.id] });
 
 export const tasksForLang = (m: ModuleId, lang: 'en' | 'es') => (lang === 'es' ? TASKS_ES : TASKS).filter((t) => t.module === m);

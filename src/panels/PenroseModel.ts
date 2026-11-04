@@ -50,13 +50,13 @@ export function infallState(r0: number, progress: number) {
 /** Mass of a black hole in seconds: GM/c^3. */
 export const BLACK_HOLES = BODIES.filter((b) => b.kind === 'black hole');
 export const massSeconds = (id: string) => { const b = BLACK_HOLES.find((x) => x.id === id); return b ? b.gm / C ** 3 : null; };
-export function fmtDuration(s: number): string {
+export function fmtDuration(s: number, es = false): string {
   const a = Math.abs(s);
   if (a < 1e-3) return `${(s * 1e6).toPrecision(3)} µs`;
   if (a < 1) return `${(s * 1e3).toPrecision(3)} ms`;
   if (a < 120) return `${s.toPrecision(3)} s`;
   if (a < 7200) return `${(s / 60).toPrecision(3)} min`;
   if (a < 172800) return `${(s / 3600).toPrecision(3)} h`;
-  if (a < 3.15576e7 * 2) return `${(s / 86400).toPrecision(3)} days`;
-  return `${(s / 3.15576e7).toPrecision(3)} years`;
+  if (a < 3.15576e7 * 2) return `${(s / 86400).toPrecision(3)} ${es ? 'días' : 'days'}`;
+  return `${(s / 3.15576e7).toPrecision(3)} ${es ? 'años' : 'years'}`;
 }

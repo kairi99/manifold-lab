@@ -7,7 +7,9 @@ import { transport } from '../math/transport';
 import type { ParamCurve, Surface, TransportSample, Vec2, Vec3 } from '../math/types';
 import { useStore, type PathKind } from '../state/store';
 import VectorArrow from './VectorArrow';
+import { PAL } from '../theme/palette';
 import { unitNormal } from './geom';
+import { markerScale } from './markerScale';
 
 export const STEPS = 1200;
 const TRAIL = 24;
@@ -36,6 +38,11 @@ export const circleLoop = (rho: number): ParamCurve => ({
 export function customLoop(s: Surface, f: number): ParamCurve {
   const { u: [u0, u1], v: [v0, v1], periodicU, periodicV } = s.domain;
   const TP = 2 * Math.PI;
+  // twisted seam: u-pass at height f closes after two trips; f = ½ is the core, closed after one (end vector then reverses)
+  if (s.id === 'custom' && s.chartWrap && !periodicU) {
+    const n = Math.abs(f - 0.5) < 1e-9 ? 1 : 2;
+    return { point: (t) => [u0 + n * t * (u1 - u0), v0 + f * (v1 - v0)], velocity: () => [n * (u1 - u0), 0] };
+  }
   if (periodicU) return { point: (t) => [u0 + t * (u1 - u0), v0 + f * (v1 - v0)], velocity: () => [u1 - u0, 0] };
   if (periodicV) return { point: (t) => [u0 + f * (u1 - u0), v0 + t * (v1 - v0)], velocity: () => [0, v1 - v0] };
   const [cu, cv, ru, rv] = [(u0 + u1) / 2, (v0 + v1) / 2, (f * (u1 - u0)) / 2, (f * (v1 - v0)) / 2];
@@ -93,6 +100,7 @@ export function useTransportData(): TransportData {
 }
 
 const lift = (s: Surface, uv: Vec2, h: number): Vec3 => {
+  h *= markerScale(s);
   const p = s.position(uv[0], uv[1]), n = unitNormal(s, uv[0], uv[1]);
   return [p[0] + n[0] * h, p[1] + n[1] * h, p[2] + n[2] * h];
 };
@@ -117,21 +125,21 @@ export default function TransportPath() {
 
   return (
     <group>
-      {line && <Line points={line} color="#ff6b9d" lineWidth={2.5} />}
+      {line && <Line points={line} color={PAL.path} lineWidth={2.5} />}
       {(pathKind === 'free' || !curve) &&
         freePoints.map((p, i) => (
           <mesh key={i} position={lift(surface, p, 0.02)}>
-            <sphereGeometry args={[0.03, 12, 8]} />
-            <meshStandardMaterial color="#ffd24a" emissive="#ffd24a" emissiveIntensity={0.5} />
+            <sphereGeometry args={[0.03 * markerScale(surface), 12, 8]} />
+            <meshStandardMaterial color={PAL.p} emissive={PAL.p} emissiveIntensity={0.5} />
           </mesh>
         ))}
       {samples && start && (
         <>
           {trail.filter((i) => i < idx).map((i) => (
-            <VectorArrow key={i} surface={surface} uv={samples[i].uv} V={samples[i].V} color="#7fe0c8" ghost />
+            <VectorArrow key={i} surface={surface} uv={samples[i].uv} V={samples[i].V} color={PAL.V} ghost />
           ))}
-          <VectorArrow surface={surface} uv={start} V={V0} color="#9aa7c7" ghost />
-          <VectorArrow surface={surface} uv={samples[idx].uv} V={samples[idx].V} color="#ffb347" />
+          <VectorArrow surface={surface} uv={start} V={V0} color={PAL.ghost} ghost />
+          <VectorArrow surface={surface} uv={samples[idx].uv} V={samples[idx].V} color={PAL.V} />
         </>
       )}
     </group>

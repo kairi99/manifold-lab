@@ -12,6 +12,7 @@ import { useTr } from '../i18n';
 import Arrow from './Arrow';
 import DraggablePoint from './DraggablePoint';
 import { Label } from './Label';
+import { useMarkerScale } from './markerScale';
 import SurfaceMesh from './SurfaceMesh';
 import { unitNormal } from './geom';
 
@@ -57,6 +58,7 @@ export function FieldsScene() {
   const { surface: s, X, Y } = useFieldSel();
   const { uv, showFibers, flowPlaying, commT, set } = useStore();
   const t = useTr();
+  const k = useMarkerScale(s);
   const particles = useRef<THREE.InstancedMesh>(null);
   const discs = useRef<THREE.InstancedMesh>(null);
 
@@ -76,14 +78,14 @@ export function FieldsScene() {
   }, [s, X]);
 
   const arrows = useMemo(() => {
-    const sc = MAXLEN / grid.max;
+    const sc = (MAXLEN * k) / grid.max;
     return grid.pts.map((g, k) => {
       if (g.m < 1e-4 * grid.max) return null;
       const color = new THREE.Color().setHSL(0.65 - 0.65 * (g.m / grid.max), 0.9, 0.58).getStyle();
-      const up = 0.004;
-      return <Arrow key={k} origin={[g.pos[0] + g.n[0] * up, g.pos[1] + g.n[1] * up, g.pos[2] + g.n[2] * up]} dir={[g.W[0] * sc, g.W[1] * sc, g.W[2] * sc]} color={color} radius={0.006} />;
+      const up = 0.004 * k;
+      return <Arrow key={k} origin={[g.pos[0] + g.n[0] * up, g.pos[1] + g.n[1] * up, g.pos[2] + g.n[2] * up]} dir={[g.W[0] * sc, g.W[1] * sc, g.W[2] * sc]} color={color} radius={0.006 * k} />;
     });
-  }, [grid]);
+  }, [grid, k]);
 
   const seedLines = useMemo(() => {
     const sel = grid.pts.filter((_, k) => k % 17 === 5).slice(0, 11);
@@ -97,8 +99,8 @@ export function FieldsScene() {
   const comm = useMemo(() => {
     if (!Y) return null;
     const c = flowCommutator(s, X, Y, uv, commT);
-    return { pts: c.path.map((q) => lift(s, q, 0.02)), gap: c.gap };
-  }, [s, X, Y, uv, commT]);
+    return { pts: c.path.map((q) => lift(s, q, 0.02 * k)), gap: c.gap };
+  }, [s, X, Y, uv, commT, k]);
 
   useLayoutEffect(() => {
     const m = discs.current;
@@ -137,7 +139,7 @@ export function FieldsScene() {
   });
 
   const pn = unitNormal(s, uv[0], uv[1]);
-  const pPos = lift(s, uv, 0.006);
+  const pPos = lift(s, uv, 0.006 * k);
   const legCol = ['#ff7a59', '#59d0ff', '#ff7a59', '#59d0ff'];
   return (
     <group>
@@ -147,25 +149,25 @@ export function FieldsScene() {
       {showFibers && (
         <>
           <instancedMesh ref={discs} args={[undefined, undefined, NU * NV]} frustumCulled={false}>
-            <circleGeometry args={[0.07, 20]} />
+            <circleGeometry args={[0.07 * k, 20]} />
             <meshBasicMaterial color="#9ad0ff" transparent opacity={0.22} side={THREE.DoubleSide} depthWrite={false} />
           </instancedMesh>
           <mesh position={pPos} quaternion={new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), new THREE.Vector3(...pn))}>
-            <circleGeometry args={[0.28, 40]} />
+            <circleGeometry args={[0.28 * k, 40]} />
             <meshBasicMaterial color="#ffd24a" transparent opacity={0.3} side={THREE.DoubleSide} depthWrite={false} />
           </mesh>
-          <Label text="T_{p}M" position={[pPos[0] + pn[0] * 0.2, pPos[1] + pn[1] * 0.2, pPos[2] + pn[2] * 0.2]} color="#ffd24a" />
+          <Label text="T_{p}M" position={[pPos[0] + pn[0] * 0.2 * k, pPos[1] + pn[1] * 0.2 * k, pPos[2] + pn[2] * 0.2 * k]} color="#ffd24a" height={0.09 * k} />
         </>
       )}
       {lines.map((pl, i) => pl.length > 1 && <Line key={i} points={pl} color={i === lines.length - 1 ? '#ffd24a' : '#ffffff'} lineWidth={1} transparent opacity={0.3} />)}
       <instancedMesh ref={particles} args={[undefined, undefined, 16]} frustumCulled={false}>
-        <sphereGeometry args={[0.02, 10, 8]} />
+        <sphereGeometry args={[0.02 * k, 10, 8]} />
         <meshBasicMaterial color="#ffffff" />
       </instancedMesh>
       {zeros.map(({ z, ind }, k) => (
         <group key={k}>
-          <mesh position={z.point}><sphereGeometry args={[0.035, 12, 8]} /><meshBasicMaterial color="#ff4d6d" depthTest={false} transparent /></mesh>
-          <Label text={t(indexLabel(ind), indexLabel(ind, true))} position={[z.point[0] * 1.0, z.point[1] * 1.0 + 0.0, z.point[2] + 0.12]} color="#ff9db0" />
+          <mesh position={z.point}><sphereGeometry args={[0.035 * k, 12, 8]} /><meshBasicMaterial color="#ff4d6d" depthTest={false} transparent /></mesh>
+          <Label text={t(indexLabel(ind), indexLabel(ind, true))} position={[z.point[0] * 1.0, z.point[1] * 1.0 + 0.0, z.point[2] + 0.12 * k]} color="#ff9db0" height={0.09 * k} />
         </group>
       ))}
       {comm && (
@@ -178,7 +180,7 @@ export function FieldsScene() {
           })}
           {comm.pts.length > 1 && (() => {
             const a = comm.pts[comm.pts.length - 1], b = comm.pts[0];
-            return <Arrow origin={a} dir={[b[0] - a[0], b[1] - a[1], b[2] - a[2]]} color="#ff4dff" radius={0.012} overlay />;
+            return <Arrow origin={a} dir={[b[0] - a[0], b[1] - a[1], b[2] - a[2]]} color="#ff4dff" radius={0.012 * k} overlay />;
           })()}
         </>
       )}

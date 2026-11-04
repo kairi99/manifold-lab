@@ -3,6 +3,9 @@ import * as THREE from 'three';
 import { useThree, type ThreeEvent } from '@react-three/fiber';
 import type { Surface, Vec2 } from '../math/types';
 import Arrow from './Arrow';
+import { PAL } from '../theme/palette';
+import { useStore } from '../state/store';
+import { useMarkerScale } from './markerScale';
 import { add, cross, fromWorld, sub, toWorld } from './geom';
 
 export interface VectorArrowProps {
@@ -15,12 +18,14 @@ export interface VectorArrowProps {
   onChange?: (V: Vec2) => void;
 }
 
-export default function VectorArrow({ surface: s, uv, V, color = '#ffb347', editable = false, ghost = false, onChange }: VectorArrowProps) {
+export default function VectorArrow({ surface: s, uv, V, color = PAL.V, editable = false, ghost = false, onChange }: VectorArrowProps) {
   const { gl, camera, controls } = useThree();
   const [drag, setDrag] = useState(false);
+  const lit = useStore((st) => !ghost && st.hl === 'V');
   const live = useRef({ s, uv, onChange });
   live.current = { s, uv, onChange };
   const ctrl = controls as unknown as { enabled: boolean } | null;
+  const k = useMarkerScale(s);
   const p = s.position(uv[0], uv[1]);
   const W = toWorld(s, uv[0], uv[1], V);
   const tip = add(p, W);
@@ -52,15 +57,15 @@ export default function VectorArrow({ surface: s, uv, V, color = '#ffb347', edit
 
   return (
     <group>
-      <Arrow origin={p} dir={W} color={color} opacity={ghost ? 0.35 : 1} radius={ghost ? 0.01 : 0.018} />
+      <Arrow origin={p} dir={W} color={color} opacity={ghost ? 0.35 : 1} radius={(ghost ? 0.01 : 0.018) * k} hlKey={ghost ? undefined : 'V'} />
       {editable && (
         <mesh
           position={tip}
           onPointerDown={(e: ThreeEvent<PointerEvent>) => { e.stopPropagation(); setDrag(true); }}
-          onPointerOver={() => (gl.domElement.style.cursor = 'grab')}
-          onPointerOut={() => (gl.domElement.style.cursor = '')}
+          onPointerOver={() => { gl.domElement.style.cursor = 'grab'; useStore.getState().set({ hl: 'V' }); }}
+          onPointerOut={() => { gl.domElement.style.cursor = ''; useStore.getState().set({ hl: null }); }}
         >
-          <sphereGeometry args={[0.045, 16, 12]} />
+          <sphereGeometry args={[(lit ? 0.06 : 0.045) * k, 16, 12]} />
           <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.5} transparent opacity={0.8} />
         </mesh>
       )}

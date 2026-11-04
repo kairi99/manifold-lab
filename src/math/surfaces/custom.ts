@@ -1,7 +1,7 @@
 // User-typed surfaces: X(u,v) parsed by ../expr, differentiated exactly with 2nd-order jets (n = 2).
 import { evaluate, parse, toLatex, ExprError, type Ast } from '../expr';
 import { constant, variable, type J, type Jet } from '../jet';
-import type { Christoffel, Mat2, Surface, Vec3 } from '../types';
+import type { ChartWrap, Christoffel, Mat2, Surface, Vec3 } from '../types';
 import { cross, dot, norm } from '../vec';
 
 export interface CustomSpec {
@@ -14,10 +14,14 @@ export interface CustomSpec {
   vRange: [string, string];
   periodicU: boolean;
   periodicV: boolean;
+  /** Möbius-type seam: (u + P, v) ~ (u, −v), P = u-range length; needs a v-range symmetric about its centre. Not combined with periodicU. */
+  twistU?: boolean;
   /** LaTeX names of the two coordinates (display only; expressions always use u and v) */
   coords: [string, string];
   /** slider-controlled constants a, b usable in expressions */
   params: { a: number; b: number };
+  /** Euler characteristic if the surface is closed (enables the Gauss–Bonnet comparison) */
+  euler?: number;
 }
 
 export interface Compiled { asts: [Ast, Ast, Ast]; u: [number, number]; v: [number, number] }
@@ -51,6 +55,24 @@ const lift = (j: J): Jet => (typeof j === 'number' ? constant(2, j) : j);
 // display frame: math z-up -> three.js y-up by a proper rotation (x, y, z) -> (x, z, -y), so orientation is kept
 const show = (p: Vec3): Vec3 => [p[0], p[2], -p[1]];
 
+/**
+ * Twisted identification (u + P, v) ~ (u, v0 + v1 − v): crossing the seam k times shifts u by kP and,
+ * for odd k, reflects v and flips the v-component of the velocity. Leaving through the v edges ends the curve.
+ */
+export function twistWrap(ur: [number, number], vr: [number, number]): ChartWrap {
+  const P = ur[1] - ur[0], vs = vr[0] + vr[1];
+  return (st) => {
+    const k = Math.floor((st.uv[0] - ur[0]) / P);
+    let [u, v] = st.uv, [du, dv] = st.vel;
+    if (k !== 0) {
+      u -= k * P;
+      if (Math.abs(k) % 2 === 1) { v = vs - v; dv = -dv; }
+    }
+    if (v < vr[0] || v > vr[1]) return null;
+    return { uv: [u, v], vel: [du, dv] };
+  };
+}
+
 /** Build a Surface from an already-valid spec; throws on parse errors. */
 export function makeCustomSurface(spec: CustomSpec): Surface {
   const { c, errors } = compileSpec(spec);
@@ -76,7 +98,9 @@ export function makeCustomSurface(spec: CustomSpec): Surface {
     id: 'custom',
     name: spec.name || 'Custom',
     coords: spec.coords,
+    euler: spec.euler,
     domain: { u: c.u, v: c.v, periodicU: spec.periodicU, periodicV: spec.periodicV },
+    chartWrap: spec.twistU && !spec.periodicU ? twistWrap(c.u, c.v) : undefined,
     position: (u, v) => show(num(u, v)),
     du: (u, v) => show(jets(u, v).Xu),
     dv: (u, v) => show(jets(u, v).Xv),

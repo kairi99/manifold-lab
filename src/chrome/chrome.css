@@ -12,7 +12,8 @@
 .tb-seg button:last-child { border-radius: 0 6px 6px 0; border-left: none; }
 .tb-seg button[aria-pressed=true] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 @media (max-width: 600px) {
-  .topbar { padding: 6px 8px; gap: 8px; }
+  .topbar { padding: 6px 8px; gap: 4px 8px; flex-wrap: wrap; }
+  .topbar-tools { flex-wrap: wrap; justify-content: flex-end; }
   .topbar .brand { font-size: 15px; }
   .topbar button { padding: 4px 7px; font-size: 12px; }
 }

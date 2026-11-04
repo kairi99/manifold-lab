@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useStore } from '../state/store';
-import { MathText } from '../panels/Tex';
+import { GlossaryText } from './Glossary';
 import { TOURS, TOURS_ES } from './steps';
 import { useTr } from '../i18n';
 import './tour.css';
@@ -140,7 +140,7 @@ export function Tour() {
       )}
       <div ref={card} className="tour-card" style={cardStyle} role="dialog" aria-modal="true" aria-labelledby="tour-title" aria-describedby="tour-body" tabIndex={-1}>
         <h2 id="tour-title">{step.title}</h2>
-        <p id="tour-body"><MathText text={step.body} /></p>
+        <p id="tour-body"><GlossaryText text={step.body} /></p>
         <div className="tour-foot">
           <span className="tour-count">{i + 1} / {STEPS.length}</span>
           <button onClick={close}>{t('Skip', 'Saltar')}</button>

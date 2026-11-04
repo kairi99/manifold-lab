@@ -6,6 +6,7 @@ export function makeTorus(R = 1, r = 0.4): Surface {
     id: 'torus',
     name: 'Torus',
     nameEs: 'Toro',
+    euler: 0,
     coords: ['u', 'v'],
     domain: { u: [0, tp], v: [0, tp], periodicU: true, periodicV: true },
     position: (u, v) => [(R + r * Math.cos(v)) * Math.cos(u), r * Math.sin(v), (R + r * Math.cos(v)) * Math.sin(u)],
