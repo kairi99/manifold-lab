@@ -1,0 +1,32 @@
+import type { ModuleId } from '../state/store';
+
+export interface TourStep {
+  /** data-tour attribute value; null (or a missing element) = centered card */
+  target: string | null;
+  title: string;
+  /** may contain $...$ inline math, rendered with KaTeX */
+  body: string;
+  /** switch to this module when the step is shown */
+  module?: ModuleId;
+}
+
+export const STEPS: TourStep[] = [
+  { target: null, title: 'Welcome to Manifold Lab',
+    body: 'Explore surfaces by seeing their geometry: tangent spaces $T_pM$, the metric $g_{ij}$, Christoffel symbols $\\Gamma^k_{ij}$ and parallel transport, with live equations that update as you move. This tour takes about a minute and you can skip it any time.' },
+  { target: 'nav', title: 'Modules',
+    body: 'Pick a module here. "Metric & tangent spaces" shows how lengths and angles are measured at a point. "Parallel transport" carries a vector around a loop and shows how it turns.' },
+  { target: 'surface-picker', title: 'Choose a surface',
+    body: 'Switch between surfaces such as the sphere, torus and saddle. The Gaussian curvature $K$, and so the equations, change with the surface.' },
+  { target: 'canvas', title: 'The 3D view', module: 'metric',
+    body: 'Left-drag to orbit, right-drag to pan, scroll to zoom. Drag the yellow point to move $p$ on the surface. Drag the tip of the vector to edit $V = V^i\\,\\partial_i$.' },
+  { target: 'panel', title: 'Live equations',
+    body: 'This panel shows $g_{ij}$, $\\Gamma^k_{ij}$ and related numbers evaluated at the current $p$, and updates as you drag.' },
+  { target: 'nav', title: 'Parallel transport', module: 'transport',
+    body: 'Now the second module: slide a vector along a closed loop so that $\\nabla_{\\dot\\gamma} V = 0$, i.e. without turning it intrinsically, and see what happens when it comes back.' },
+  { target: 'transport-controls', title: 'Choose a loop, then play',
+    body: 'Choose a loop (latitude circle, triangle, or your own clicked points). Press play, or scrub the slider to step through the transport by hand.' },
+  { target: 'holonomy', title: 'Holonomy',
+    body: 'When the loop closes, the angle between the starting and returning vector is the holonomy. For a loop bounding a region $R$ it equals $\\iint_R K\\,dA$ (Gauss–Bonnet).' },
+  { target: null, title: 'You are set',
+    body: 'Try the suggested tasks in each module. Press ? at any time to reopen this tour.' },
+];

@@ -1,0 +1,121 @@
+import { useMemo } from 'react';
+import { Line } from '@react-three/drei';
+import { create } from 'zustand';
+import { getSurface } from '../math';
+import { catmullRomLoop, geodesicTriangleSphere, latitudeLoop } from '../math/curves';
+import { transport } from '../math/transport';
+import type { ParamCurve, Surface, TransportSample, Vec2, Vec3 } from '../math/types';
+import { useStore, type PathKind } from '../state/store';
+import VectorArrow from './VectorArrow';
+import { unitNormal } from './geom';
+
+export const STEPS = 1200;
+const TRAIL = 24;
+
+/** Draw-mode flag shared between scene and panel. */
+export const useDraw = create<{ drawing: boolean; setDrawing: (d: boolean) => void }>((set) => ({
+  drawing: false,
+  setDrawing: (drawing) => set({ drawing }),
+}));
+
+/** Torus: v = const loop, u over [0, 2π]. */
+export const torusLoop = (v0: number): ParamCurve => ({
+  point: (t) => [2 * Math.PI * t, v0],
+  velocity: () => [2 * Math.PI, 0],
+});
+/** Graph surfaces: circle of radius ρ in (x, y). */
+export const circleLoop = (rho: number): ParamCurve => ({
+  point: (t) => [rho * Math.cos(2 * Math.PI * t), rho * Math.sin(2 * Math.PI * t)],
+  velocity: (t) => [-2 * Math.PI * rho * Math.sin(2 * Math.PI * t), 2 * Math.PI * rho * Math.cos(2 * Math.PI * t)],
+});
+
+export function availableKinds(surfaceId: string): PathKind[] {
+  return surfaceId === 'sphere' ? ['latitude', 'triangle', 'free'] : ['latitude', 'free'];
+}
+
+/** Range and label of the single loop slider (store.latitude) per surface. */
+export function loopSlider(surfaceId: string) {
+  if (surfaceId === 'sphere') return { label: 'θ0 (latitude)', min: 0.2, max: Math.PI - 0.2, deg: true };
+  if (surfaceId === 'torus') return { label: 'v (tube angle)', min: 0, max: 2 * Math.PI, deg: true };
+  return { label: 'ρ (circle radius)', min: 0.1, max: 1.1, deg: false };
+}
+
+/** Orthonormal frame (e1, e2) of the tangent plane, in coordinate components. */
+export function frame(s: Surface, uv: Vec2): [Vec2, Vec2] {
+  const g = s.metric(uv[0], uv[1]);
+  const e1: Vec2 = [1 / Math.sqrt(g[0][0]), 0];
+  const w: Vec2 = [-g[0][1] / g[0][0], 1];
+  const wn = Math.sqrt(g[1][1] - (g[0][1] * g[0][1]) / g[0][0]);
+  return [e1, [w[0] / wn, w[1] / wn]];
+}
+
+export interface TransportData {
+  surface: Surface;
+  kind: PathKind;
+  curve: ParamCurve | null;
+  start: Vec2 | null;
+  V0: Vec2;
+  samples: TransportSample[] | null;
+}
+
+export function useTransportData(): TransportData {
+  const { surfaceId, pathKind, latitude, freePoints, vector } = useStore();
+  const surface = getSurface(surfaceId);
+  const kind = availableKinds(surfaceId).includes(pathKind) ? pathKind : 'latitude';
+  const curve = useMemo<ParamCurve | null>(() => {
+    if (kind === 'free') return freePoints.length >= 3 ? catmullRomLoop(freePoints) : null;
+    if (surfaceId === 'sphere') return kind === 'triangle' ? geodesicTriangleSphere() : latitudeLoop(latitude);
+    if (surfaceId === 'torus') return torusLoop(latitude);
+    return circleLoop(Math.min(1.1, Math.max(0.1, latitude)));
+  }, [surfaceId, kind, latitude, freePoints]);
+  const start = useMemo(() => (curve ? curve.point(0) : null), [curve]);
+  const V0 = vector;
+  const samples = useMemo(() => (curve ? transport(surface, curve, V0, STEPS) : null), [surface, curve, V0]);
+  return { surface, kind, curve, start, V0, samples };
+}
+
+const lift = (s: Surface, uv: Vec2, h: number): Vec3 => {
+  const p = s.position(uv[0], uv[1]), n = unitNormal(s, uv[0], uv[1]);
+  return [p[0] + n[0] * h, p[1] + n[1] * h, p[2] + n[2] * h];
+};
+
+export default function TransportPath() {
+  const { surface, curve, start, V0, samples } = useTransportData();
+  const progress = useStore((st) => st.progress);
+  const { freePoints, pathKind } = useStore();
+  const line = useMemo(() => {
+    if (!curve) return null;
+    const pts: Vec3[] = [];
+    for (let i = 0; i <= 400; i++) pts.push(lift(surface, curve.point(i / 400), 0.012));
+    return pts;
+  }, [surface, curve]);
+
+  const idx = Math.round(progress * STEPS);
+  const trail = useMemo(() => {
+    if (!samples) return [];
+    const stride = STEPS / TRAIL;
+    return Array.from({ length: TRAIL }, (_, k) => Math.round(k * stride));
+  }, [samples]);
+
+  return (
+    <group>
+      {line && <Line points={line} color="#ff6b9d" lineWidth={2.5} />}
+      {(pathKind === 'free' || !curve) &&
+        freePoints.map((p, i) => (
+          <mesh key={i} position={lift(surface, p, 0.02)}>
+            <sphereGeometry args={[0.03, 12, 8]} />
+            <meshStandardMaterial color="#ffd24a" emissive="#ffd24a" emissiveIntensity={0.5} />
+          </mesh>
+        ))}
+      {samples && start && (
+        <>
+          {trail.filter((i) => i < idx).map((i) => (
+            <VectorArrow key={i} surface={surface} uv={samples[i].uv} V={samples[i].V} color="#7fe0c8" ghost />
+          ))}
+          <VectorArrow surface={surface} uv={start} V={V0} color="#9aa7c7" ghost />
+          <VectorArrow surface={surface} uv={samples[idx].uv} V={samples[idx].V} color="#ffb347" />
+        </>
+      )}
+    </group>
+  );
+}
