@@ -44,3 +44,6 @@ fieldset.group label { display: block; }
 .panel input[type=number] { background: var(--bg); color: var(--fg); border: 1px solid var(--control); border-radius: 6px; padding: 4px; }
 .panel button { background: none; color: var(--fg); border: 1px solid var(--control); border-radius: 6px; padding: 6px 10px; cursor: pointer; font: inherit; font-size: 13px; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+.no-webgl { height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 24px; max-width: 520px; margin: 0 auto; color: var(--fg); }
+.no-webgl p { margin: 0 0 10px; line-height: 1.5; }
+.no-webgl-detail { color: var(--muted); font-size: 12px; font-family: ui-monospace, monospace; }

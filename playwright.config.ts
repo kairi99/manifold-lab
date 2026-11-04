@@ -11,6 +11,8 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:5174',
     trace: 'on-first-retry',
+    // CI runners have no GPU: force Firefox's software WebGL (Mesa llvmpipe) so the 3D canvas exists
+    launchOptions: { firefoxUserPrefs: { 'webgl.force-enabled': true, 'webgl.disabled': false } },
   },
   webServer: {
     // test the production bundle: the dev server re-optimizes deps on a cold start and reloads mid-test

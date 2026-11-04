@@ -26,6 +26,8 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npx playwright install --with-deps firefox
+      # software OpenGL for headless WebGL on GPU-less runners
+      - run: sudo apt-get install -y --no-install-recommends libgl1-mesa-dri libegl1 libgles2
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()

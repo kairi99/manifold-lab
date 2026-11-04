@@ -7,6 +7,7 @@ import { MODULE_VIEWS } from './modules/registry';
 import { Tour, TourButton, useFirstVisitTour } from './tour/Tour';
 import { SuggestedTasks } from './tour/SuggestedTasks';
 import { CanvasAccess, KEYS_HELP } from './a11y/CanvasAccess';
+import { WebGLGuard } from './scene/WebGLGuard';
 
 const MODULES: { id: ModuleId; label: string }[] = [
   { id: 'metric', label: 'Metric & Tangent Spaces' },
@@ -39,6 +40,7 @@ export default function App() {
       </nav>
       <main className="canvas" data-tour="canvas">
         <CanvasAccess>
+        <WebGLGuard>
         <Canvas camera={{ position: [3, 2.5, 3], fov: 45 }}>
           <color attach="background" args={['#0f1117']} />
           <ambientLight intensity={0.5} />
@@ -46,6 +48,7 @@ export default function App() {
           <OrbitControls makeDefault />
           <Suspense fallback={null}><Scene /></Suspense>
         </Canvas>
+        </WebGLGuard>
         </CanvasAccess>
       </main>
       <aside id="controls" className="panel" data-tour="panel" tabIndex={-1} aria-label="Controls and equations">
