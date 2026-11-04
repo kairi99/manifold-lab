@@ -12,9 +12,9 @@ export interface TourStep {
 
 export const STEPS: TourStep[] = [
   { target: null, title: 'Welcome to Manifold Lab',
-    body: 'Explore surfaces by seeing their geometry: tangent spaces $T_pM$, the metric $g_{ij}$, Christoffel symbols $\\Gamma^k_{ij}$, parallel transport, geodesics, curvature and vector fields, with live equations that update as you move. This tour takes about a minute and you can skip it any time.' },
+    body: 'Explore surfaces by seeing their geometry: tangent spaces $T_pM$, the metric $g_{ij}$, Christoffel symbols $\\Gamma^k_{ij}$, parallel transport, geodesics, curvature, vector fields and Schwarzschild spacetime, with live equations that update as you move. This tour takes about a minute and you can skip it any time.' },
   { target: 'nav', title: 'Modules',
-    body: 'Pick a module here. "Metric & tangent spaces" shows how lengths and angles are measured at a point. "Parallel transport" carries a vector around a loop and shows how it turns. "Geodesics" shoots the straightest possible curves from a point. "Curvature" compares intrinsic and extrinsic curvature. "Vector Fields & TM" explores flows, Lie brackets and zeros of vector fields.' },
+    body: 'Pick a module here. "Metric & tangent spaces" shows how lengths and angles are measured at a point. "Parallel transport" carries a vector around a loop and shows how it turns. "Geodesics" shoots the straightest possible curves from a point. "Curvature" compares intrinsic and extrinsic curvature. "Vector Fields & TM" explores flows, Lie brackets and zeros of vector fields. "Relativity" applies it all to Schwarzschild spacetime.' },
   { target: 'surface-picker', title: 'Choose a surface',
     body: 'Switch between surfaces such as the sphere, torus and saddle. The Gaussian curvature $K$, and so the equations, change with the surface.' },
   { target: 'canvas', title: 'The 3D view', module: 'metric',
@@ -33,6 +33,10 @@ export const STEPS: TourStep[] = [
     body: 'The fourth module paints $K$ over the surface. It computes $K$ twice: intrinsically, $K = R_{1212}/\\det g$ from the metric alone, and extrinsically, $K = \\kappa_1\\kappa_2$ from how the surface bends in $\\mathbb{R}^3$. They always agree: Theorema Egregium.' },
   { target: 'poincare-hopf', title: 'Vector fields & the tangent bundle', module: 'fields',
     body: 'The fifth module draws a vector field as a section $X: M \\to TM$ of the tangent bundle and animates its flow. It shows Killing fields ($\\mathcal{L}_X g = 0$), Lie brackets such as $[L_x, L_y] = -L_z$, and the Poincaré–Hopf theorem $\\sum \\operatorname{ind} = \\chi(M)$.' },
+  { target: 'gr-presets', title: 'Relativity: Schwarzschild', module: 'relativity',
+    body: 'The last module leaves surfaces for spacetime: orbits and light rays are geodesics of $ds^2 = -(1-\\tfrac{2M}{r})dt^2 + \\tfrac{dr^2}{1-2M/r} + r^2 d\\Omega^2$. Pick a real object, such as Mercury, the star S2 around Sgr A*, or the M87* shadow, and compare the prediction with the observation.' },
+  { target: 'gr-potential', title: 'Effective potential',
+    body: 'Radial motion obeys $\\dot r^2 = E^2 - V_{\\text{eff}}(r)$. The plot marks the photon sphere $3M$, the marginally bound orbit $4M$ and the ISCO $6M$.' },
   { target: null, title: 'You are set',
     body: 'Try the suggested tasks in each module. Press ? at any time to reopen this tour.' },
 ];

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { Vec2 } from '../math/types';
 
-export type ModuleId = 'metric' | 'transport' | 'geodesics' | 'curvature' | 'fields';
+export type ModuleId = 'metric' | 'transport' | 'geodesics' | 'curvature' | 'fields' | 'relativity';
 export type PathKind = 'latitude' | 'triangle' | 'free';
 
 export interface AppState {
@@ -34,6 +34,16 @@ export interface AppState {
   flowPlaying: boolean;
   flowPhase: number; // particle animation phase in [0,1)
   commT: number; // flow-commutator parameter t
+  // relativity (geometric units G=c=1, lengths in units of M)
+  grView: 'orbits' | 'light' | 'flamm';
+  grBody: string; // CelestialBody id ('' = generic black hole, M = 1)
+  grOrbit: string; // OrbitPreset id or 'custom'
+  grRp: number; // custom periapsis r_p / M
+  grRa: number; // custom apoapsis r_a / M
+  grB: number; // impact parameter b / M for the central light ray
+  grShowFlamm: boolean; // draw orbits lifted onto the Flamm paraboloid
+  grPlaying: boolean;
+  grProgress: number; // 0..1 along the integrated orbit
   set: (p: Partial<AppState>) => void;
 }
 
@@ -61,5 +71,14 @@ export const useStore = create<AppState>((set) => ({
   flowPlaying: true,
   flowPhase: 0,
   commT: 0.3,
+  grView: 'orbits',
+  grBody: '',
+  grOrbit: 'custom',
+  grRp: 10,
+  grRa: 30,
+  grB: 6,
+  grShowFlamm: true,
+  grPlaying: true,
+  grProgress: 0,
   set: (p) => set(p),
 }));

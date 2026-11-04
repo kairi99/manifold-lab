@@ -7,6 +7,7 @@ import { TransportScene, TransportPanel } from './modules/TransportModule';
 import { GeodesicScene, GeodesicPanel } from './modules/GeodesicModule';
 import { CurvatureScene, CurvaturePanel } from './modules/CurvatureModule';
 import { FieldsScene, FieldsPanel } from './modules/FieldsModule';
+import { RelativityScene, RelativityPanel } from './modules/RelativityModule';
 import { Tour, TourButton, useFirstVisitTour } from './tour/Tour';
 import { SuggestedTasks } from './tour/SuggestedTasks';
 
@@ -16,6 +17,7 @@ const MODULES: { id: ModuleId; label: string }[] = [
   { id: 'geodesics', label: 'Geodesics' },
   { id: 'curvature', label: 'Curvature' },
   { id: 'fields', label: 'Vector Fields & TM' },
+  { id: 'relativity', label: 'Relativity: Schwarzschild' },
 ];
 
 export default function App() {
@@ -38,11 +40,11 @@ export default function App() {
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
           <OrbitControls makeDefault />
-          {module === 'metric' ? <MetricScene /> : module === 'transport' ? <TransportScene /> : module === 'geodesics' ? <GeodesicScene /> : module === 'curvature' ? <CurvatureScene /> : <FieldsScene />}
+          {module === 'metric' ? <MetricScene /> : module === 'transport' ? <TransportScene /> : module === 'geodesics' ? <GeodesicScene /> : module === 'curvature' ? <CurvatureScene /> : module === 'fields' ? <FieldsScene /> : <RelativityScene />}
         </Canvas>
       </main>
       <aside className="panel" data-tour="panel">
-        {module === 'metric' ? <MetricPanel /> : module === 'transport' ? <TransportPanel /> : module === 'geodesics' ? <GeodesicPanel /> : module === 'curvature' ? <CurvaturePanel /> : <FieldsPanel />}
+        {module === 'metric' ? <MetricPanel /> : module === 'transport' ? <TransportPanel /> : module === 'geodesics' ? <GeodesicPanel /> : module === 'curvature' ? <CurvaturePanel /> : module === 'fields' ? <FieldsPanel /> : <RelativityPanel />}
         <SuggestedTasks module={module} />
       </aside>
       <Tour />

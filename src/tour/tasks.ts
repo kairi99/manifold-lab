@@ -96,3 +96,22 @@ TASKS.push(
     hint: 'Which one has $\\mathcal L_Xg=0$?',
     answer: 'Lz is Killing: $\\mathcal L_Xg=0$, $\\operatorname{div}X=0$, its flow is rotation (isometry). gradHeight has $\\operatorname{div}X\\ne0$, so its flow does not preserve area, hence not an isometry.' },
 );
+
+TASKS.push(
+  { id: 'r-mercury', module: 'relativity',
+    prompt: 'Choose the Sun and the Mercury preset. Compare the predicted perihelion advance with the observed value, then ask why it is so small.',
+    hint: 'Read $a/M$ in the panel. The shift per orbit is $6\\pi M/[a(1-e^2)]$.',
+    answer: 'Mercury has $a/M\\approx 3.9\\times10^7$, so the shift is only $\\approx 5\\times10^{-7}$ rad ($0.10^{\\prime\\prime}$) per orbit. Over $\\approx 415$ orbits per century this is $\\approx 43^{\\prime\\prime}$/century, matching the observed GR contribution. The scene shows a strong-field toy with the same eccentricity.' },
+  { id: 'r-isco', module: 'relativity',
+    prompt: 'Pick the generic black hole, custom orbit, with $r_a$ just above $r_p=6$. Then lower $r_p$ just below $6M$.',
+    hint: 'Watch the potential plot: the minimum of $V_{\\rm eff}$ where a circular orbit sits.',
+    answer: 'For $L^2>12M^2$ $V_{\\rm eff}$ has a minimum (stable circular orbit) and a maximum. At $L=2\\sqrt3\\,M$ they merge at $r=6M$ (the ISCO, $E=\\sqrt{8/9}$). For $r_p<6M$ no stable circular orbit exists and a near-circular orbit spirals in and plunges.' },
+  { id: 'r-photon', module: 'relativity',
+    prompt: 'In the light view, sweep $b$ through $3\\sqrt3\\,M\\approx5.196M$. What changes? How big is the shadow of Sgr A*?',
+    hint: 'Look for the red (captured) rays and the maximum of the light potential, $E^2=1$ versus $L^2/27M^2$.',
+    answer: 'The light potential peaks at $r=3M$ with height $L^2/27M^2$; rays with $b<b_c=3\\sqrt3\\,M$ are captured, larger ones are deflected. The shadow has angular radius $b_c/D$; for Sgr A* the diameter $2b_c/D\\approx 53\\,\\mu$as, consistent with EHT ($51.8\\pm2.3\\,\\mu$as).' },
+  { id: 'r-flamm', module: 'relativity',
+    prompt: 'Open the Flamm view. The slice has $K=-M/r^3\\ne0$, yet the vacuum Ricci tensor vanishes. How can both hold?',
+    hint: 'Which object is curved: the 2D spatial slice or spacetime? Are the orbits geodesics of the slice?',
+    answer: 'The slice $t=$const is curved ($K=-M/r^3$) but spacetime is Ricci flat: $R_{\\mu\\nu}=0$ only says the trace parts cancel between space and time curvature, the Weyl tensor survives (tides). Orbits are geodesics of the 4D metric, not of the slice, so drawn on the paraboloid they are not geodesics of that surface.' },
+);
