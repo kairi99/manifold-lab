@@ -14,6 +14,10 @@ export interface CelestialBody {
   kind: 'star' | 'planet' | 'white dwarf' | 'neutron star' | 'black hole';
   gm: number; radiusM: number | null; distanceM?: number;
   note: string; sources: Source[];
+  /** Dimensionless spin a* = Jc/(GM^2); lower/upper are bounds (a lone `lower` means a lower limit). */
+  spin?: { value: number; lower?: number; upper?: number; method: string; source: Source };
+  /** Spin angular momentum J, kg m^2/s. */
+  angularMomentum?: number;
 }
 export interface OrbitPreset {
   id: string; name: string; centralId: string;
@@ -45,7 +49,9 @@ export const BODIES: CelestialBody[] = [
     sources: [IAU] },
   { id: 'earth', name: 'Earth', kind: 'planet', gm: 3.986004418e14, radiusM: R_EARTH,
     note: 'r_s is under 1 cm. GPS clocks still need GR corrections of tens of microseconds per day.',
-    sources: [{ label: 'GM: IAU 2015 B3 / CODATA-era TT value 3.986004418e14; R: IAU 2015 B3 nominal equatorial', url: IAU.url }] },
+    sources: [{ label: 'GM: IAU 2015 B3 / CODATA-era TT value 3.986004418e14; R: IAU 2015 B3 nominal equatorial', url: IAU.url }],
+    angularMomentum: 8.034e37 * 7.292115e-5, // I * omega; I = 8.034e37 kg m^2 NOT verified against a primary source (omega = sidereal rate); product 5.858e33 arithmetic checked
+  },
   { id: 'jupiter', name: 'Jupiter', kind: 'planet', gm: 1.2668653e17, radiusM: 7.1492e7,
     note: 'Most massive planet; r_s about 2.8 m, a useful comparison with the Sun.',
     sources: [{ label: 'IAU 2015 B3 nominal GM_J = 1.2668653e17, R_eq = 7.1492e7 m', url: IAU.url }] },
@@ -66,10 +72,19 @@ export const BODIES: CelestialBody[] = [
     sources: [{ ...EHT_M87, label: EHT_M87.label + ': M = (6.5 +/- 0.7)e9 Msun; D = 16.8 Mpc' }] },
   { id: 'cyg-x1', name: 'Cygnus X-1', kind: 'black hole', gm: 21.2 * GM_SUN, radiusM: null, distanceM: 2.22e3 * PC,
     note: 'First widely accepted stellar-mass black hole candidate, now 21.2 +/- 2.2 Msun at 2.22 kpc.',
+    spin: { value: 0.9985, lower: 0.9985, method: 'X-ray continuum fitting; 3-sigma LOWER limit a* > 0.9985, assumes spin aligned with orbit and neglects counteracting torque',
+      source: { label: 'Zhao et al. 2021, ApJ 908, 117 (confirmed via search-result abstract text, not the paper itself)', url: 'https://doi.org/10.3847/1538-4357/abbcd6' } },
     sources: [{ label: 'Miller-Jones et al. 2021, Science 371, 1046 (21.2 +/- 2.2 Msun; D = 2.22 +0.18/-0.17 kpc, distance error bars from a garbled record)', url: 'https://arxiv.org/abs/2102.09091' }] },
   { id: 'gw150914', name: 'GW150914 remnant', kind: 'black hole', gm: 62 * GM_SUN, radiusM: null,
     note: 'Final black hole of the first detected merger; about 3 Msun of energy radiated as gravitational waves in about 0.2 s.',
-    sources: [{ label: 'LIGO/Virgo 2016, PRL 116, 241102 (final mass 62 +4/-4 Msun, source frame, 90%)', url: 'https://arxiv.org/abs/1602.03840' }] },
+    sources: [{ label: 'LIGO/Virgo 2016, PRL 116, 241102 (final mass 62 +4/-4 Msun, source frame, 90%)', url: 'https://arxiv.org/abs/1602.03840' }],
+    spin: { value: 0.67, lower: 0.60, upper: 0.72, method: 'Gravitational-wave waveform fit, final spin 0.67 +0.05/-0.07 (90% credible)',
+      source: { label: 'LIGO/Virgo 2016, PRL 116, 061102 Table I (values seen via a search snippet, not the paper itself)', url: 'https://arxiv.org/abs/1602.03840' } } },
+  { id: 'grs1915', name: 'GRS 1915+105', kind: 'black hole', gm: 12.4 * GM_SUN, radiusM: null, distanceM: 8.6e3 * PC,
+    note: 'Microquasar with a near-extremal Kerr black hole; Reid 2014 parallax lowered the mass from 14 to 12.4 Msun.',
+    sources: [{ label: 'Reid et al. 2014, ApJ 796, 2 (parallax D = 8.6 kpc, M = 12.4 Msun; seen via search snippet, uncertainties not recorded)', url: 'https://arxiv.org/abs/1409.2453' }],
+    spin: { value: 0.98, lower: 0.98, method: 'X-ray continuum fitting; a* > 0.98 LOWER limit computed for the older 14 Msun, 11 kpc, 66 deg inputs; Reid 2014 preliminary a* = 0.98 +/- 0.01 (stat), > 0.92 (3 sigma, with systematics) with revised inputs',
+      source: { label: 'McClintock et al. 2006, ApJ 652, 518; Reid et al. 2014', url: 'https://arxiv.org/abs/astro-ph/0606076' } } },
 ];
 
 const mercuryA = 57.909e9;

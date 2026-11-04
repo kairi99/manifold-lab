@@ -6,6 +6,7 @@ import 'katex/dist/katex.min.css';
 import { MODULE_VIEWS } from './modules/registry';
 import { Tour, TourButton, useFirstVisitTour } from './tour/Tour';
 import { SuggestedTasks } from './tour/SuggestedTasks';
+import { CanvasAccess, KEYS_HELP } from './a11y/CanvasAccess';
 
 const MODULES: { id: ModuleId; label: string }[] = [
   { id: 'metric', label: 'Metric & Tangent Spaces' },
@@ -13,27 +14,31 @@ const MODULES: { id: ModuleId; label: string }[] = [
   { id: 'geodesics', label: 'Geodesics' },
   { id: 'curvature', label: 'Curvature' },
   { id: 'fields', label: 'Vector Fields & TM' },
-  { id: 'relativity', label: 'Relativity: Schwarzschild' },
+  { id: 'relativity', label: 'Relativity: Schwarzschild & Kerr' },
 ];
 
 export default function App() {
   const module = useStore((s) => s.module);
   const set = useStore((s) => s.set);
   useFirstVisitTour();
+  // honour prefers-reduced-motion: nothing animates until the user asks
+  useEffect(() => { if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) set({ flowPlaying: false, grPlaying: false }); }, [set]);
   const { Scene, Panel } = MODULE_VIEWS[module];
   // on phones the tabs scroll sideways; keep the active one visible (also when the tour switches module)
   useEffect(() => { document.querySelector('.nav button.active')?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }, [module]);
   return (
     <div className="app">
-      <nav className="nav" data-tour="nav">
+      <a className="skip" href="#controls" onClick={(e) => { e.preventDefault(); document.getElementById('controls')?.focus(); }}>Skip to controls</a>
+      <nav className="nav" data-tour="nav" aria-label="Modules">
         <h1>Manifold Lab</h1>
         {MODULES.map((m) => (
-          <button key={m.id} className={m.id === module ? 'active' : ''} onClick={() => set({ module: m.id, playing: false, geoPlaying: false })}>
+          <button key={m.id} className={m.id === module ? 'active' : ''} aria-current={m.id === module ? 'page' : undefined} onClick={() => set({ module: m.id, playing: false, geoPlaying: false })}>
             {m.label}
           </button>
         ))}
       </nav>
       <main className="canvas" data-tour="canvas">
+        <CanvasAccess>
         <Canvas camera={{ position: [3, 2.5, 3], fov: 45 }}>
           <color attach="background" args={['#0f1117']} />
           <ambientLight intensity={0.5} />
@@ -41,13 +46,15 @@ export default function App() {
           <OrbitControls makeDefault />
           <Suspense fallback={null}><Scene /></Suspense>
         </Canvas>
+        </CanvasAccess>
       </main>
-      <aside className="panel" data-tour="panel">
+      <aside id="controls" className="panel" data-tour="panel" tabIndex={-1} aria-label="Controls and equations">
+        {module !== 'relativity' && <p id="kbd-help" className="kbd-help">{KEYS_HELP}</p>}
         <Suspense fallback={<p className="loading">Loading module…</p>}><Panel /></Suspense>
         <SuggestedTasks module={module} />
+        <TourButton />
       </aside>
       <Tour />
-      <TourButton />
     </div>
   );
 }

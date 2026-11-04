@@ -11,7 +11,8 @@ An interactive explorer for differential geometry and general relativity. Every 
 - **Geodesics** — fans of geodesics, conjugate points, Clairaut's constant, geodesic deviation.
 - **Curvature** — Gaussian-curvature heatmap, Theorema Egregium (intrinsic $R_{1212}/\det g$ vs extrinsic $\kappa_1\kappa_2$), principal directions, geodesic circles.
 - **Vector fields & the tangent bundle** — flows, Killing fields, Lie brackets ($[L_x, L_y] = -L_z$), Poincaré–Hopf.
-- **Relativity: Schwarzschild** — Flamm's paraboloid, timelike and null geodesics, effective potential, perihelion precession and light bending, with real objects (Mercury, S2 around Sgr A\*, the Hulse–Taylor pulsar, GPS, M87\* and Sgr A\* shadows).
+- **Relativity: Schwarzschild & Kerr** — Flamm's paraboloid, timelike and null geodesics, effective potential, perihelion precession and light bending, with real objects (Mercury, S2 around Sgr A\*, the Hulse–Taylor pulsar, GPS, M87\* and Sgr A\* shadows). Kerr: horizons, ergosphere, ISCO and photon orbits vs spin, frame dragging, radiative efficiency. A ray-traced black-hole image (thin disk + lensed sky) checked against Bardeen's shadow curve. Clocks & delays: gravitational redshift (Pound–Rebka, Gravity Probe A, Sirius B), Shapiro delay (Cassini) and Gravity Probe B frame dragging.
+- **Accessibility** — keyboard control of the 3D point and vector (arrows, `[` `]`, `+` `−`), screen-reader descriptions, reduced-motion support.
 
 Surfaces: sphere, torus, saddle, paraboloid. All closed-form geometry is checked against finite differences and known results in the test suite.
 
@@ -22,7 +23,8 @@ A skippable guided tour opens on the first visit; press `?` to reopen it.
 ```sh
 npm install
 npm run dev      # http://localhost:5173
-npm test         # vitest
+npm test         # vitest unit tests
+npm run test:e2e # Playwright browser tests (drags, readouts, phone layout)
 npm run build
 ```
 

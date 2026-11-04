@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 /** Render a KaTeX string; `block` for display math. Errors render as red source, never throw. */
 export function Tex({ children, block = false }: { children: string; block?: boolean }) {
   const html = useMemo(
-    () => katex.renderToString(children, { displayMode: block, throwOnError: false }),
+    () => katex.renderToString(children, { displayMode: block, throwOnError: false, output: 'htmlAndMathml' }),
     [children, block],
   );
   return <span className={block ? 'tex-block' : 'tex'} dangerouslySetInnerHTML={{ __html: html }} />;

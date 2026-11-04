@@ -41,15 +41,15 @@ export function GeodesicPanel() {
         <span>Length: {fmt(geoLength / Math.PI, 2)}π</span>
         <input type="range" min={0.5} max={4 * Math.PI} step={0.01} value={geoLength} onChange={(e) => set({ geoLength: +e.target.value })} />
       </label>
-      <div data-tour="geo-controls" className="field">
+      <div data-tour="geo-controls" className="field" role="group" aria-label="Playback">
         <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={() => set(geoPlaying ? { geoPlaying: false } : { geoPlaying: true, geoProgress: geoProgress >= 1 ? 0 : geoProgress })}>
             {geoPlaying ? 'Pause' : 'Play'}
           </button>
           <button onClick={() => set({ geoPlaying: false, geoProgress: 0 })}>Reset</button>
         </div>
-        <span>Progress {(geoProgress * 100).toFixed(0)}%</span>
-        <input type="range" min={0} max={1} step={0.001} value={geoProgress} onChange={(e) => set({ geoProgress: +e.target.value, geoPlaying: false })} />
+        <label htmlFor="geo-progress">Progress {(geoProgress * 100).toFixed(0)}%</label>
+        <input id="geo-progress" type="range" min={0} max={1} step={0.001} value={geoProgress} onChange={(e) => set({ geoProgress: +e.target.value, geoPlaying: false })} />
       </div>
 
       <h2>Geodesic equation</h2>

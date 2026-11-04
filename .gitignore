@@ -23,3 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 .vitest
+playwright-report/
+test-results/
+dist-e2e/

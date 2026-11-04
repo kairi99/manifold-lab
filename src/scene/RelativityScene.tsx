@@ -12,6 +12,7 @@ import type { CelestialBody, LightPreset, OrbitPreset } from '../data/celestial'
 import { useStore } from '../state/store';
 import { Label } from './Label';
 import SurfaceMesh from './SurfaceMesh';
+import { KerrView, ImageView, ClocksView } from './KerrScene';
 
 /**
  * Display scale: the whole scene lives in a group scaled by DISPLAY = 1/14, so 1 world unit = 14 M
@@ -251,6 +252,15 @@ function FlammView() {
 export function RelativityScene() {
   const view = useStore((s) => s.grView), showFlamm = useStore((s) => s.grShowFlamm);
   const surface = useMemo(() => makeFlamm(FLAMM_ZMAX), []);
+  if (view === 'kerr' || view === 'image' || view === 'clocks') {
+    return (
+      <group scale={DISPLAY}>
+        {view === 'kerr' && <KerrView />}
+        {view === 'image' && <ImageView />}
+        {view === 'clocks' && <ClocksView />}
+      </group>
+    );
+  }
   const flamm = view === 'flamm' || showFlamm;
   return (
     <group scale={DISPLAY}>

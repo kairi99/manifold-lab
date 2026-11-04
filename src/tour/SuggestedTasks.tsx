@@ -37,10 +37,10 @@ export function SuggestedTasks({ module }: { module: ModuleId }) {
                 <span><Rich text={t.prompt} /></span>
               </label>
               <div className="task-actions">
-                <button onClick={() => setShown({ ...shown, [t.id]: shown[t.id] === 'hint' ? undefined : 'hint' })}>
+                <button aria-expanded={shown[t.id] === 'hint'} onClick={() => setShown({ ...shown, [t.id]: shown[t.id] === 'hint' ? undefined : 'hint' })}>
                   {shown[t.id] === 'hint' ? 'Hide hint' : 'Show hint'}
                 </button>
-                <button onClick={() => setShown({ ...shown, [t.id]: shown[t.id] === 'answer' ? undefined : 'answer' })}>
+                <button aria-expanded={shown[t.id] === 'answer'} onClick={() => setShown({ ...shown, [t.id]: shown[t.id] === 'answer' ? undefined : 'answer' })}>
                   {shown[t.id] === 'answer' ? 'Hide answer' : 'Show answer'}
                 </button>
               </div>

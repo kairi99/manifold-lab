@@ -35,7 +35,7 @@ export interface AppState {
   flowPhase: number; // particle animation phase in [0,1)
   commT: number; // flow-commutator parameter t
   // relativity (geometric units G=c=1, lengths in units of M)
-  grView: 'orbits' | 'light' | 'flamm';
+  grView: 'orbits' | 'light' | 'flamm' | 'kerr' | 'image' | 'clocks';
   grBody: string; // CelestialBody id ('' = generic black hole, M = 1)
   grOrbit: string; // OrbitPreset id or 'custom'
   grRp: number; // custom periapsis r_p / M
@@ -44,6 +44,13 @@ export interface AppState {
   grShowFlamm: boolean; // draw orbits lifted onto the Flamm paraboloid
   grPlaying: boolean;
   grProgress: number; // 0..1 along the integrated orbit
+  // Kerr / imaging (geometric units, M = 1)
+  grSpin: number; // a/M in [0, 0.998]
+  grRetro: boolean; // retrograde orbit (against the spin)
+  grIncl: number; // observer inclination, degrees from the spin axis (0 = face-on)
+  grImgRes: number; // ray-traced image width = height, pixels
+  grImgTarget: 'disk' | 'sky' | 'both';
+  grClockPreset: string; // id of a redshift / Shapiro / frame-dragging preset ('' = none)
   set: (p: Partial<AppState>) => void;
 }
 
@@ -80,5 +87,11 @@ export const useStore = create<AppState>((set) => ({
   grShowFlamm: true,
   grPlaying: true,
   grProgress: 0,
+  grSpin: 0.9,
+  grRetro: false,
+  grIncl: 75,
+  grImgRes: 160,
+  grImgTarget: 'both',
+  grClockPreset: '',
   set: (p) => set(p),
 }));

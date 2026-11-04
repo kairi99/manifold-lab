@@ -81,13 +81,14 @@ export function TransportPanel() {
     <div>
       <SurfacePicker />
       <h2>Path</h2>
-      <div className="field">
+      <fieldset className="field group">
+        <legend>Loop type</legend>
         {availableKinds(surfaceId).map((k) => (
           <label key={k}>
             <input type="radio" name="pk" checked={kind === k} onChange={() => { set({ pathKind: k, progress: 0, playing: false }); if (k !== 'free') setDrawing(false); }} /> {KIND_LABEL[k]}
           </label>
         ))}
-      </div>
+      </fieldset>
       {kind === 'latitude' && (
         <label className="field">
           <span>{sl.label}: {sl.deg ? `${fmt(latitude * DEG, 0)}°` : fmt(latitude, 2)}</span>
@@ -97,12 +98,12 @@ export function TransportPanel() {
         </label>
       )}
       {kind === 'free' && (
-        <div className="field">
+        <div className="field" role="group" aria-label="Free loop">
           <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={() => setDrawing(!drawing)}>{drawing ? 'Done drawing' : 'Draw loop'}</button>
+            <button aria-pressed={drawing} onClick={() => setDrawing(!drawing)}>{drawing ? 'Done drawing' : 'Draw loop'}</button>
             <button onClick={() => set({ freePoints: [], progress: 0, playing: false })}>Clear</button>
           </div>
-          <span>{drawing ? 'Click the surface to add points (need 3+).' : `${freePoints.length} points`}</span>
+          <span role="status">{drawing ? 'Click the surface to add points (need 3+).' : `${freePoints.length} points`}</span>
         </div>
       )}
       {start && (

@@ -115,3 +115,18 @@ TASKS.push(
     hint: 'Which object is curved: the 2D spatial slice or spacetime? Are the orbits geodesics of the slice?',
     answer: 'The slice $t=$const is curved ($K=-M/r^3$) but spacetime is Ricci flat: $R_{\\mu\\nu}=0$ only says the trace parts cancel between space and time curvature, the Weyl tensor survives (tides). Orbits are geodesics of the 4D metric, not of the slice, so drawn on the paraboloid they are not geodesics of that surface.' },
 );
+
+TASKS.push(
+  { id: 'r-kerr-isco', module: 'relativity',
+    prompt: 'In the Kerr view move the spin from $a=0$ to $a=0.998$ (prograde) and read the ISCO radius and the efficiency $1-E_{\\rm ISCO}$.',
+    hint: 'Watch the ISCO ring shrink toward the horizon and the E_ISCO readout.',
+    answer: 'At $a=0$ the ISCO is $6M$ with $E=\\sqrt{8/9}$, efficiency $5.7\\%$. At $a=0.998$ the prograde ISCO drops to about $1.24M$ and the efficiency rises to about $32\\%$, because frame dragging lets matter orbit closer and release more binding energy.' },
+  { id: 'r-shadow', module: 'relativity',
+    prompt: 'In the Image view compare the shadow curve at $a=0$ with $a=0.99$ at inclination $89^\\circ$ (edge-on).',
+    hint: 'Turn the overlay on and look at the left and right edges of the dark region.',
+    answer: 'At $a=0$ the shadow is a circle of radius $3\\sqrt3\\,M$ for every inclination. At $a=0.99$ edge-on it is flattened on the side of the approaching disk (a D shape) and displaced, because the prograde photon orbit lies much closer to the hole than the retrograde one.' },
+  { id: 'r-gpb', module: 'relativity',
+    prompt: 'In the Clocks view choose Gravity Probe B. Compare the frame-dragging prediction with the measurement.',
+    hint: 'Read the table: formula, published prediction, observed.',
+    answer: 'GP-B measured $37.2\\pm7.2$ mas/yr against the GR prediction $39.2$ mas/yr (about a 19% measurement), consistent with GR; the geodetic term $6601.8\\pm18.3$ vs $6606.1$ mas/yr is far more precise.' },
+);

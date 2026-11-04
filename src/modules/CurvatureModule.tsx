@@ -87,17 +87,18 @@ export function CurvaturePanel() {
   return (
     <div>
       <SurfacePicker />
-      <div className="field">
+      <fieldset className="field group">
+        <legend>Show</legend>
         {toggle('heatmap', 'Gaussian curvature heatmap')}
         {toggle('principal', 'Principal directions')}
         {toggle('circle', 'Geodesic circle')}
-      </div>
+      </fieldset>
       <label className="field">
         <span>Geodesic circle radius ρ: {fmt(curvRho, 2)}</span>
         <input type="range" min={0.05} max={1.5} step={0.01} value={curvRho} onChange={(e) => set({ curvRho: +e.target.value })} />
       </label>
       <div className="field">
-        <div style={{ height: 12, borderRadius: 4, background: gradient }} />
+        <div role="img" aria-label={flat ? `Colour scale: K = ${fmt(range.max)} everywhere` : `Colour scale for K from ${fmt(-scale)} to ${fmt(scale)}`} style={{ height: 12, borderRadius: 4, background: gradient }} />
         <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'ui-monospace, monospace', fontSize: 11 }}>
           {flat ? <span>K = {fmt(range.max)} everywhere</span> : <><span>{fmt(-scale)}</span><span>0</span><span>{fmt(scale)}</span></>}
         </div>

@@ -77,12 +77,28 @@ export function Tour() {
     return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', measure); };
   }, [open, i, step.target]);
 
+  // remember the opener and give focus back to it on close
+  const opener = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    opener.current = document.activeElement as HTMLElement | null;
+    return () => opener.current?.focus?.();
+  }, [open]);
+
   useEffect(() => { if (open) card.current?.focus(); }, [open, i]);
 
   useEffect(() => {
     if (!open) return;
     const h = (e: KeyboardEvent) => {
       if (e.key === 'Escape') close();
+      else if (e.key === 'Tab' && card.current) {
+        // focus trap: cycle through the card's buttons
+        const f = [...card.current.querySelectorAll<HTMLElement>('button:not(:disabled)')];
+        const a = document.activeElement, first = f[0], last = f[f.length - 1];
+        if (!card.current.contains(a) || a === card.current) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+        else if (e.shiftKey && a === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+      }
       else if (e.key === 'ArrowRight') go(1);
       else if (e.key === 'ArrowLeft') go(-1);
     };
@@ -108,9 +124,9 @@ export function Tour() {
       ) : (
         <div className="tour-dim" />
       )}
-      <div ref={card} className="tour-card" style={cardStyle} role="dialog" aria-modal="true" aria-labelledby="tour-title" tabIndex={-1}>
+      <div ref={card} className="tour-card" style={cardStyle} role="dialog" aria-modal="true" aria-labelledby="tour-title" aria-describedby="tour-body" tabIndex={-1}>
         <h2 id="tour-title">{step.title}</h2>
-        <p><MathText text={step.body} /></p>
+        <p id="tour-body"><MathText text={step.body} /></p>
         <div className="tour-foot">
           <span className="tour-count">{i + 1} / {STEPS.length}</span>
           <button onClick={close}>Skip</button>

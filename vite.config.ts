@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
@@ -12,6 +13,7 @@ const VENDOR: [string, RegExp][] = [
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  test: { include: ['src/**/*.test.ts'] },
   // served from https://kairi99.github.io/manifold-lab/ in production builds
   base: process.env.GITHUB_PAGES ? '/manifold-lab/' : '/',
   build: {

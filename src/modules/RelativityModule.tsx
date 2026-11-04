@@ -1,4 +1,7 @@
 import { useStore } from '../state/store';
+import { KerrPanel } from './KerrPanel';
+import { BlackHoleImage } from '../panels/BlackHoleImage';
+import { ClocksPanel } from '../panels/ClocksPanel';
 import { Tex, fmt } from '../panels/Tex';
 import { PotentialPlot } from '../panels/PotentialPlot';
 import { RelativityScene, bodyMass, lightModel, orbitModel, periapsides, sampleAt } from '../scene/RelativityScene';
@@ -11,7 +14,7 @@ import {
 export { RelativityScene };
 
 const RAD = 180 / Math.PI, ARCSEC = RAD * 3600;
-const VIEWS = [['orbits', 'Orbits'], ['light', 'Light'], ['flamm', 'Flamm']] as const;
+const VIEWS = [['orbits', 'Orbits'], ['light', 'Light'], ['flamm', 'Flamm'], ['kerr', 'Kerr'], ['image', 'Image'], ['clocks', 'Clocks']] as const;
 const sci = (x: number, d = 3) => (Math.abs(x) >= 1e4 || (x !== 0 && Math.abs(x) < 1e-2) ? x.toExponential(d - 1) : fmt(x, d));
 const Src = ({ s }: { s: { label: string; url?: string } }) =>
   s.url ? <a href={s.url} target="_blank" rel="noreferrer">{s.label}</a> : <>{s.label}</>;
@@ -164,15 +167,30 @@ export function RelativityPanel() {
 
   return (
     <div>
-      <div role="group" aria-label="View" style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+      <div role="group" aria-label="View" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginBottom: 12 }}>
         {VIEWS.map(([id, t]) => (
           <button key={id} aria-pressed={view === id} onClick={() => set({ grView: id })}
-            style={{ flex: 1, padding: '6px', background: view === id ? 'var(--accent)' : 'var(--bg)', color: view === id ? 'var(--bg)' : 'var(--fg)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer' }}>
+            style={{ padding: '6px', background: view === id ? 'var(--accent)' : 'var(--bg)', color: view === id ? 'var(--bg)' : 'var(--fg)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer' }}>
             {t}
           </button>
         ))}
       </div>
 
+      {(view === 'kerr' || view === 'image' || view === 'clocks') && (
+        <>
+          {view !== 'clocks' && <label className="field">
+            <span>Central object</span>
+            <select value={grBody} onChange={(e) => set({ grBody: e.target.value, grOrbit: 'custom', grProgress: 0 })}>
+              <option value="">generic black hole, M = 1</option>
+              {BODIES.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+            </select>
+          </label>}
+          {view === 'kerr' && <KerrPanel body={body} />}
+          {view === 'image' && <BlackHoleImage />}
+          {view === 'clocks' && <ClocksPanel />}
+        </>
+      )}
+      {view !== 'kerr' && view !== 'image' && view !== 'clocks' && <>
       <div data-tour="gr-presets">
         <label className="field">
           <span>Central object</span>
@@ -265,6 +283,7 @@ export function RelativityPanel() {
 
       {body && <BodyCard body={body} />}
       {!body && <p>Generic black hole in geometric units G = c = 1, lengths in M; r_s = 2M.</p>}
+      </>}
     </div>
   );
 }
