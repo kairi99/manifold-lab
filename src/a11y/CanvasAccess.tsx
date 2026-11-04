@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 
 import { getSurface } from '../math';
 import { useStore, type AppState } from '../state/store';
 import { coordText, fmt } from '../panels/Tex';
+import { SURFACE_MODULES } from '../state/modules';
 
 export const KEYS_HELP =
   'Keyboard (3D view focused): arrow keys move p (left/right: first coordinate, up/down: second; Shift = larger step). [ and ] rotate V, + and − scale V.';
@@ -11,6 +12,8 @@ const MOVE: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight:
 /** One-line spoken summary of the current state. Returns a string so the store selector can skip equal renders. */
 function describe(s: AppState): string {
   if (s.module === 'relativity') return 'Relativity: Schwarzschild spacetime. Use the controls panel to change the view.';
+  if (s.module === 'spacetime') return `Curvature in 4D, ${s.stView} view. Use the controls panel to change the view.`;
+  if (s.module === 'cosmos') return `Causal structure and cosmology, ${s.csView} view. Use the controls panel to change the view.`;
   const surf = getSurface(s.surfaceId);
   const [cu, cv] = surf.coords.map(coordText);
   const pct = (x: number) => `${Math.round(x * 10) * 10}%`;
@@ -36,7 +39,7 @@ function useThrottled(text: string) {
 function onKeyDown(e: KeyboardEvent<HTMLDivElement>) {
   if (e.target !== e.currentTarget || e.ctrlKey || e.metaKey || e.altKey) return;
   const st = useStore.getState();
-  if (st.module === 'relativity') return;
+  if (!SURFACE_MODULES.has(st.module)) return;
   const s = getSurface(st.surfaceId);
   const mv = MOVE[e.key];
   if (mv) {

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { Vec2 } from '../math/types';
 
-export type ModuleId = 'metric' | 'transport' | 'geodesics' | 'curvature' | 'fields' | 'relativity';
+export type ModuleId = 'metric' | 'transport' | 'geodesics' | 'curvature' | 'fields' | 'relativity' | 'spacetime' | 'cosmos';
 export type PathKind = 'latitude' | 'triangle' | 'free';
 
 export interface AppState {
@@ -51,6 +51,35 @@ export interface AppState {
   grImgRes: number; // ray-traced image width = height, pixels
   grImgTarget: 'disk' | 'sky' | 'both';
   grClockPreset: string; // id of a redshift / Shapiro / frame-dragging preset ('' = none)
+  // curvature in 4D (spacetime module); fields prefixed st* / gw* belong to that module
+  stView: 'tensors' | 'tidal' | 'waves';
+  stMetric: string; // SpacetimeMetric id
+  stPlaying: boolean;
+  stProgress: number; // 0..1 animation progress (tidal fall, wave phase)
+  stParams: Record<string, number>; // metric parameters (missing keys use defaults)
+  stEvent: number[] | null; // event coordinates; null = metric's default event
+  stBody: string; // tidal view: 'bh10' or a BODIES black-hole id
+  stR0: number; // tidal view: release radius r0 / M
+  stLen: number; // tidal view: body length, m
+  stPol: 'plus' | 'cross' | 'circ'; // waves view polarisation
+  stAmp: number; // waves view display amplitude (exaggerated)
+  gwDrive: 'mono' | 'gw150914'; // waves view: monochromatic wave or GW150914 NR template
+  gwSet: 'prl' | 'gwtc1'; // GW150914 parameter set
+  gwRawL1: boolean; // plot L1 unshifted/uninverted
+  // causal structure & cosmology (cosmos module); fields prefixed cs* belong to that module
+  csView: 'penrose' | 'cosmology';
+  csPlaying: boolean;
+  csProgress: number; // 0..1 animation progress
+  csSpace: 'minkowski' | 'schwarzschild'; // Penrose diagram spacetime
+  csPt: [number, number]; // probe event [X, T] in diagram coordinates
+  csR0: number; // infall start radius / M
+  csBody: string; // black-hole BODIES id for unit conversion ('' = geometric units only)
+  csSet: string; // COSMO_SETS id the sliders started from
+  csH0: number; // km/s/Mpc
+  csOm: number;
+  csOL: number;
+  csObj: string; // COSMO_OBJECTS id
+  csTime: 'conformal' | 'cosmic'; // vertical axis of the conformal diagram
   set: (p: Partial<AppState>) => void;
 }
 
@@ -93,5 +122,32 @@ export const useStore = create<AppState>((set) => ({
   grImgRes: 160,
   grImgTarget: 'both',
   grClockPreset: '',
+  stView: 'tensors',
+  stMetric: 'schwarzschild',
+  stPlaying: true,
+  stProgress: 0,
+  stParams: {},
+  stEvent: null,
+  stBody: 'bh10',
+  stR0: 20,
+  stLen: 2,
+  stPol: 'plus',
+  stAmp: 0.5,
+  gwDrive: 'mono',
+  gwSet: 'gwtc1',
+  gwRawL1: false,
+  csView: 'penrose',
+  csPlaying: true,
+  csProgress: 0,
+  csSpace: 'schwarzschild',
+  csPt: [1.2, 0.3],
+  csR0: 10,
+  csBody: 'sgr-a',
+  csSet: 'planck2018',
+  csH0: 67.66,
+  csOm: 0.3111,
+  csOL: 0.688809,
+  csObj: 'jades-gs-z14-0',
+  csTime: 'conformal',
   set: (p) => set(p),
 }));

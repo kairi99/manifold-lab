@@ -45,7 +45,7 @@ export const schwarzschild: SpacetimeMetric = {
   id: 'schwarzschild', name: 'Schwarzschild',
   coords: ['t', 'r', '\\theta', '\\varphi'],
   params: [{ key: 'M', label: 'M', min: 0.1, max: 5, step: 0.1, value: 1 }],
-  lineElement: 'ds^2=-f\\,dt^2+f^{-1}dr^2+r^2d\\Omega^2,\; f=1-\\tfrac{2M}{r}',
+  lineElement: 'ds^2=-f\\,dt^2+f^{-1}dr^2+r^2d\\Omega^2,\\quad f=1-\\tfrac{2M}{r}',
   defaultEvent: (p) => [0, 6 * pv(p, 'M', 1), Math.PI / 2, 0],
   g([, r, th], p) {
     const M = pv(p, 'M', 1), m = zeros4(), s = J.sin(th);
@@ -88,7 +88,7 @@ export const reissnerNordstrom: SpacetimeMetric = {
     { key: 'M', label: 'M', min: 0.1, max: 5, step: 0.1, value: 1 },
     { key: 'Q', label: 'Q', min: 0, max: 1, step: 0.01, value: 0.6 },
   ],
-  lineElement: 'ds^2=-f\\,dt^2+f^{-1}dr^2+r^2d\\Omega^2,\; f=1-\\tfrac{2M}{r}+\\tfrac{Q^2}{r^2}',
+  lineElement: 'ds^2=-f\\,dt^2+f^{-1}dr^2+r^2d\\Omega^2,\\quad f=1-\\tfrac{2M}{r}+\\tfrac{Q^2}{r^2}',
   defaultEvent: (p) => [0, 6 * pv(p, 'M', 1), Math.PI / 2, 0],
   g([, r, th], p) {
     const M = pv(p, 'M', 1), Q = pv(p, 'Q', 0.6), m = zeros4(), s = J.sin(th);
@@ -134,7 +134,7 @@ export const flrwLCDM: SpacetimeMetric = {
   id: 'flrw', name: 'Flat ΛCDM FLRW',
   coords: ['t', 'x', 'y', 'z'],
   params: [{ key: 'Om', label: '\\Omega_m', min: 0.05, max: 0.95, step: 0.01, value: 0.3 }],
-  lineElement: 'ds^2=-dt^2+a(t)^2(dx^2+dy^2+dz^2),\; a=(\\Omega_m/\\Omega_\\Lambda)^{1/3}\\sinh^{2/3}(\\tfrac32\\sqrt{\\Omega_\\Lambda}H_0t)',
+  lineElement: 'ds^2=-dt^2+a(t)^2(dx^2+dy^2+dz^2),\\quad a=(\\Omega_m/\\Omega_\\Lambda)^{1/3}\\sinh^{2/3}(\\tfrac32\\sqrt{\\Omega_\\Lambda}H_0t)',
   defaultEvent: () => [0.9, 0, 0, 0],
   g([t], p) {
     const Om = pv(p, 'Om', 0.3), OL = 1 - Om;

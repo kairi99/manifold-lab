@@ -18,4 +18,6 @@ export const MODULE_VIEWS: Record<ModuleId, { Scene: View; Panel: View }> = {
   curvature: load(() => import('./CurvatureModule'), 'CurvatureScene', 'CurvaturePanel'),
   fields: load(() => import('./FieldsModule'), 'FieldsScene', 'FieldsPanel'),
   relativity: load(() => import('./RelativityModule'), 'RelativityScene', 'RelativityPanel'),
+  spacetime: load(() => import('./SpacetimeModule'), 'SpacetimeScene', 'SpacetimePanel'),
+  cosmos: load(() => import('./CosmosModule'), 'CosmosScene', 'CosmosPanel'),
 };

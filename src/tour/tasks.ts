@@ -130,3 +130,26 @@ TASKS.push(
     hint: 'Read the table: formula, published prediction, observed.',
     answer: 'GP-B measured $37.2\\pm7.2$ mas/yr against the GR prediction $39.2$ mas/yr (about a 19% measurement), consistent with GR; the geodetic term $6601.8\\pm18.3$ vs $6606.1$ mas/yr is far more precise.' },
 );
+
+TASKS.push(
+  { id: 's-mink', module: 'spacetime',
+    prompt: 'Choose Minkowski (spherical coordinates). Count the nonzero $\\Gamma$ and the nonzero Riemann components. Then choose Schwarzschild.',
+    hint: 'Are the Christoffel symbols a tensor?',
+    answer: 'Minkowski in $(t,r,\\theta,\\varphi)$ has nonzero $\\Gamma$ (e.g. $\\Gamma^r_{\\theta\\theta}=-r$) but $R^\\rho{}_{\\sigma\\mu\\nu}=0$: $\\Gamma$ is coordinate-dependent, curvature is not. Schwarzschild has $R_{\\mu\\nu}=0$ yet $R_{\\rho\\sigma\\mu\\nu}\\ne0$: vacuum curvature is pure Weyl, $C^2=K=48M^2/r^6$.' },
+  { id: 's-spaghetti', module: 'spacetime',
+    prompt: 'In Tidal compare the tidal acceleration across a 2 m body at the horizon of a 10 $M_\\odot$ hole and of Sgr A*.',
+    hint: 'At $r=2M$, $\\Delta a = 2GM L/r^3 \\propto 1/M^2$.',
+    answer: 'About $2\\times10^8$ m/s² for 10 $M_\\odot$ (spaghettified well before the horizon) and about $10^{-3}$ m/s² for Sgr A* (nothing felt at the horizon). Tides scale as $M/r^3$, which at $r=2M$ is $1/(8M^2)$.' },
+  { id: 's-gw', module: 'spacetime',
+    prompt: 'In Waves switch between $+$ and $\\times$. Then read the chirp mass of GW150914 from the component masses.',
+    hint: 'Rotate the $+$ pattern by $45^\\circ$. $\\mathcal M=(m_1m_2)^{3/5}/(m_1+m_2)^{1/5}$.',
+    answer: '$\\times$ is $+$ rotated by $45^\\circ$ (spin-2: a $180^\\circ$ rotation maps each pattern to itself). With $m_1=36$, $m_2=29\\,M_\\odot$, $\\mathcal M\\approx28\\,M_\\odot$, the combination that sets $\\dot f\\propto\\mathcal M^{5/3}f^{11/3}$ in the inspiral.' },
+  { id: 'c-infall', module: 'cosmos',
+    prompt: 'In the Penrose view drop an observer from $r_0=10M$. Compare Schwarzschild $t$ and proper time $\\tau$ at the horizon.',
+    hint: 'Watch the readouts as the dot crosses $U=0$.',
+    answer: '$t\\to\\infty$ at the horizon but $\\tau$ stays finite; $r=0$ is reached at $\\tau=\\pi\\sqrt{r_0^3/8M}\\approx35.1M$ (about 12 minutes for Sgr A*). Inside, $r$ is timelike: the singularity is a moment in the future, not a place.' },
+  { id: 'c-superluminal', module: 'cosmos',
+    prompt: 'In Cosmology select JADES-GS-z14-0. Is it receding faster than light? How can we see it?',
+    hint: 'Compare its distance with the Hubble sphere, then look at the past light cone.',
+    answer: 'Today it recedes at several times $c$ ($v=HD$ with $D\\approx34$ Gly beyond the Hubble radius). Light emitted toward us first receded too, but the Hubble sphere grew and overtook it, so the photons now reach us. Recession speed is not a velocity in a local inertial frame.' },
+);

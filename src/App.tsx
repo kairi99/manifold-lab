@@ -8,6 +8,7 @@ import { Tour, TourButton, useFirstVisitTour } from './tour/Tour';
 import { SuggestedTasks } from './tour/SuggestedTasks';
 import { CanvasAccess, KEYS_HELP } from './a11y/CanvasAccess';
 import { WebGLGuard } from './scene/WebGLGuard';
+import { SURFACE_MODULES } from './state/modules';
 
 const MODULES: { id: ModuleId; label: string }[] = [
   { id: 'metric', label: 'Metric & Tangent Spaces' },
@@ -16,6 +17,8 @@ const MODULES: { id: ModuleId; label: string }[] = [
   { id: 'curvature', label: 'Curvature' },
   { id: 'fields', label: 'Vector Fields & TM' },
   { id: 'relativity', label: 'Relativity: Schwarzschild & Kerr' },
+  { id: 'spacetime', label: 'Curvature in 4D' },
+  { id: 'cosmos', label: 'Causal Structure & Cosmology' },
 ];
 
 export default function App() {
@@ -23,7 +26,7 @@ export default function App() {
   const set = useStore((s) => s.set);
   useFirstVisitTour();
   // honour prefers-reduced-motion: nothing animates until the user asks
-  useEffect(() => { if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) set({ flowPlaying: false, grPlaying: false }); }, [set]);
+  useEffect(() => { if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) set({ flowPlaying: false, grPlaying: false, stPlaying: false, csPlaying: false }); }, [set]);
   const { Scene, Panel } = MODULE_VIEWS[module];
   // on phones the tabs scroll sideways; keep the active one visible (also when the tour switches module)
   useEffect(() => { document.querySelector('.nav button.active')?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }, [module]);
@@ -52,7 +55,7 @@ export default function App() {
         </CanvasAccess>
       </main>
       <aside id="controls" className="panel" data-tour="panel" tabIndex={-1} aria-label="Controls and equations">
-        {module !== 'relativity' && <p id="kbd-help" className="kbd-help">{KEYS_HELP}</p>}
+        {SURFACE_MODULES.has(module) && <p id="kbd-help" className="kbd-help">{KEYS_HELP}</p>}
         <Suspense fallback={<p className="loading">Loading module…</p>}><Panel /></Suspense>
         <SuggestedTasks module={module} />
         <TourButton />
