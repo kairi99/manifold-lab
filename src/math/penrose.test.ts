@@ -29,7 +29,7 @@ describe('Kruskal', () => {
     expect(U).toBe(0); expect(V).toBe(0);
     const h = P.horizons();
     for (const line of [h.U0, h.V0]) expect(Math.abs((line[1][1] - line[0][1]) / (line[1][0] - line[0][0]))).toBeCloseTo(1, 12);
-    for (const V of [0.3, 2, 50]) { const [X, T] = P.kruskalToDiagram(0, V); expect(X).toBeCloseTo(T, 12); }
+    for (const Vk of [0.3, 2, 50]) { const [X, T] = P.kruskalToDiagram(0, Vk); expect(X).toBeCloseTo(T, 12); }
   });
   it('singularity UV=1 maps to T = pi/2', () => {
     for (const U of [0.1, 0.7, 1, 3, 20]) {

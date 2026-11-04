@@ -35,14 +35,14 @@ export default function VectorArrow({ surface: s, uv, V, color = PAL.V, editable
     const el = gl.domElement;
     const rc = new THREE.Raycaster(), ndc = new THREE.Vector2(), plane = new THREE.Plane(), hit = new THREE.Vector3();
     const move = (ev: PointerEvent) => {
-      const { s, uv, onChange } = live.current;
+      const { s: ls, uv: luv, onChange: lchange } = live.current;
       const r = el.getBoundingClientRect();
       ndc.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
       rc.setFromCamera(ndc, camera);
-      const p = s.position(uv[0], uv[1]);
-      const n = cross(s.du(uv[0], uv[1]), s.dv(uv[0], uv[1]));
-      plane.setFromNormalAndCoplanarPoint(new THREE.Vector3(...n).normalize(), new THREE.Vector3(...p));
-      if (rc.ray.intersectPlane(plane, hit)) onChange?.(fromWorld(s, uv[0], uv[1], sub([hit.x, hit.y, hit.z], p)));
+      const base = ls.position(luv[0], luv[1]);
+      const n = cross(ls.du(luv[0], luv[1]), ls.dv(luv[0], luv[1]));
+      plane.setFromNormalAndCoplanarPoint(new THREE.Vector3(...n).normalize(), new THREE.Vector3(...base));
+      if (rc.ray.intersectPlane(plane, hit)) lchange?.(fromWorld(ls, luv[0], luv[1], sub([hit.x, hit.y, hit.z], base)));
     };
     const up = () => setDrag(false);
     window.addEventListener('pointermove', move);

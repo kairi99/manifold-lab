@@ -43,7 +43,7 @@ export function PotentialPlot({ L, E2, kind, rMax = 30 }: PotentialPlotProps) {
   }
   const rt = Array.from({ length: 5 }, (_, k) => Math.round((r0 + ((rMax - r0) * k) / 4) * 10) / 10);
   const vt = [0, 0.5, 1].map((f) => f * yMax);
-  const tp = turning.map((x) => x.toFixed(2)).join(', ');
+  const tp = turning.map((rv) => rv.toFixed(2)).join(', ');
   const label = t(`Effective potential for ${kind === 'null' ? 'light' : 'a massive particle'} with L = ${L.toFixed(3)} M, E squared = ${E2.toFixed(4)}; turning points at r = ${tp || 'none'} M`,
     `Potencial efectivo para ${kind === 'null' ? 'la luz' : 'una partícula masiva'} con L = ${L.toFixed(3)} M, E al cuadrado = ${E2.toFixed(4)}; puntos de retorno en r = ${tp || 'ninguno'} M`);
   const s = (c: string) => ({ stroke: c, fill: 'none' });
@@ -52,26 +52,26 @@ export function PotentialPlot({ L, E2, kind, rMax = 30 }: PotentialPlotProps) {
       <title>{label}</title>
       <rect x={ML} y={MT} width={W - ML - MR} height={H - MT - MB} style={{ fill: 'none', stroke: 'var(--border)' }} />
       {forb.map((d, i) => <path key={i} d={d} style={{ fill: 'var(--muted)', fillOpacity: 0.3, stroke: 'none' }} />)}
-      {MARKS.filter(([r]) => r < rMax).map(([r, t]) => (
-        <g key={t}>
+      {MARKS.filter(([r]) => r < rMax).map(([r, tk]) => (
+        <g key={tk}>
           <line x1={x(r)} x2={x(r)} y1={MT} y2={H - MB} strokeDasharray="3 3" style={s('var(--muted)')} />
-          <text x={x(r)} y={MT + 9} fontSize="9" textAnchor="middle" style={{ fill: 'var(--muted)' }}>{richSvg(t)}</text>
+          <text x={x(r)} y={MT + 9} fontSize="9" textAnchor="middle" style={{ fill: 'var(--muted)' }}>{richSvg(tk)}</text>
         </g>
       ))}
       <line x1={ML} x2={W - MR} y1={y(E2)} y2={y(E2)} strokeWidth="1.2" style={s('#ffd166')} />
       <text x={W - MR - 2} y={y(E2) - 3} fontSize="10" textAnchor="end" style={{ fill: '#ffd166' }}>E²</text>
       <path d={curve} strokeWidth="2" style={s('var(--accent)')} />
-      {turning.map((t, i) => <circle key={i} cx={x(t)} cy={y(E2)} r="3.5" style={{ fill: '#ff6bd6' }} />)}
-      {rt.map((t) => (
-        <g key={t}>
-          <line x1={x(t)} x2={x(t)} y1={H - MB} y2={H - MB + 4} style={s('var(--muted)')} />
-          <text x={x(t)} y={H - MB + 14} fontSize="10" textAnchor="middle" style={{ fill: 'var(--fg)' }}>{t}</text>
+      {turning.map((tk, i) => <circle key={i} cx={x(tk)} cy={y(E2)} r="3.5" style={{ fill: '#ff6bd6' }} />)}
+      {rt.map((tk) => (
+        <g key={tk}>
+          <line x1={x(tk)} x2={x(tk)} y1={H - MB} y2={H - MB + 4} style={s('var(--muted)')} />
+          <text x={x(tk)} y={H - MB + 14} fontSize="10" textAnchor="middle" style={{ fill: 'var(--fg)' }}>{tk}</text>
         </g>
       ))}
-      {vt.map((t) => (
-        <g key={t}>
-          <line x1={ML - 4} x2={ML} y1={y(t)} y2={y(t)} style={s('var(--muted)')} />
-          <text x={ML - 6} y={y(t) + 3} fontSize="10" textAnchor="end" style={{ fill: 'var(--fg)' }}>{t.toFixed(2)}</text>
+      {vt.map((tk) => (
+        <g key={tk}>
+          <line x1={ML - 4} x2={ML} y1={y(tk)} y2={y(tk)} style={s('var(--muted)')} />
+          <text x={ML - 6} y={y(tk) + 3} fontSize="10" textAnchor="end" style={{ fill: 'var(--fg)' }}>{tk.toFixed(2)}</text>
         </g>
       ))}
       <text x={(ML + W - MR) / 2} y={H - 4} fontSize="10" textAnchor="middle" style={{ fill: 'var(--muted)' }}>r / M</text>

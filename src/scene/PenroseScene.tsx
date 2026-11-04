@@ -29,13 +29,13 @@ function Static({ space, xf }: { space: 'minkowski' | 'schwarzschild'; xf: Xf })
   const t = useTr();
   const g = useMemo(() => {
     if (space === 'minkowski') {
-      return { r: [0.5, 1, 2, 4, 10].map((r) => minkowskiConstR(r)), t: [-8, -4, -2, -1, 0, 1, 2, 4, 8].map((t) => minkowskiConstT(t)), r2: [] as Pt[][], t2: [] as Pt[][] };
+      return { r: [0.5, 1, 2, 4, 10].map((r) => minkowskiConstR(r)), t: [-8, -4, -2, -1, 0, 1, 2, 4, 8].map((tv) => minkowskiConstT(tv)), r2: [] as Pt[][], t2: [] as Pt[][] };
     }
     return {
       r: [2.5, 3, 4, 6, 10, 20].flatMap((r) => [constR(r, 'I'), constR(r, 'III')]),
-      t: [-20, -6, -2, 0, 2, 6, 20].flatMap((t) => [constT(t, 'I'), constT(t, 'III')]),
+      t: [-20, -6, -2, 0, 2, 6, 20].flatMap((tv) => [constT(tv, 'I'), constT(tv, 'III')]),
       r2: [0.4, 1, 1.6].flatMap((r) => [constR(r, 'II'), constR(r, 'IV')]),
-      t2: [-1.5, 0, 1.5].flatMap((t) => [constT(t, 'II'), constT(t, 'IV')]),
+      t2: [-1.5, 0, 1.5].flatMap((tv) => [constT(tv, 'II'), constT(tv, 'IV')]),
     };
   }, [space]);
   const ni = nullInfinities(), h = horizons();

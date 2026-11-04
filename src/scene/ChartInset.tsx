@@ -47,7 +47,7 @@ function Arrow({ x, y, dx, dy, color, max = 52, w = 2, dashed }: { x: number; y:
 }
 
 /** Per-surface static layers (heatmap, Tissot ellipses, singular lines): rebuilt only when the surface changes. */
-function useChartGeometry(s: Surface, W: number, H: number) {
+function useChartGeometry(s: Surface) {
   return useMemo(() => {
     const { u: [u0, u1], v: [v0, v1] } = s.domain;
     const sx = W / (u1 - u0), sy = H / (v1 - v0);
@@ -97,7 +97,7 @@ function useChartGeometry(s: Surface, W: number, H: number) {
       if (s.singularAt(u, v)) dots.push(px([u, v]));
     }
     return { px, sx, sy, eps, tissot, heat, gridU, gridV, edges, dots };
-  }, [s, W, H]);
+  }, [s]);
 }
 
 export default function ChartInset() {
@@ -106,7 +106,7 @@ export default function ChartInset() {
   const showHeat = module === 'curvature' && curvShow.heatmap;
   void customSpec; // re-render + memo key when the custom surface changes
   const s = getSurface(surfaceId);
-  const geo = useChartGeometry(s, W, H);
+  const geo = useChartGeometry(s);
   const { px, sx, sy } = geo;
   const svg = useRef<SVGSVGElement>(null);
   const [cu, cv] = s.coords.map(coordText);

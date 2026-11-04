@@ -34,11 +34,11 @@ export function CurveScene() {
   });
   const { pts, centre, k, ext } = useMemo(() => {
     const [t0, t1] = def.range;
-    const pts = Array.from({ length: N + 1 }, (_, i) => def.jet(t0 + ((t1 - t0) * i) / N, a, b).r);
-    const lo = [0, 1, 2].map((c) => Math.min(...pts.map((p) => p[c]))), hi = [0, 1, 2].map((c) => Math.max(...pts.map((p) => p[c])));
-    const centre = lo.map((l, c) => (l + hi[c]) / 2) as Vec3;
-    const ext = Math.max(...lo.map((l, c) => hi[c] - l)) / 2;
-    return { pts, centre, k: 1.8 / ext, ext };
+    const samples = Array.from({ length: N + 1 }, (_, i) => def.jet(t0 + ((t1 - t0) * i) / N, a, b).r);
+    const lo = [0, 1, 2].map((c) => Math.min(...samples.map((p) => p[c]))), hi = [0, 1, 2].map((c) => Math.max(...samples.map((p) => p[c])));
+    const mid = lo.map((l, c) => (l + hi[c]) / 2) as Vec3;
+    const half = Math.max(...lo.map((l, c) => hi[c] - l)) / 2;
+    return { pts: samples, centre: mid, k: 1.8 / half, ext: half };
   }, [def, a, b]);
   const t = def.range[0] + u * (def.range[1] - def.range[0]);
   const j = def.jet(t, a, b), f = frenet(j);

@@ -16,7 +16,7 @@ export function TensorsPanel() {
   const m = stModel(id, params, event), { c, metric, p, x } = m;
   const names = metric.coords.map(coordText);
   const ein = einsteinCheck(m), cf = closedForms(m);
-  const nz = (t: unknown, sym: { a: number; b: number; sign: 1 | -1 }[], pair = false) => nonzeroComponents(t, 1e-9 * (maxAbs(t) || 1), sym, names, pair);
+  const nz = (tensor: unknown, sym: { a: number; b: number; sign: 1 | -1 }[], pair = false) => nonzeroComponents(tensor, 1e-9 * (maxAbs(tensor) || 1), sym, names, pair);
   const gam = nz(c.Gamma, [{ a: 1, b: 2, sign: 1 }]);
   const riem = nz(c.RiemannLow, [{ a: 0, b: 1, sign: -1 }, { a: 2, b: 3, sign: -1 }], true);
   const tolR = 1e-9 * (maxAbs(c.RiemannLow) || 1);

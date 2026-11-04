@@ -18,8 +18,8 @@ export function ClocksPanel() {
   const qn = (o: { quantity: string; quantityEs?: string }) => tr(lang, o.quantity, o.quantityEs ?? o.quantity);
   const preset = useStore((s) => s.grClockPreset), set = useStore((s) => s.set);
   const [rGen, setRGen] = useState(6);
-  const id = ALL.some((t) => t.id === preset) ? preset : REDSHIFT_TESTS[0].id;
-  const rs = REDSHIFT_TESTS.find((t) => t.id === id), sh = SHAPIRO_TESTS.find((t) => t.id === id), fd = FRAME_DRAG_TESTS.find((t) => t.id === id);
+  const id = ALL.some((x) => x.id === preset) ? preset : REDSHIFT_TESTS[0].id;
+  const rs = REDSHIFT_TESTS.find((x) => x.id === id), sh = SHAPIRO_TESTS.find((x) => x.id === id), fd = FRAME_DRAG_TESTS.find((x) => x.id === id);
   const test = (rs ?? sh ?? fd)!;
   const body = bodyById(test.centralId)!;
   const unc = (o: { value: number; uncertainty?: number; unit: string }) => `${sci(o.value)}${o.uncertainty !== undefined ? ` ± ${sci(o.uncertainty)}` : ''} ${lang === 'es' ? unitEs(o.unit) : o.unit}`;
@@ -28,9 +28,9 @@ export function ClocksPanel() {
     <div data-tour="gr-clocks">
       <label className="field"><span>{t('Test', 'Prueba')}</span>
         <select value={id} onChange={(e) => set({ grClockPreset: e.target.value })}>
-          <optgroup label={t('Gravitational redshift', 'Desplazamiento al rojo gravitacional')}>{REDSHIFT_TESTS.map((t) => <option key={t.id} value={t.id}>{nm(t)}</option>)}</optgroup>
-          <optgroup label={t('Shapiro delay', 'Retraso de Shapiro')}>{SHAPIRO_TESTS.map((t) => <option key={t.id} value={t.id}>{nm(t)}</option>)}</optgroup>
-          <optgroup label={t('Frame dragging', 'Arrastre de marcos')}>{FRAME_DRAG_TESTS.map((t) => <option key={t.id} value={t.id}>{nm(t)}</option>)}</optgroup>
+          <optgroup label={t('Gravitational redshift', 'Desplazamiento al rojo gravitacional')}>{REDSHIFT_TESTS.map((x) => <option key={x.id} value={x.id}>{nm(x)}</option>)}</optgroup>
+          <optgroup label={t('Shapiro delay', 'Retraso de Shapiro')}>{SHAPIRO_TESTS.map((x) => <option key={x.id} value={x.id}>{nm(x)}</option>)}</optgroup>
+          <optgroup label={t('Frame dragging', 'Arrastre de marcos')}>{FRAME_DRAG_TESTS.map((x) => <option key={x.id} value={x.id}>{nm(x)}</option>)}</optgroup>
         </select></label>
       <p style={{ fontSize: 12 }}>{t('Central body', 'Cuerpo central')}: {nm(body)}. <Rich>{tr(lang, test.note, test.noteEs ?? test.note)}</Rich></p>
 

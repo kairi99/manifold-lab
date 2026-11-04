@@ -14,7 +14,7 @@ export function GWPlot({ t, rawL1 }: { t: number; rawL1: boolean }) {
   const Y = 1.3; // ±1.3e-21
   const y = (r: number, v: number) => rowTop(r) + RH / 2 - (Math.max(-Y, Math.min(Y, v)) / Y) * (RH / 2);
   const path = (r: number, ts: number[], hs: number[], sh = 0, sg = 1, step = 2) =>
-    ts.filter((_, i) => i % step === 0).map((tt, k) => `${k ? 'L' : 'M'}${x(tt + sh).toFixed(1)},${y(r, sg * hs[k * step]).toFixed(1)}`).join('');
+    ts.filter((_, i) => i % step === 0).map((tv, k) => `${k ? 'L' : 'M'}${x(tv + sh).toFixed(1)},${y(r, sg * hs[k * step]).toFixed(1)}`).join('');
   const label = tt(`GW150914 strain in units of 1e-21 over ${T0.toFixed(2)} to ${T1.toFixed(2)} s relative to merger. Top: measured Hanford strain and the numerical-relativity template. Bottom: Hanford and Livingston measured strain${rawL1 ? ' (Livingston as recorded, arriving 6.9 ms earlier)' : ' (Livingston shifted by 6.9 ms and inverted as in the LIGO paper)'}. Playhead at ${t.toFixed(3)} s.`,
     `Deformación de GW150914 en unidades de 1e-21 de ${T0.toFixed(2)} a ${T1.toFixed(2)} s respecto a la fusión. Arriba: deformación medida en Hanford y la plantilla de relatividad numérica. Abajo: deformación medida en Hanford y Livingston${rawL1 ? ' (Livingston tal como se registró, llega 6.9 ms antes)' : ' (Livingston desplazada 6.9 ms e invertida como en el artículo de LIGO)'}. Cursor en ${t.toFixed(3)} s.`);
   const ticks = [-0.15, -0.1, -0.05, 0, 0.05].filter((v) => v >= T0 && v <= T1);
@@ -58,7 +58,7 @@ export function ChirpPlot({ f, t }: { f: (t: number) => number; t: number }) {
     <svg viewBox={`0 0 ${w} ${h}`} width="100%" role="img" aria-label={label} style={{ display: 'block', maxWidth: '100%' }}>
       <title>{label}</title>
       <rect x={ml} y={mt} width={w - ml - mr} height={h - mt - mb} style={{ fill: 'none', stroke: 'var(--border)' }} />
-      <path d={ts.map((tt, i) => `${i ? 'L' : 'M'}${x(tt).toFixed(1)},${y(fs[i]).toFixed(1)}`).join('')} fill="none" strokeWidth="2" style={{ stroke: 'var(--accent)' }} />
+      <path d={ts.map((tv, i) => `${i ? 'L' : 'M'}${x(tv).toFixed(1)},${y(fs[i]).toFixed(1)}`).join('')} fill="none" strokeWidth="2" style={{ stroke: 'var(--accent)' }} />
       <line x1={x(t)} x2={x(t)} y1={mt} y2={h - mb} strokeWidth="1.5" style={{ stroke: 'var(--fg)' }} />
       {[0, 100, 200, 300, 400].map((v) => <text key={v} x={ml - 4} y={y(v) + 3} fontSize="9" textAnchor="end" style={{ fill: 'var(--fg)' }}>{v}</text>)}
       {[-0.15, -0.1, -0.05, 0].map((v) => <text key={v} x={x(v)} y={h - mb + 11} fontSize="9" textAnchor="middle" style={{ fill: 'var(--fg)' }}>{v}</text>)}

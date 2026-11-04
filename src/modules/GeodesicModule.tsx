@@ -26,7 +26,7 @@ export function GeodesicPanel() {
   const tip = (p: typeof central) => surface.position(...p.samples[revealCount(p, target) - 1].uv.slice(0, 2) as [number, number]);
   const a = tip(paths[0]), b = tip(paths[paths.length - 1]);
   const chord = Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
-  const longest = paths.reduce((a, b) => (b.samples[b.samples.length - 1].s > a.samples[a.samples.length - 1].s ? b : a));
+  const longest = paths.reduce((best, q) => (q.samples[q.samples.length - 1].s > best.samples[best.samples.length - 1].s ? q : best));
   const drift = maxRelDrift(longest.samples.map((q) => surface.metric(q.uv[0], q.uv[1])).map((m, i) => { const v = longest.samples[i].vel; return m[0][0] * v[0] * v[0] + 2 * m[0][1] * v[0] * v[1] + m[1][1] * v[1] * v[1]; }));
   const stopped = paths.find((p) => p.stopped);
   const killing = surfaceId === 'sphere' ? String.raw`\partial_\varphi` : String.raw`\partial_u`;

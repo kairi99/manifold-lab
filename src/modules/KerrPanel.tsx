@@ -34,10 +34,10 @@ function KerrPlot({ a }: { a: number }) {
         <rect x={ML} y={MT} width={W - ML - MR} height={H - MT - MB} style={{ fill: 'none', stroke: 'var(--border)' }} />
         {curves.map(([n, c, f, d]) => <path key={n} d={path(f)} fill="none" strokeWidth="2" strokeDasharray={d} style={{ stroke: c }} />)}
         <line x1={x(a)} x2={x(a)} y1={MT} y2={H - MB} style={{ stroke: 'var(--fg)' }} strokeWidth="1" />
-        {[0, 0.5, 1].map((t) => (
-          <g key={t}><text x={x(t)} y={H - MB + 14} fontSize="10" textAnchor="middle" style={{ fill: 'var(--fg)' }}>{t}</text></g>
+        {[0, 0.5, 1].map((tk) => (
+          <g key={tk}><text x={x(tk)} y={H - MB + 14} fontSize="10" textAnchor="middle" style={{ fill: 'var(--fg)' }}>{tk}</text></g>
         ))}
-        {[0, 3, 6, 9].map((t) => <text key={t} x={ML - 6} y={y(t) + 3} fontSize="10" textAnchor="end" style={{ fill: 'var(--fg)' }}>{t}</text>)}
+        {[0, 3, 6, 9].map((tk) => <text key={tk} x={ML - 6} y={y(tk) + 3} fontSize="10" textAnchor="end" style={{ fill: 'var(--fg)' }}>{tk}</text>)}
         <text x={(ML + W - MR) / 2} y={H - 4} fontSize="10" textAnchor="middle" style={{ fill: 'var(--muted)' }}>a / M</text>
         <text x={10} y={(MT + H - MB) / 2} fontSize="10" textAnchor="middle" transform={`rotate(-90 10 ${(MT + H - MB) / 2})`} style={{ fill: 'var(--muted)' }}>r / M</text>
       </svg>

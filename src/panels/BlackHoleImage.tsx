@@ -40,7 +40,7 @@ export function BlackHoleImage() {
   }, []);
 
   useEffect(() => {
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       const c = canvas.current;
       if (!c || !worker.current) return;
       const id = ++jobId.current;
@@ -52,7 +52,7 @@ export function BlackHoleImage() {
       };
       worker.current.postMessage({ id, params });
     }, 250);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [a, incl, res, target]);
 
   const path = useMemo(() => shadowBoundary(a, incl).map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(3)},${(-y).toFixed(3)}`).join('') + 'Z', [a, incl]);
@@ -92,10 +92,10 @@ export function BlackHoleImage() {
         <svg viewBox={`${-FOV} ${-FOV} ${2 * FOV} ${2 * FOV}`} aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
           <line x1={-FOV} x2={FOV} y1={0} y2={0} stroke="#8a8f98" strokeWidth="1" vectorEffect="non-scaling-stroke" strokeOpacity="0.5" />
           <line y1={-FOV} y2={FOV} x1={0} x2={0} stroke="#8a8f98" strokeWidth="1" vectorEffect="non-scaling-stroke" strokeOpacity="0.5" />
-          {TICKS.filter((t) => t !== 0).map((t) => (
-            <g key={t} fill="#cfd3da" fontSize="0.8">
-              <text x={t} y={FOV - 0.4} textAnchor="middle">{t}</text>
-              <text x={-FOV + 0.3} y={-t + 0.25}>{t}</text>
+          {TICKS.filter((tk) => tk !== 0).map((tk) => (
+            <g key={tk} fill="#cfd3da" fontSize="0.8">
+              <text x={tk} y={FOV - 0.4} textAnchor="middle">{tk}</text>
+              <text x={-FOV + 0.3} y={-tk + 0.25}>{tk}</text>
             </g>
           ))}
           <text x={FOV - 0.3} y={-0.4} textAnchor="end" fill="#cfd3da" fontSize="0.8">α / M</text>
