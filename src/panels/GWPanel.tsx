@@ -34,25 +34,25 @@ export function GWPanel() {
       <Tex block>{'h_{ij}^{TT}=\\begin{pmatrix}h_+&h_\\times\\\\h_\\times&-h_+\\end{pmatrix}\\cos(\\omega t-kz)'}</Tex>
       <Tex block>{'\\frac{d^2\\xi^i}{dt^2}=\\tfrac12\\,\\ddot h_{ij}\\,\\xi^j,\\qquad \\xi^i(t)\\approx\\big(\\delta^i_j+\\tfrac12 h^i{}_j\\big)\\xi_0^j'}</Tex>
       <div className="readout" aria-label="Strain matrix">
-        <span>h_xx = −h_yy</span><span>{fmt(hPlus, 3)}</span>
-        <span>h_xy = h_yx</span><span>{fmt(hCross, 3)}</span>
+        <span>h<sub>xx</sub> = −h<sub>yy</sub></span><span>{fmt(hPlus, 3)}</span>
+        <span>h<sub>xy</sub> = h<sub>yx</sub></span><span>{fmt(hCross, 3)}</span>
         <span>units</span><span>display (real strain ~1e-21)</span>
       </div>
-      <Note>Free particles keep their TT coordinates; it is the proper distance g_ij(t) ξ^i ξ^j that oscillates. Ring area is preserved (det = 1) and the pattern is transverse and traceless; × is + rotated by 45°; circular is both with a quarter-period phase shift.</Note>
+      <Note>Free particles keep their TT coordinates; it is the proper distance g<sub>ij</sub>(t) ξ<sup>i</sup> ξ<sup>j</sup> that oscillates. Ring area is preserved (det = 1) and the pattern is transverse and traceless; × is + rotated by 45°; circular is both with a quarter-period phase shift.</Note>
 
       <h2>GW150914 strain</h2>
       <GWPlot t={t} rawL1={raw} />
       <label className="check"><input type="checkbox" checked={raw} onChange={(e) => set({ gwRawL1: e.target.checked })} /> Show L1 as recorded (unshifted, not inverted)</label>
       <Note>Blue: measured Hanford strain. Orange: measured Livingston strain; the signal reached L1 about 6.9 ms before H1, and, as in Fig. 1 of the LIGO paper, L1 is shifted by +6.9 ms and inverted (the detectors are nearly anti-aligned) so it overlays H1 (bottom row). Dashed pink: numerical-relativity template for the best-fit parameters, a model, not data. All curves band-passed 35–350 Hz. Source: <Src s={GW150914_WAVEFORM_SOURCE} /></Note>
       <div className="readout">
-        <span>t − t_merger</span><span>{fmt(t * 1000, 1)} ms</span>
+        <span>t − t<sub>merger</sub></span><span>{fmt(t * 1000, 1)} ms</span>
         <span>template strain</span><span>{fmt(hT, 3)} ×1e-21 (peak {fmt(TPL_MAX, 2)})</span>
         <span>instantaneous f (illustrative)</span><span>{fmt(f, 0)} Hz</span>
       </div>
 
       <h2>Chirp frequency f(t)</h2>
       <ChirpPlot f={d.fChirp} t={t} />
-      <Note>ILLUSTRATIVE merger–ringdown: leading-order inspiral f(τ) ∝ τ^(−3/8) until it reaches the Kerr ringdown frequency, then constant. Not a fit to the data or to numerical relativity.</Note>
+      <Note>ILLUSTRATIVE merger–ringdown: leading-order inspiral f(τ) ∝ τ<sup>−3/8</sup> until it reaches the Kerr ringdown frequency, then constant. Not a fit to the data or to numerical relativity.</Note>
 
       <h2>Parameters</h2>
       <Seg label="Parameter set" value={pset} items={[['prl', 'PRL 2016'], ['gwtc1', 'GWTC-1']] as const} onPick={(v) => set({ gwSet: v })} />
@@ -68,8 +68,8 @@ export function GWPanel() {
       <div className="readout">
         <span>chirp mass from m1, m2</span><span>{fmt(d.mc, 2)} Msun (source), {fmt(d.mc * (1 + d.z), 2)} (detector)</span>
         <span>total mass</span><span>{fmt(d.mTot, 1)} Msun</span>
-        <span>f_ISCO (inspiral ends)</span><span>{fmt(fIsco(d.mTot), 0)} Hz source, {fmt(fIsco(d.mTot * (1 + d.z)), 0)} Hz observed</span>
-        <span>ringdown f_220</span><span>{fmt(d.qnm.f, 0)} Hz (observed frame)</span>
+        <span>f<sub>ISCO</sub> (inspiral ends)</span><span>{fmt(fIsco(d.mTot), 0)} Hz source, {fmt(fIsco(d.mTot * (1 + d.z)), 0)} Hz observed</span>
+        <span>ringdown f<sub>220</sub></span><span>{fmt(d.qnm.f, 0)} Hz (observed frame)</span>
         <span>ringdown damping τ</span><span>{fmt(d.qnm.tauDamp * 1000, 2)} ms, Q = {fmt(d.qnm.q, 2)}</span>
         <span>peak strain</span><span>{sci(GW150914_PRL.peakStrain)}</span>
       </div>

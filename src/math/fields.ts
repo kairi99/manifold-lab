@@ -33,12 +33,12 @@ const poleS = (): FieldZero => zero(sphere, 'south pole', [Math.PI, 0], 1, latit
 const sphereFields = (): VectorField[] => {
   const h = Math.PI / 2;
   return [
-    { id: 'Lz', name: 'L_z: rotation about the polar (vertical) axis', latex: String.raw`X=\partial_\varphi`, killing: true,
+    { id: 'Lz', name: 'Lz: rotation about the polar (vertical) axis', latex: String.raw`X=\partial_\varphi`, killing: true,
       X: () => [0, 1], zeros: [poleN(), poleS()] },
-    { id: 'Lx', name: 'L_x: rotation about an equatorial axis (x)', latex: String.raw`X=-\sin\varphi\,\partial_\theta-\cot\theta\cos\varphi\,\partial_\varphi`, killing: true,
+    { id: 'Lx', name: 'Lx: rotation about an equatorial axis (x)', latex: String.raw`X=-\sin\varphi\,\partial_\theta-\cot\theta\cos\varphi\,\partial_\varphi`, killing: true,
       X: (t, p) => [-Math.sin(p), -Math.cos(p) / Math.tan(t)],
       zeros: [zero(sphere, '+x axis', [h, 0], 1), zero(sphere, '-x axis', [h, Math.PI], 1)] },
-    { id: 'Ly', name: 'L_y: rotation about the other equatorial axis (y)', latex: String.raw`X=\cos\varphi\,\partial_\theta-\cot\theta\sin\varphi\,\partial_\varphi`, killing: true,
+    { id: 'Ly', name: 'Ly: rotation about the other equatorial axis (y)', latex: String.raw`X=\cos\varphi\,\partial_\theta-\cot\theta\sin\varphi\,\partial_\varphi`, killing: true,
       X: (t, p) => [Math.cos(p), -Math.sin(p) / Math.tan(t)],
       zeros: [zero(sphere, '+z axis', [h, h], 1), zero(sphere, '-z axis', [h, 3 * h], 1)] },
     { id: 'gradHeight', name: 'gradient of height', latex: String.raw`X=\nabla\cos\theta=-\sin\theta\,\partial_\theta`, killing: false,

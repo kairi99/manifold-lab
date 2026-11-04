@@ -1,18 +1,18 @@
 import { useStore } from '../state/store';
-import { Tex, fmt } from './Tex';
+import { Tex, fmt, Rich } from './Tex';
 import { COSMO_OBJECTS, COSMO_SETS } from '../data/cosmology';
 import { curvature, hubbleTimeGyr } from '../math/cosmology';
 import { objById, objectNumbers, setById, useCosmoParams, validity } from './CosmoModel';
 import { AngularDiameterPlot, ScaleFactorPlot } from './CosmoPlots';
 import { COSMO_COLORS } from '../scene/CosmoScene';
 
-const Src = ({ s }: { s: { label: string; url?: string } }) => s.url ? <a href={s.url} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}>{s.label}</a> : <>{s.label}</>;
+const Src = ({ s }: { s: { label: string; url?: string } }) => s.url ? <a href={s.url} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)' }}><Rich>{s.label}</Rich></a> : <Rich>{s.label}</Rich>;
 const big = (x: number, d = 3) => (Math.abs(x) >= 1e5 ? x.toExponential(2) : fmt(x, d));
 const LEGEND: [string, string][] = [['observer worldline', COSMO_COLORS.observer], ['past light cone', COSMO_COLORS.cone], ['particle horizon', COSMO_COLORS.particle],
   ['event horizon', COSMO_COLORS.event], ['Hubble sphere', COSMO_COLORS.hubble], ['galaxy worldlines (comoving)', COSMO_COLORS.galaxy], ['selected object', COSMO_COLORS.pick]];
 
 function Slider({ label, value, min, max, step, onChange }: { label: string; value: number; min: number; max: number; step: number; onChange: (v: number) => void }) {
-  return <label className="field"><span>{label}</span><input type="range" aria-label={label} min={min} max={max} step={step} value={value} onChange={(e) => onChange(+e.target.value)} /></label>;
+  return <label className="field"><span><Rich>{label}</Rich></span><input type="range" aria-label={label} min={min} max={max} step={step} value={value} onChange={(e) => onChange(+e.target.value)} /></label>;
 }
 
 export function CosmoPanel() {
@@ -30,13 +30,13 @@ export function CosmoPanel() {
     <div>
       <label className="field"><span>Cosmological parameters</span>
         <select value={csSet} onChange={(e) => pick(e.target.value)}>{COSMO_SETS.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
-      <p style={{ fontSize: 12 }}>{cs.note}{modified && ' Sliders have been moved away from this set.'} {cs.sources.map((s, i) => <span key={i}><Src s={s} /> </span>)}</p>
+      <p style={{ fontSize: 12 }}><Rich>{cs.note}</Rich>{modified && ' Sliders have been moved away from this set.'} {cs.sources.map((s, i) => <span key={i}><Src s={s} /> </span>)}</p>
       <Slider label={`H₀ = ${fmt(csH0, 2)} km/s/Mpc`} value={csH0} min={50} max={90} step={0.1} onChange={(v) => set({ csH0: v })} />
       <Slider label={`Ω_m = ${fmt(csOm, 3)}`} value={csOm} min={0.05} max={1.5} step={0.005} onChange={(v) => set({ csOm: v })} />
       <Slider label={`Ω_Λ = ${fmt(csOL, 3)}`} value={csOL} min={-0.5} max={1.5} step={0.005} onChange={(v) => set({ csOL: v })} />
       <div className="readout">
-        <span>Ω_r (from set)</span><span>{p.Or.toExponential(2)}</span>
-        <span>Ω_k = 1 − Ω_m − Ω_r − Ω_Λ</span><span>{fmt(ok, 4)} ({Math.abs(ok) < 1e-3 ? 'flat' : ok > 0 ? 'open' : 'closed'})</span>
+        <span>Ω<sub>r</sub> (from set)</span><span>{p.Or.toExponential(2)}</span>
+        <span>Ω<sub>k</sub> = 1 − Ω<sub>m</sub> − Ω<sub>r</sub> − Ω<sub>Λ</sub></span><span>{fmt(ok, 4)} ({Math.abs(ok) < 1e-3 ? 'flat' : ok > 0 ? 'open' : 'closed'})</span>
         <span>Hubble time 1/H₀</span><span>{fmt(hubbleTimeGyr(p), 2)} Gyr</span>
       </div>
       <button style={{ marginTop: 8 }} onClick={() => pick(csSet)}>Reset to set</button>
@@ -61,9 +61,9 @@ export function CosmoPanel() {
             <span>age of universe now</span><span>{fmt(n.ageNow, 3)} Gyr</span>
             <span>age at emission</span><span>{n.ageThen < 0.01 ? `${fmt(n.ageThen * 1000, 2)} Myr` : `${fmt(n.ageThen, 3)} Gyr`}</span>
             <span>lookback time</span><span>{fmt(n.lookback, 3)} Gyr</span>
-            <span>D_C (comoving)</span><span>{big(n.dC, 1)} Mpc = {fmt(n.dCgly, 3)} Gly</span>
-            <span>D_L (luminosity)</span><span>{big(n.dL, 1)} Mpc</span>
-            <span>D_A (angular diameter)</span><span>{big(n.dA, 2)} Mpc</span>
+            <span>D<sub>C</sub> (comoving)</span><span>{big(n.dC, 1)} Mpc = {fmt(n.dCgly, 3)} Gly</span>
+            <span>D<sub>L</sub> (luminosity)</span><span>{big(n.dL, 1)} Mpc</span>
+            <span>D<sub>A</sub> (angular diameter)</span><span>{big(n.dA, 2)} Mpc</span>
             <span>distance modulus μ</span><span>{fmt(n.mu, 3)} mag</span>
             <span>recession speed today</span><span>{fmt(n.vNow, 3)} c</span>
             <span>recession speed at emission</span><span>{fmt(n.vThen, 3)} c</span>
@@ -71,7 +71,7 @@ export function CosmoPanel() {
           {(n.vNow > 1 || n.vThen > 1) && (
             <p role="status" style={{ fontSize: 12 }}>Receding faster than light{n.vNow > 1 ? ' today' : ' when the light was emitted'}, yet we see it: the photons travelled through regions whose recession speed dropped below c (the Hubble sphere grows in comoving terms). Expansion of space is not motion through space, so special relativity's limit does not apply.</p>
           )}
-          <p style={{ fontSize: 12 }}>{obj.note}</p>
+          <p style={{ fontSize: 12 }}><Rich>{obj.note}</Rich></p>
           {!obj.verified && <p role="note" style={{ fontSize: 12, color: '#ffd24a' }}>Unverified: this redshift was not checked against the primary source.</p>}
           <p style={{ fontSize: 12 }}>Source: {obj.sources.length ? obj.sources.map((s, i) => <span key={i}>{i > 0 && '; '}<Src s={s} /></span>) : 'none recorded'}</p>
 

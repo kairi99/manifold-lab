@@ -120,8 +120,8 @@ export function TransportPanel() {
         <div className="readout">
           <span>({coordText(cu)}, {coordText(cv)})</span><span>({fmt(cur.uv[0])}, {fmt(cur.uv[1])})</span>
           <span>du/dt</span><span>({fmt(dudt[0])}, {fmt(dudt[1])})</span>
-          <span>V^k</span><span>({fmt(cur.V[0])}, {fmt(cur.V[1])})</span>
-          <span>dV^k/dt</span><span>({fmt(dV[0])}, {fmt(dV[1])})</span>
+          <span>V<sup>k</sup></span><span>({fmt(cur.V[0])}, {fmt(cur.V[1])})</span>
+          <span>dV<sup>k</sup>/dt</span><span>({fmt(dV[0])}, {fmt(dV[1])})</span>
           <span>g(V,V)</span><span>{fmt(normSq(surface, cur.uv, cur.V), 5)}</span>
         </div>
       ) : <p>Draw at least 3 points to define a loop.</p>}

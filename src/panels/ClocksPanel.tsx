@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '../state/store';
-import { Tex, fmt } from './Tex';
+import { Tex, fmt, Rich } from './Tex';
 import { REDSHIFT_TESTS, SHAPIRO_TESTS, FRAME_DRAG_TESTS } from '../data/grTests';
 import { bodyById, C, YEAR } from '../data/celestial';
 import type { Source } from '../data/celestial';
@@ -8,7 +8,7 @@ import { gravRedshift, redshiftWeakSI, shapiroDelaySI, geodeticPrecessionSI, len
 
 const MAS = (180 / Math.PI) * 3600e3 * YEAR; // rad/s -> mas/yr
 const sci = (x: number, d = 3) => (x !== 0 && (Math.abs(x) >= 1e4 || Math.abs(x) < 1e-2) ? x.toExponential(d - 1) : fmt(x, d));
-const Src = ({ s }: { s: Source }) => (s.url ? <a href={s.url} target="_blank" rel="noreferrer">{s.label}</a> : <>{s.label}</>);
+const Src = ({ s }: { s: Source }) => (s.url ? <a href={s.url} target="_blank" rel="noreferrer"><Rich>{s.label}</Rich></a> : <Rich>{s.label}</Rich>);
 const ALL = [...REDSHIFT_TESTS, ...SHAPIRO_TESTS, ...FRAME_DRAG_TESTS];
 
 export function ClocksPanel() {
@@ -28,7 +28,7 @@ export function ClocksPanel() {
           <optgroup label="Shapiro delay">{SHAPIRO_TESTS.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</optgroup>
           <optgroup label="Frame dragging">{FRAME_DRAG_TESTS.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</optgroup>
         </select></label>
-      <p style={{ fontSize: 12 }}>Central body: {body.name}. {test.note}</p>
+      <p style={{ fontSize: 12 }}>Central body: {body.name}. <Rich>{test.note}</Rich></p>
 
       {rs && (() => {
         const z = redshiftWeakSI(body.gm, rs.r1M, rs.r2M ?? Infinity);

@@ -66,7 +66,7 @@ export function TidalScene() {
       <Line points={[[-3, -3.4, 0], [0, -3.4, 0]]} color="#8a8f98" lineWidth={1} />
       <mesh position={[-3, -3.4, 0]}><sphereGeometry args={[0.18, 12, 8]} /><meshBasicMaterial color="#000000" /></mesh>
       <Label text="horizon 2M" position={[-3, -3.95, 0]} height={0.3} />
-      <Label text={`r0 = ${r0}M`} position={[0, -3.95, 0]} height={0.3} />
+      <Label text={`r_0 = ${r0} M`} position={[0, -3.95, 0]} height={0.3} />
       <mesh ref={marker}><sphereGeometry args={[0.14, 12, 8]} /><meshBasicMaterial color="#ffffff" /></mesh>
     </group>
   );

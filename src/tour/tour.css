@@ -25,3 +25,19 @@
 .task-actions button { padding: 3px 8px; font-size: 12px; color: var(--muted); }
 .task-reveal { margin: 6px 0 0 24px; padding: 6px 8px; background: var(--bg); border-left: 2px solid var(--accent); border-radius: 4px; }
 @media (max-width: 600px) { .tour-card { padding: 12px; } }
+
+.panel .theory-btn { width: 100%; margin: 0 0 14px; padding: 8px 10px; background: none; color: var(--accent); border: 1px solid var(--accent); border-radius: 6px; cursor: pointer; font: inherit; font-size: 13px; text-align: left; }
+.panel .theory-btn:hover { background: rgba(108, 182, 255, 0.08); }
+.theory-overlay { position: fixed; inset: 0; z-index: 1100; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.theory { width: min(760px, 100%); max-height: 100%; display: flex; flex-direction: column; background: var(--panel); color: var(--fg); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); outline: none; }
+.theory header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+.theory header h2 { flex: 1; margin: 0; font-size: 17px; color: var(--accent); }
+.theory header button { background: none; border: 1px solid var(--control); color: var(--fg); border-radius: 6px; width: 32px; height: 32px; cursor: pointer; }
+.theory-body { overflow-y: auto; padding: 4px 18px 18px; font-size: 14px; line-height: 1.55; }
+.theory-body h3 { font-size: 15px; margin: 18px 0 6px; }
+.theory-body p { margin: 0 0 8px; }
+.theory-body .tex-block { margin: 8px 0; }
+.theory-motivation { margin-top: 12px; padding: 10px 12px; background: var(--bg); border-left: 3px solid var(--accent); border-radius: 4px; }
+.theory-motivation p { margin: 0; }
+.theory-refs { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+@media (max-width: 600px) { .theory-overlay { padding: 8px; } .theory-body { padding: 4px 14px 14px; } }

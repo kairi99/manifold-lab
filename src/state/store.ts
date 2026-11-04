@@ -25,6 +25,7 @@ export interface AppState {
   progress: number; // 0..1 along path
   playing: boolean;
   tourOpen: boolean;
+  theoryOpen: boolean;
   // geodesics
   geoCount: number; // geodesics in the fan (1 = single)
   geoSpread: number; // total fan opening angle, radians
@@ -137,6 +138,7 @@ export const useStore = create<AppState>((set) => ({
   progress: 0,
   playing: false,
   tourOpen: false,
+  theoryOpen: false,
   geoCount: 9,
   geoSpread: Math.PI / 6,
   geoLength: Math.PI,

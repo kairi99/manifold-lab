@@ -152,7 +152,7 @@ export function FieldsScene() {
             <circleGeometry args={[0.28, 40]} />
             <meshBasicMaterial color="#ffd24a" transparent opacity={0.3} side={THREE.DoubleSide} depthWrite={false} />
           </mesh>
-          <Label text="T_pM" position={[pPos[0] + pn[0] * 0.2, pPos[1] + pn[1] * 0.2, pPos[2] + pn[2] * 0.2]} color="#ffd24a" />
+          <Label text="T_{p}M" position={[pPos[0] + pn[0] * 0.2, pPos[1] + pn[1] * 0.2, pPos[2] + pn[2] * 0.2]} color="#ffd24a" />
         </>
       )}
       {lines.map((pl, i) => pl.length > 1 && <Line key={i} points={pl} color={i === lines.length - 1 ? '#ffd24a' : '#ffffff'} lineWidth={1} transparent opacity={0.3} />)}

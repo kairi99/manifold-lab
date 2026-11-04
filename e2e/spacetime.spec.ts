@@ -14,7 +14,7 @@ test('Schwarzschild r=6: Kretschmann 48/6^6 and vacuum Einstein equation', async
   await open(app)
   expect(await num(readout(app, 'Kretschmann K'))).toBeCloseTo(48 / 6 ** 6, 6)
   await expect(readout(app, 'Kretschmann K')).toHaveText('1.029e-3')
-  await expect(readout(app, 'Einstein equation')).toHaveText('G_μν = 0 ✓')
+  await expect(readout(app, 'Einstein equation')).toHaveText('Gμν = 0 ✓')
   await expect(readout(app, 'Ricci scalar R')).toHaveText('0')
 })
 
@@ -61,6 +61,6 @@ test('waves: ring, GW150914 plot and parameters render', async ({ app }) => {
   await expect(app.getByRole('table', { name: 'GW150914 parameters' })).toContainText('35.6')
   await app.getByRole('group', { name: 'Wave source' }).getByRole('button', { name: 'GW150914 template' }).click()
   await app.getByRole('group', { name: 'Parameter set' }).getByRole('button', { name: 'PRL 2016' }).click()
-  expect(await num(readout(app, 'ringdown f_220'))).toBeGreaterThan(200)
+  expect(await num(readout(app, 'ringdown f220'))).toBeGreaterThan(200)
   await expect(app.locator('.canvas canvas')).toBeVisible()
 })

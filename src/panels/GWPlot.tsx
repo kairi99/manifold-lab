@@ -1,3 +1,4 @@
+import { richSvg } from './Tex';
 import { GW150914_H1 as H1, GW150914_L1 as L1, GW150914_H1_TEMPLATE as TPL } from '../data/gw150914';
 import { T0, T1 } from './GWModel';
 
@@ -32,7 +33,7 @@ export function GWPlot({ t, rawL1 }: { t: number; rawL1: boolean }) {
         <path d={path(1, L1.t, L1.h, rawL1 ? 0 : L1_SHIFT, rawL1 ? 1 : -1)} fill="none" strokeWidth="1.2" style={{ stroke: '#ffa94d' }} />
         {[0, 1].map((r) => <line key={r} x1={x(t)} x2={x(t)} y1={rowTop(r)} y2={rowTop(r) + RH} strokeWidth="1.5" style={{ stroke: 'var(--fg)' }} />)}
         {ticks.map((v) => <text key={v} x={x(v)} y={H - MB + 12} fontSize="9" textAnchor="middle" style={{ fill: 'var(--fg)' }}>{v}</text>)}
-        <text x={(ML + W - MR) / 2} y={H - 3} fontSize="9" textAnchor="middle" style={{ fill: 'var(--muted)' }}>t − t_merger (s)</text>
+        <text x={(ML + W - MR) / 2} y={H - 3} fontSize="9" textAnchor="middle" style={{ fill: 'var(--muted)' }}>{richSvg('t − t_merger (s)')}</text>
         <text x={ML + 4} y={rowTop(0) + 10} fontSize="9" style={{ fill: '#6cb6ff' }}>H1 measured</text>
         <text x={ML + 70} y={rowTop(0) + 10} fontSize="9" style={{ fill: '#ff6bd6' }}>NR template (model)</text>
         <text x={ML + 4} y={rowTop(1) + 10} fontSize="9" style={{ fill: '#6cb6ff' }}>H1</text>
@@ -56,7 +57,7 @@ export function ChirpPlot({ f, t }: { f: (t: number) => number; t: number }) {
       <line x1={x(t)} x2={x(t)} y1={mt} y2={h - mb} strokeWidth="1.5" style={{ stroke: 'var(--fg)' }} />
       {[0, 100, 200, 300, 400].map((v) => <text key={v} x={ml - 4} y={y(v) + 3} fontSize="9" textAnchor="end" style={{ fill: 'var(--fg)' }}>{v}</text>)}
       {[-0.15, -0.1, -0.05, 0].map((v) => <text key={v} x={x(v)} y={h - mb + 11} fontSize="9" textAnchor="middle" style={{ fill: 'var(--fg)' }}>{v}</text>)}
-      <text x={(ml + w - mr) / 2} y={h - 2} fontSize="9" textAnchor="middle" style={{ fill: 'var(--muted)' }}>t − t_merger (s); f in Hz</text>
+      <text x={(ml + w - mr) / 2} y={h - 2} fontSize="9" textAnchor="middle" style={{ fill: 'var(--muted)' }}>{richSvg('t − t_merger (s); f in Hz')}</text>
     </svg>
   );
 }

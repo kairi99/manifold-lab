@@ -6,6 +6,7 @@ import 'katex/dist/katex.min.css';
 import { MODULE_VIEWS } from './modules/registry';
 import { Tour, TourButton, useFirstVisitTour } from './tour/Tour';
 import { SuggestedTasks } from './tour/SuggestedTasks';
+import { TheoryButton, TheoryDialog } from './tour/Theory';
 import { CanvasAccess, KEYS_HELP } from './a11y/CanvasAccess';
 import { WebGLGuard } from './scene/WebGLGuard';
 import { FitCamera } from './scene/FitCamera';
@@ -21,7 +22,7 @@ export default function App() {
   useEffect(() => {
     const sync = () => {
       const m = moduleFromHash(location.hash), s = useStore.getState();
-      if (!m) set({ onHome: true, tourOpen: false });
+      if (!m) set({ onHome: true, tourOpen: false, theoryOpen: false });
       else if (s.onHome || s.module !== m) set({ module: m, onHome: false, playing: false, geoPlaying: false });
     };
     sync();
@@ -60,12 +61,14 @@ export default function App() {
         </CanvasAccess>
       </main>
       <aside id="controls" className="panel" data-tour="panel" tabIndex={-1} aria-label="Controls and equations">
+        <TheoryButton />
         {SURFACE_MODULES.has(module) && <p id="kbd-help" className="kbd-help">{KEYS_HELP}</p>}
         <Suspense fallback={<p className="loading">Loading module…</p>}><Panel /></Suspense>
         <SuggestedTasks module={module} />
         <TourButton />
       </aside>
       <Tour />
+      <TheoryDialog />
     </div>
   );
 }

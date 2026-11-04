@@ -71,9 +71,9 @@ export function KerrPanel({ body }: { body: CelestialBody | null }) {
             style={{ padding: 6, background: retro === v ? 'var(--accent)' : 'var(--bg)', color: retro === v ? 'var(--bg)' : 'var(--fg)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer' }}>{t}</button>
         ))}
       </div>
-      <label className="field"><span>Periapsis r_p = {fmt(rp, 1)} M</span>
+      <label className="field"><span>Periapsis r<sub>p</sub> = {fmt(rp, 1)} M</span>
         <input type="range" min={2.5} max={60} step={0.1} value={rp} aria-label="Periapsis radius" onChange={(e) => set({ grRp: +e.target.value, grProgress: 0 })} /></label>
-      <label className="field"><span>Apoapsis r_a = {fmt(ra, 1)} M</span>
+      <label className="field"><span>Apoapsis r<sub>a</sub> = {fmt(ra, 1)} M</span>
         <input type="range" min={2.5} max={60} step={0.1} value={ra} aria-label="Apoapsis radius" onChange={(e) => set({ grRa: +e.target.value, grProgress: 0 })} /></label>
       <div className="field" style={{ flexDirection: 'row', gap: 8 }}>
         <button onClick={() => set({ grPlaying: !playing })}>{playing ? 'Pause' : 'Play'}</button>
@@ -113,15 +113,15 @@ export function KerrPanel({ body }: { body: CelestialBody | null }) {
         {circ ? (
           <>
             <span>orbital Ω at ISCO</span><span>{fmt(circ.Omega, 5)} /M</span>
-            <span>E_ISCO</span><span>{fmt(circ.E, 5)}</span>
-            <span>L_ISCO</span><span>{fmt(circ.L, 4)} M</span>
+            <span>E<sub>ISCO</sub></span><span>{fmt(circ.E, 5)}</span>
+            <span>L<sub>ISCO</sub></span><span>{fmt(circ.L, 4)} M</span>
             <span>efficiency 1 − E</span><span>{fmt((1 - circ.E) * 100, 2)} %</span>
           </>
         ) : <><span>ISCO orbit</span><span>n/a</span></>}
       </div>
-      <p style={{ fontSize: 12 }}>Accretion releases 1 − E_ISCO of the rest mass: 5.7% at a = 0, up to about 32% at a = 0.998 (prograde).</p>
+      <p style={{ fontSize: 12 }}>Accretion releases 1 − E<sub>ISCO</sub> of the rest mass: 5.7% at a = 0, up to about 32% at a = 0.998 (prograde).</p>
 
-      <h2>Orbit precession (r_p = {fmt(Math.min(rp, ra), 1)}, r_a = {fmt(Math.max(rp, ra), 1)} M)</h2>
+      <h2>Orbit precession (r<sub>p</sub> = {fmt(Math.min(rp, ra), 1)}, r<sub>a</sub> = {fmt(Math.max(rp, ra), 1)} M)</h2>
       <div className="readout">
         <span>prograde / orbit</span><span>{orbits.pro.orb ? deg(precPro) : 'no bound orbit'}</span>
         <span>retrograde / orbit</span><span>{orbits.retro.orb ? deg(precRetro) : 'no bound orbit'}</span>

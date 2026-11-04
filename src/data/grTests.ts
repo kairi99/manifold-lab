@@ -16,7 +16,7 @@ export const REDSHIFT_TESTS: RedshiftTest[] = [
   { id: 'pound-snider', name: 'Pound-Rebka / Pound-Snider (Harvard tower)', centralId: 'earth', r1M: R_EARTH, r2M: R_EARTH + 22.5,
     observed: { quantity: 'Measured / GR-predicted shift ratio', value: 0.9990, unit: '', uncertainty: 0.0076,
       source: { label: 'Pound & Snider 1965, Phys. Rev. 140, B788. Ratio 0.9990 +/- 0.0076 seen only on a secondary site (physics.it.com); Physics Today says about 1%. Pound-Rebka 1960 alone: (2.57 +/- 0.26)e-15 vs 2.46e-15' } },
-    note: 'Gamma rays (Fe-57, 14.4 keV) over the 22.5 m Jefferson tower; predicted fractional shift gh/c^2 = 2.46e-15.' },
+    note: 'Gamma rays (Fe-57, 14.4 keV) over the 22.5 m Jefferson tower; predicted fractional shift gh/c^2 = 2.46 × 10^{−15}.' },
   { id: 'gpa', name: 'Gravity Probe A (hydrogen maser rocket, 1976)', centralId: 'earth', r1M: R_EARTH, r2M: R_EARTH + 10.0e6,
     observed: { quantity: 'Agreement with GR, fractional', value: 7e-5, unit: '', uncertainty: 7e-5,
       source: { label: 'Vessot et al. 1980, PRL 45, 2081. NASA NTRS abstract (ntrs.nasa.gov/citations/19810032669): agreement 70e-6, rocket launched nearly vertically to 10,000 km (nominal altitude used here). Full paper not read' } },

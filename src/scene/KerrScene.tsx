@@ -60,7 +60,7 @@ function Horizon({ a, label = true }: { a: number; label?: boolean }) {
     <group>
       <mesh><sphereGeometry args={[rPlus, 48, 32]} /><meshBasicMaterial color="#000000" /></mesh>
       <mesh><sphereGeometry args={[rPlus * 1.02, 48, 32]} /><meshBasicMaterial color="#ff9f43" transparent opacity={0.3} side={THREE.BackSide} depthWrite={false} /></mesh>
-      {label && <Label text="horizon r+ (a sphere in BL coordinates)" position={[0, -rPlus - 3.5, 0]} color="#ff9f43" height={1.6} />}
+      {label && <Label text="horizon r_{+} (a sphere in BL coordinates)" position={[0, -rPlus - 3.5, 0]} color="#ff9f43" height={1.6} />}
     </group>
   );
 }

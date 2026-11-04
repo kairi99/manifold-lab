@@ -119,7 +119,7 @@ TASKS.push(
 TASKS.push(
   { id: 'r-kerr-isco', module: 'relativity',
     prompt: 'In the Kerr view move the spin from $a=0$ to $a=0.998$ (prograde) and read the ISCO radius and the efficiency $1-E_{\\rm ISCO}$.',
-    hint: 'Watch the ISCO ring shrink toward the horizon and the E_ISCO readout.',
+    hint: 'Watch the ISCO ring shrink toward the horizon and the $E_{\\rm ISCO}$ readout.',
     answer: 'At $a=0$ the ISCO is $6M$ with $E=\\sqrt{8/9}$, efficiency $5.7\\%$. At $a=0.998$ the prograde ISCO drops to about $1.24M$ and the efficiency rises to about $32\\%$, because frame dragging lets matter orbit closer and release more binding energy.' },
   { id: 'r-shadow', module: 'relativity',
     prompt: 'In the Image view compare the shadow curve at $a=0$ with $a=0.99$ at inclination $89^\\circ$ (edge-on).',

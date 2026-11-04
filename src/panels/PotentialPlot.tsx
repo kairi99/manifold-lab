@@ -1,3 +1,4 @@
+import { richSvg } from './Tex';
 import { Veff } from '../math/schwarzschild';
 
 export interface PotentialPlotProps {
@@ -50,7 +51,7 @@ export function PotentialPlot({ L, E2, kind, rMax = 30 }: PotentialPlotProps) {
       {MARKS.filter(([r]) => r < rMax).map(([r, t]) => (
         <g key={t}>
           <line x1={x(r)} x2={x(r)} y1={MT} y2={H - MB} strokeDasharray="3 3" style={s('var(--muted)')} />
-          <text x={x(r)} y={MT + 9} fontSize="9" textAnchor="middle" style={{ fill: 'var(--muted)' }}>{t}</text>
+          <text x={x(r)} y={MT + 9} fontSize="9" textAnchor="middle" style={{ fill: 'var(--muted)' }}>{richSvg(t)}</text>
         </g>
       ))}
       <line x1={ML} x2={W - MR} y1={y(E2)} y2={y(E2)} strokeWidth="1.2" style={s('#ffd166')} />
@@ -70,7 +71,7 @@ export function PotentialPlot({ L, E2, kind, rMax = 30 }: PotentialPlotProps) {
         </g>
       ))}
       <text x={(ML + W - MR) / 2} y={H - 4} fontSize="10" textAnchor="middle" style={{ fill: 'var(--muted)' }}>r / M</text>
-      <text x={10} y={(MT + H - MB) / 2} fontSize="10" textAnchor="middle" transform={`rotate(-90 10 ${(MT + H - MB) / 2})`} style={{ fill: 'var(--muted)' }}>V_eff</text>
+      <text x={10} y={(MT + H - MB) / 2} fontSize="10" textAnchor="middle" transform={`rotate(-90 10 ${(MT + H - MB) / 2})`} style={{ fill: 'var(--muted)' }}>{richSvg('V_eff')}</text>
     </svg>
   );
 }

@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
-import { fmt } from './Tex';
+import { fmt, Rich } from './Tex';
 
 export const sci = (x: number, d = 4) => (x === 0 || Math.abs(x) < 1e-14 ? '0' : Math.abs(x) >= 1e4 || Math.abs(x) < 1e-2 ? x.toExponential(d - 1) : fmt(x, d));
 
 export const Src = ({ s }: { s: { label: string; url?: string } }) =>
-  s.url ? <a href={s.url} target="_blank" rel="noreferrer">{s.label}</a> : <>{s.label}</>;
+  s.url ? <a href={s.url} target="_blank" rel="noreferrer"><Rich>{s.label}</Rich></a> : <Rich>{s.label}</Rich>;
 
 /** Segmented button row (role=group), same look as the Relativity view switcher. */
 export function Seg<T extends string>({ label, value, items, onPick, cols }: { label: string; value: T; items: readonly (readonly [T, string])[]; onPick: (v: T) => void; cols?: number }) {

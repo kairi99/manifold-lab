@@ -50,9 +50,9 @@ export function FieldsPanel() {
       <h2>Field and values at p</h2>
       <Tex block>{X.latex}</Tex>
       <div className="readout">
-        <span>X^{coordText(cu)}</span><span>{fmt(xv[0])}</span>
-        <span>X^{coordText(cv)}</span><span>{fmt(xv[1])}</span>
-        <span>|X|_g</span><span>{fmt(len)}</span>
+        <span>X<sup>{coordText(cu)}</sup></span><span>{fmt(xv[0])}</span>
+        <span>X<sup>{coordText(cv)}</sup></span><span>{fmt(xv[1])}</span>
+        <span>|X|<sub>g</sub></span><span>{fmt(len)}</span>
         <span>div X</span><span>{fmt(div)}</span>
       </div>
       <Tex block>{String.raw`(\mathcal L_X g)_{ij}=${pmatrix(L)}`}</Tex>

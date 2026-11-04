@@ -1,5 +1,5 @@
 import { useStore } from '../state/store';
-import { Tex, fmt } from './Tex';
+import { Tex, fmt, Rich } from './Tex';
 import { BLACK_HOLES, fmtDuration, infallState, massSeconds, probeAt } from './PenroseModel';
 import { infallGeodesic } from '../math/penrose';
 
@@ -14,7 +14,7 @@ const ROLE: Record<string, string> = {
 
 function Slider({ label, value, min, max, step, onChange }: { label: string; value: number; min: number; max: number; step: number; onChange: (v: number) => void }) {
   return (
-    <label className="field"><span>{label}</span>
+    <label className="field"><span><Rich>{label}</Rich></span>
       <input type="range" aria-label={label} min={min} max={max} step={step} value={value} onChange={(e) => onChange(+e.target.value)} /></label>
   );
 }

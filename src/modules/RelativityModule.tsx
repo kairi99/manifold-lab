@@ -2,7 +2,7 @@ import { useStore } from '../state/store';
 import { KerrPanel } from './KerrPanel';
 import { BlackHoleImage } from '../panels/BlackHoleImage';
 import { ClocksPanel } from '../panels/ClocksPanel';
-import { Tex, fmt } from '../panels/Tex';
+import { Tex, fmt, Rich } from '../panels/Tex';
 import { PotentialPlot } from '../panels/PotentialPlot';
 import { RelativityScene, bodyMass, lightModel, orbitModel, periapsides, sampleAt } from '../scene/RelativityScene';
 import { BODIES, LIGHT, ORBITS, GM_SUN, YEAR, bodyById } from '../data/celestial';
@@ -17,7 +17,7 @@ const RAD = 180 / Math.PI, ARCSEC = RAD * 3600;
 const VIEWS = [['orbits', 'Orbits'], ['light', 'Light'], ['flamm', 'Flamm'], ['kerr', 'Kerr'], ['image', 'Image'], ['clocks', 'Clocks']] as const;
 const sci = (x: number, d = 3) => (Math.abs(x) >= 1e4 || (x !== 0 && Math.abs(x) < 1e-2) ? x.toExponential(d - 1) : fmt(x, d));
 const Src = ({ s }: { s: { label: string; url?: string } }) =>
-  s.url ? <a href={s.url} target="_blank" rel="noreferrer">{s.label}</a> : <>{s.label}</>;
+  s.url ? <a href={s.url} target="_blank" rel="noreferrer"><Rich>{s.label}</Rich></a> : <Rich>{s.label}</Rich>;
 
 function BodyCard({ body }: { body: CelestialBody }) {
   const Mm = bodyMass(body)!;
@@ -29,16 +29,16 @@ function BodyCard({ body }: { body: CelestialBody }) {
       <div className="readout">
         <span>mass</span><span>{sci(body.gm / GM_SUN)} M☉</span>
         <span>M = GM/c²</span><span>{sci(Mm)} m</span>
-        <span>r_s = 2GM/c²</span><span>{rs >= 1000 ? `${sci(rs / 1000)} km` : `${sci(rs)} m`}</span>
+        <span>r<sub>s</sub> = 2GM/c²</span><span>{rs >= 1000 ? `${sci(rs / 1000)} km` : `${sci(rs)} m`}</span>
         {R !== null ? (
           <>
-            <span>R / r_s</span><span>{sci(R / rs)}</span>
+            <span>R / r<sub>s</sub></span><span>{sci(R / rs)}</span>
             <span>photon sphere (3M)</span><span>{R > PHOTON_SPHERE * Mm ? 'outside surface' : 'above the surface (exists)'}</span>
             <span>ISCO (6M)</span><span>{R > ISCO * Mm ? 'inside the body: no ISCO' : 'outside surface'}</span>
           </>
         ) : (<><span>surface</span><span>none (black hole)</span></>)}
       </div>
-      <p>{body.note}</p>
+      <p><Rich>{body.note}</Rich></p>
       <ul style={{ fontSize: 12, paddingLeft: 18 }}>{body.sources.map((s, i) => <li key={i}><Src s={s} /></li>)}</ul>
     </>
   );
@@ -86,7 +86,7 @@ function OrbitReadouts({ preset, Mm, toy, rp, ra }: { preset: OrbitPreset | null
           </div>
           {o && <p style={{ fontSize: 12 }}>Observed: {o.quantity}. Source: <Src s={o.source} /></p>}
           {preset.caveat && <p style={{ fontSize: 12 }}>Caveat: {preset.caveat}</p>}
-          <p style={{ fontSize: 12 }}>{preset.note}</p>
+          <p style={{ fontSize: 12 }}><Rich>{preset.note}</Rich></p>
         </>
       )}
       {gps && (
@@ -127,14 +127,14 @@ function LightReadouts({ preset, Mm, body, b }: { preset: LightPreset | null; Mm
       <div className="readout">
         <span>numeric</span><span>{d.numeric === null ? 'captured (b ≤ b_c)' : `${fmt(d.numeric * RAD, 3)}° `}</span>
         <span>weak field 4M/b</span><span>{fmt(d.weakField * RAD, 3)}°</span>
-        <span>b_c = 3√3 M</span><span>{fmt(B_CRIT, 4)} M</span>
+        <span>b<sub>c</sub> = 3√3 M</span><span>{fmt(B_CRIT, 4)} M</span>
       </div>
       {preset && real && (
         <>
           <h2>Real: {preset.name}</h2>
           <div className="readout"><span>GR</span><span>{real.pred}</span><span>observed</span><span>{real.obs}</span></div>
           {preset.observed && <p style={{ fontSize: 12 }}>Source: <Src s={preset.observed.source} /></p>}
-          <p style={{ fontSize: 12 }}>{preset.note}</p>
+          <p style={{ fontSize: 12 }}><Rich>{preset.note}</Rich></p>
         </>
       )}
     </>
@@ -212,9 +212,9 @@ export function RelativityPanel() {
 
       {view === 'orbits' && custom && (
         <>
-          <label className="field"><span>Periapsis r_p = {fmt(grRp, 1)} M</span>
+          <label className="field"><span>Periapsis r<sub>p</sub> = {fmt(grRp, 1)} M</span>
             <input type="range" min={2.5} max={60} step={0.1} value={grRp} onChange={(e) => set({ grRp: +e.target.value, grProgress: 0 })} /></label>
-          <label className="field"><span>Apoapsis r_a = {fmt(grRa, 1)} M</span>
+          <label className="field"><span>Apoapsis r<sub>a</sub> = {fmt(grRa, 1)} M</span>
             <input type="range" min={2.5} max={60} step={0.1} value={grRa} onChange={(e) => set({ grRa: +e.target.value, grProgress: 0 })} /></label>
         </>
       )}
@@ -257,7 +257,7 @@ export function RelativityPanel() {
               <span>E</span><span>{fmt(om.orb.E, 5)}</span>
               <span>L</span><span>{fmt(om.orb.L, 4)} M</span>
               <span>fate</span><span>{om.traj?.fate}</span>
-              <span>r_p, r_a</span><span>{fmt(om.rp, 2)}, {fmt(om.ra, 2)} M</span>
+              <span>r<sub>p</sub>, r<sub>a</sub></span><span>{fmt(om.rp, 2)}, {fmt(om.ra, 2)} M</span>
               <span>measured shift / orbit</span><span>{avg === null ? 'n/a (< 2 periapsides)' : `${fmt(avg * RAD, 2)}°`}</span>
             </div>
           ) : <p>No bound orbit with these apsides (unbound, or inside the stability limit).</p>}
@@ -282,7 +282,7 @@ export function RelativityPanel() {
       )}
 
       {body && <BodyCard body={body} />}
-      {!body && <p>Generic black hole in geometric units G = c = 1, lengths in M; r_s = 2M.</p>}
+      {!body && <p>Generic black hole in geometric units G = c = 1, lengths in M; r<sub>s</sub> = 2M.</p>}
       </>}
     </div>
   );

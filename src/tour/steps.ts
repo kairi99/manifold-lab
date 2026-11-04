@@ -18,6 +18,9 @@ const ORBIT_3D: TourStep = { target: 'canvas', title: 'The 3D view',
 const END: TourStep = { target: 'nav', title: 'Other simulations',
   body: 'Switch simulation with these tabs, or click "Manifold Lab" to go back to the start page. Each simulation has its own short guide; press ? to replay this one. Suggested tasks at the bottom of the panel give you things to try.' };
 
+const THEORY_STEP: TourStep = { target: 'theory', title: 'Motivation & theory',
+  body: 'This button opens the background: why the concept matters, the key equations and theorems, and further reading.' };
+
 export const TOURS: Record<ModuleId, TourStep[]> = {
   metric: [
     { target: null, title: 'Metric & tangent spaces',
@@ -25,7 +28,7 @@ export const TOURS: Record<ModuleId, TourStep[]> = {
     VIEW_3D, PICKER,
     { target: 'metric-readout', title: 'Live equations',
       body: 'These are $g_{ij}$, $\\Gamma^k_{ij}$ and the length of $V$ evaluated at the current $p$. Compare $|V|^2 = g_{ij}V^iV^j$ with the Euclidean length of the arrow: they agree.' },
-    END,
+    THEORY_STEP, END,
   ],
   transport: [
     { target: null, title: 'Parallel transport',
@@ -35,7 +38,7 @@ export const TOURS: Record<ModuleId, TourStep[]> = {
       body: 'Pick a loop (latitude circle, triangle, or your own clicked points). Press play, or scrub the slider to step through the transport by hand.' },
     { target: 'holonomy', title: 'Holonomy',
       body: 'When the loop closes, the angle between the starting and returning vector is the holonomy. For a loop bounding a region $R$ it equals $\\iint_R K\\,dA$ (Gauss–Bonnet).' },
-    END,
+    THEORY_STEP, END,
   ],
   geodesics: [
     { target: null, title: 'Geodesics',
@@ -43,7 +46,7 @@ export const TOURS: Record<ModuleId, TourStep[]> = {
     VIEW_3D, PICKER,
     { target: 'geo-controls', title: 'Fan them out',
       body: 'Shoot several geodesics at once. Positive $K$ refocuses them (conjugate points), negative $K$ spreads them apart.' },
-    END,
+    THEORY_STEP, END,
   ],
   curvature: [
     { target: null, title: 'Curvature',
@@ -51,7 +54,7 @@ export const TOURS: Record<ModuleId, TourStep[]> = {
     VIEW_3D, PICKER,
     { target: 'curv-egregium', title: 'Theorema Egregium',
       body: '$K$ is computed twice: intrinsically, $K = R_{1212}/\\det g$ from the metric alone, and extrinsically, $K = \\kappa_1\\kappa_2$ from how the surface bends in $\\mathbb{R}^3$. They always agree.' },
-    END,
+    THEORY_STEP, END,
   ],
   fields: [
     { target: null, title: 'Vector fields & the tangent bundle',
@@ -59,7 +62,7 @@ export const TOURS: Record<ModuleId, TourStep[]> = {
     VIEW_3D, PICKER,
     { target: 'poincare-hopf', title: 'Poincaré–Hopf',
       body: 'The indices of the zeros of a field add up to the Euler characteristic, $\\sum \\operatorname{ind} = \\chi(M)$. The panel also shows Killing fields ($\\mathcal{L}_X g = 0$) and Lie brackets such as $[L_x, L_y] = -L_z$.' },
-    END,
+    THEORY_STEP, END,
   ],
   relativity: [
     { target: null, title: 'Relativity: Schwarzschild & Kerr',
@@ -71,7 +74,7 @@ export const TOURS: Record<ModuleId, TourStep[]> = {
       body: 'Load a real system, such as Mercury, the star S2 around Sgr A*, or the Hulse–Taylor pulsar, and compare the predicted precession with the measured one.' },
     { target: 'gr-potential', title: 'Effective potential',
       body: 'Radial motion obeys $\\dot r^2 = E^2 - V_{\\text{eff}}(r)$. The plot marks the photon sphere $3M$, the marginally bound orbit $4M$ and the ISCO $6M$.' },
-    END,
+    THEORY_STEP, END,
   ],
   spacetime: [
     { target: null, title: 'Curvature in 4D',
@@ -81,7 +84,7 @@ export const TOURS: Record<ModuleId, TourStep[]> = {
       body: 'Tensors lists $g_{\\mu\\nu}$, $\\Gamma^\\rho_{\\mu\\nu}$, $R_{\\rho\\sigma\\mu\\nu}$, $R_{\\mu\\nu}$ and $G_{\\mu\\nu}$ and checks $G_{\\mu\\nu}=8\\pi T_{\\mu\\nu}$. Tidal drops a ring of particles into a black hole ($\\ddot\\xi^i=-R^i{}_{0j0}\\xi^j$). Waves shows the $+$ and $\\times$ polarisations and the measured GW150914 strain.' },
     { target: 'panel', title: 'Controls and numbers',
       body: 'Choose the spacetime and the event here; every tensor component and invariant updates as you move.' },
-    END,
+    THEORY_STEP, END,
   ],
   cosmos: [
     { target: null, title: 'Causal structure & cosmology',
@@ -90,6 +93,6 @@ export const TOURS: Record<ModuleId, TourStep[]> = {
       body: 'Penrose diagrams shows Minkowski and the maximally extended Schwarzschild spacetime: follow an observer through the horizon to $r=0$ in finite proper time. Cosmology draws our universe (Planck 2018) with the past light cone, particle and event horizons and the Hubble sphere.' },
     { target: 'canvas', title: 'The diagram',
       body: 'Drag to pan, scroll or pinch to zoom. Light cones and observers in the diagram follow the controls in the panel.' },
-    END,
+    THEORY_STEP, END,
   ],
 };

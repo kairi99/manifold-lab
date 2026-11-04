@@ -1,3 +1,4 @@
+import { richSvg } from './Tex';
 import { age, angularDiameterDistance, cosmicTime, type CosmoParams } from '../math/cosmology';
 
 const W = 360, H = 190, ML = 42, MR = 10, MT = 10, MB = 30;
@@ -16,8 +17,8 @@ function Plot({ pts, marks, xr, yr, xlab, ylab, xlog = false, title, xt, yt }: {
       <rect x={ML} y={MT} width={W - ML - MR} height={H - MT - MB} style={{ fill: 'none', stroke: 'var(--border)' }} />
       {xt.map((v) => <text key={`x${v}`} x={X(v)} y={H - MB + 13} textAnchor="middle" fontSize="10" style={{ fill: 'var(--muted)' }}>{v}</text>)}
       {yt.map((v) => <text key={`y${v}`} x={ML - 4} y={Y(v) + 3} textAnchor="end" fontSize="10" style={{ fill: 'var(--muted)' }}>{v}</text>)}
-      <text x={(ML + W - MR) / 2} y={H - 3} textAnchor="middle" fontSize="11" style={{ fill: 'var(--fg)' }}>{xlab}</text>
-      <text x={4} y={MT + 8} fontSize="11" style={{ fill: 'var(--fg)' }}>{ylab}</text>
+      <text x={(ML + W - MR) / 2} y={H - 3} textAnchor="middle" fontSize="11" style={{ fill: 'var(--fg)' }}>{richSvg(xlab)}</text>
+      <text x={4} y={MT + 8} fontSize="11" style={{ fill: 'var(--fg)' }}>{richSvg(ylab)}</text>
       <path d={d} style={{ fill: 'none', stroke: 'var(--accent)', strokeWidth: 1.8 }} />
       {marks.map((m) => (
         <g key={m.label}>
