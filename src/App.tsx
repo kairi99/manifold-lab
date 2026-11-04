@@ -1,14 +1,9 @@
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { useStore, type ModuleId } from './state/store';
 import 'katex/dist/katex.min.css';
-import { MetricScene, MetricPanel } from './modules/MetricModule';
-import { TransportScene, TransportPanel } from './modules/TransportModule';
-import { GeodesicScene, GeodesicPanel } from './modules/GeodesicModule';
-import { CurvatureScene, CurvaturePanel } from './modules/CurvatureModule';
-import { FieldsScene, FieldsPanel } from './modules/FieldsModule';
-import { RelativityScene, RelativityPanel } from './modules/RelativityModule';
+import { MODULE_VIEWS } from './modules/registry';
 import { Tour, TourButton, useFirstVisitTour } from './tour/Tour';
 import { SuggestedTasks } from './tour/SuggestedTasks';
 
@@ -25,6 +20,7 @@ export default function App() {
   const module = useStore((s) => s.module);
   const set = useStore((s) => s.set);
   useFirstVisitTour();
+  const { Scene, Panel } = MODULE_VIEWS[module];
   // on phones the tabs scroll sideways; keep the active one visible (also when the tour switches module)
   useEffect(() => { document.querySelector('.nav button.active')?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }, [module]);
   return (
@@ -43,11 +39,11 @@ export default function App() {
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
           <OrbitControls makeDefault />
-          {module === 'metric' ? <MetricScene /> : module === 'transport' ? <TransportScene /> : module === 'geodesics' ? <GeodesicScene /> : module === 'curvature' ? <CurvatureScene /> : module === 'fields' ? <FieldsScene /> : <RelativityScene />}
+          <Suspense fallback={null}><Scene /></Suspense>
         </Canvas>
       </main>
       <aside className="panel" data-tour="panel">
-        {module === 'metric' ? <MetricPanel /> : module === 'transport' ? <TransportPanel /> : module === 'geodesics' ? <GeodesicPanel /> : module === 'curvature' ? <CurvaturePanel /> : module === 'fields' ? <FieldsPanel /> : <RelativityPanel />}
+        <Suspense fallback={<p className="loading">Loading module…</p>}><Panel /></Suspense>
         <SuggestedTasks module={module} />
       </aside>
       <Tour />
