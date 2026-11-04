@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { useStore, type ModuleId } from './state/store';
@@ -24,6 +25,8 @@ export default function App() {
   const module = useStore((s) => s.module);
   const set = useStore((s) => s.set);
   useFirstVisitTour();
+  // on phones the tabs scroll sideways; keep the active one visible (also when the tour switches module)
+  useEffect(() => { document.querySelector('.nav button.active')?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }, [module]);
   return (
     <div className="app">
       <nav className="nav" data-tour="nav">

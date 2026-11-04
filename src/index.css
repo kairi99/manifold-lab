@@ -9,7 +9,17 @@ body { background: var(--bg); color: var(--fg); font-family: system-ui, sans-ser
 .nav button.active { border-color: var(--accent); color: var(--accent); }
 .canvas { position: relative; min-height: 0; }
 .panel { background: var(--panel); border-left: 1px solid var(--border); padding: 16px; overflow-y: auto; }
-@media (max-width: 900px) { .app { grid-template-columns: 1fr; grid-template-rows: auto 60vh auto; } }
+/* Phones / narrow windows: fixed-viewport column. Tabs scroll sideways, the 3D view keeps a fixed
+   share of the screen, and the panel scrolls on its own so the scene stays visible while editing. */
+@media (max-width: 900px) {
+  .app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+  .nav { flex: none; flex-direction: row; align-items: center; overflow-x: auto; padding: 8px; gap: 6px;
+         border-right: none; border-bottom: 1px solid var(--border); scrollbar-width: none; }
+  .nav h1 { font-size: 15px; margin: 0 6px 0 4px; white-space: nowrap; }
+  .nav button { flex: none; white-space: nowrap; padding: 6px 10px; font-size: 13px; }
+  .canvas { flex: 0 0 45vh; flex-basis: 45dvh; }
+  .panel { flex: 1 1 auto; min-height: 0; border-left: none; border-top: 1px solid var(--border); padding: 12px 16px; }
+}
 .field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; font-size: 13px; color: var(--muted); }
 .field select, .field input[type=range] { width: 100%; }
 .field select { background: var(--bg); color: var(--fg); border: 1px solid var(--border); border-radius: 6px; padding: 6px; }
