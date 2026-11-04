@@ -1,6 +1,8 @@
 import { test, expect } from './fixtures'
 
 test('phone: nav, canvas, panel stacked; panel scrolls, document does not', async ({ app }) => {
+  // modules are lazy chunks: measure only after the panel content has rendered
+  await expect(app.locator('.panel .readout').first()).toBeVisible()
   const box = async (s: string) => (await app.locator(s).boundingBox())!
   const nav = await box('.nav'), canvas = await box('.canvas'), panel = await box('.panel')
   expect(nav.y + nav.height).toBeLessThanOrEqual(canvas.y + 1)
