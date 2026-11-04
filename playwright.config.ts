@@ -30,7 +30,7 @@ export default defineConfig({
     },
     {
       name: 'phone',
-      testMatch: /layout\.spec\.ts/,
+      testMatch: /(layout|tour)\.spec\.ts/,
       use: { browserName: 'chromium', viewport: { width: 390, height: 844 }, hasTouch: true },
     },
   ],

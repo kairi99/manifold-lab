@@ -9,6 +9,7 @@ test('tour: first visit, step through, Escape closes, ? reopens', async ({ app }
   expect(total).toBeGreaterThan(5)
   for (let i = 1; i < total; i++) {
     await expect(dialog.locator('.tour-count')).toHaveText(`${i} / ${total}`)
+    await expect(dialog).toBeInViewport({ ratio: 1 }) // a card below the fold left the tour stuck
     await dialog.getByRole('button', { name: 'Next' }).click()
   }
   await expect(dialog.locator('.tour-count')).toHaveText(`${total} / ${total}`)

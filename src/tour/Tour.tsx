@@ -63,19 +63,28 @@ export function Tour() {
     if (open && step.module) set({ module: step.module });
   }, [open, i, step.module, set]);
 
-  // locate target
+  // locate target: lazy modules mount a few frames late, and targets low in a scrolling panel must be scrolled into view
   useLayoutEffect(() => {
     if (!open) return;
+    let tries = 0, raf = 0, scrolled = false;
     const measure = () => {
       const el = step.target ? document.querySelector(`[data-tour="${step.target}"]`) : null;
+      if (el && !scrolled) { scrolled = true; el.scrollIntoView({ block: 'nearest' }); }
       const r = el?.getBoundingClientRect();
       setRect(r && r.width > 0 && r.height > 0 ? r : null);
+      return !!el;
     };
-    measure();
-    const raf = requestAnimationFrame(measure); // after module switch renders
+    const poll = () => { if (!measure() && step.target && ++tries < 60) raf = requestAnimationFrame(poll); };
+    poll();
+    raf = requestAnimationFrame(poll);
     window.addEventListener('resize', measure);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', measure); };
+    window.addEventListener('scroll', measure, true);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', measure); window.removeEventListener('scroll', measure, true); };
   }, [open, i, step.target]);
+
+  // real card height, so the card can be kept fully on screen
+  const [cardH, setCardH] = useState(220);
+  useLayoutEffect(() => { if (open && card.current) setCardH(card.current.offsetHeight); });
 
   // remember the opener and give focus back to it on close
   const opener = useRef<HTMLElement | null>(null);
@@ -112,7 +121,8 @@ export function Tour() {
   // place card below target if room, else above; clamp to viewport
   const cardStyle: React.CSSProperties = rect
     ? {
-        top: rect.bottom + 12 + 220 < window.innerHeight ? rect.bottom + 12 : Math.max(8, rect.top - 12 - 220),
+        top: Math.max(8, Math.min(window.innerHeight - cardH - 8,
+          rect.bottom + 12 + cardH < window.innerHeight ? rect.bottom + 12 : rect.top - 12 - cardH)),
         left: Math.min(Math.max(8, rect.left), Math.max(8, window.innerWidth - 348)),
       }
     : { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
