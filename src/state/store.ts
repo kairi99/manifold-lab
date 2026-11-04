@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { Vec2 } from '../math/types';
 
-export type ModuleId = 'metric' | 'transport';
+export type ModuleId = 'metric' | 'transport' | 'geodesics';
 export type PathKind = 'latitude' | 'triangle' | 'free';
 
 export interface AppState {
@@ -18,6 +18,12 @@ export interface AppState {
   progress: number; // 0..1 along path
   playing: boolean;
   tourOpen: boolean;
+  // geodesics
+  geoCount: number; // geodesics in the fan (1 = single)
+  geoSpread: number; // total fan opening angle, radians
+  geoLength: number; // arc length to integrate
+  geoProgress: number; // 0..1 reveal along the length
+  geoPlaying: boolean;
   set: (p: Partial<AppState>) => void;
 }
 
@@ -32,5 +38,10 @@ export const useStore = create<AppState>((set) => ({
   progress: 0,
   playing: false,
   tourOpen: false,
+  geoCount: 9,
+  geoSpread: Math.PI / 6,
+  geoLength: Math.PI,
+  geoProgress: 1,
+  geoPlaying: false,
   set: (p) => set(p),
 }));

@@ -4,12 +4,14 @@ import { useStore, type ModuleId } from './state/store';
 import 'katex/dist/katex.min.css';
 import { MetricScene, MetricPanel } from './modules/MetricModule';
 import { TransportScene, TransportPanel } from './modules/TransportModule';
+import { GeodesicScene, GeodesicPanel } from './modules/GeodesicModule';
 import { Tour, TourButton, useFirstVisitTour } from './tour/Tour';
 import { SuggestedTasks } from './tour/SuggestedTasks';
 
 const MODULES: { id: ModuleId; label: string }[] = [
   { id: 'metric', label: 'Metric & Tangent Spaces' },
   { id: 'transport', label: 'Parallel Transport' },
+  { id: 'geodesics', label: 'Geodesics' },
 ];
 
 export default function App() {
@@ -21,7 +23,7 @@ export default function App() {
       <nav className="nav" data-tour="nav">
         <h1>Manifold Lab</h1>
         {MODULES.map((m) => (
-          <button key={m.id} className={m.id === module ? 'active' : ''} onClick={() => set({ module: m.id, playing: false })}>
+          <button key={m.id} className={m.id === module ? 'active' : ''} onClick={() => set({ module: m.id, playing: false, geoPlaying: false })}>
             {m.label}
           </button>
         ))}
@@ -32,11 +34,11 @@ export default function App() {
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
           <OrbitControls makeDefault />
-          {module === 'metric' ? <MetricScene /> : <TransportScene />}
+          {module === 'metric' ? <MetricScene /> : module === 'transport' ? <TransportScene /> : <GeodesicScene />}
         </Canvas>
       </main>
       <aside className="panel" data-tour="panel">
-        {module === 'metric' ? <MetricPanel /> : <TransportPanel />}
+        {module === 'metric' ? <MetricPanel /> : module === 'transport' ? <TransportPanel /> : <GeodesicPanel />}
         <SuggestedTasks module={module} />
       </aside>
       <Tour />

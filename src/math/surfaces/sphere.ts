@@ -19,6 +19,16 @@ export function makeSphere(R = 1): Surface {
       ];
     },
     gaussK: () => 1 / (R * R),
+    // True chart range is θ∈(0,π); the eps-clipped domain is for meshing only.
+    chartWrap: (st) => {
+      let [t, p] = st.uv;
+      let [tv, pv] = st.vel;
+      if (t < 0) { t = -t; tv = -tv; p += Math.PI; }
+      else if (t > Math.PI) { t = 2 * Math.PI - t; tv = -tv; p += Math.PI; }
+      const tp = 2 * Math.PI;
+      p -= tp * Math.floor(p / tp);
+      return { uv: [t, p], vel: [tv, pv] };
+    },
     latex: {
       param: String.raw`\mathbf r(\theta,\varphi)=R(\sin\theta\cos\varphi,\ \sin\theta\sin\varphi,\ \cos\theta)`,
       metric: String.raw`g=\begin{pmatrix}R^2&0\\0&R^2\sin^2\theta\end{pmatrix}`,

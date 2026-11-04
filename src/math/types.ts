@@ -29,6 +29,8 @@ export interface Surface {
   christoffel(u: number, v: number): Christoffel;
   gaussK(u: number, v: number): number;
   latex: { param: string; metric: string; christoffel: string };
+  /** see ChartWrap; absent → periodic coords wrap, others stop at the boundary */
+  chartWrap?: ChartWrap;
 }
 
 /** A closed or open curve in parameter space, t in [0,1]. */
@@ -42,3 +44,20 @@ export interface TransportSample {
   uv: Vec2;
   V: Vec2; // components V^u, V^v
 }
+
+/** Point + coordinate velocity (u̇, v̇) of a curve in the chart. */
+export interface ChartState { uv: Vec2; vel: Vec2 }
+
+export interface GeodesicSample { s: number; uv: Vec2; vel: Vec2 }
+export interface GeodesicPath {
+  samples: GeodesicSample[];
+  /** why integration ended early, if it did */
+  stopped?: 'boundary';
+}
+
+/**
+ * Optional chart identification for surfaces whose chart has coordinate singularities.
+ * Given a state that has left the nominal domain, return the same point/velocity in-domain,
+ * or null if the curve has truly left the surface. Sphere: (θ,φ) → (−θ, φ+π) through a pole.
+ */
+export type ChartWrap = (st: ChartState) => ChartState | null;

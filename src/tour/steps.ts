@@ -12,9 +12,9 @@ export interface TourStep {
 
 export const STEPS: TourStep[] = [
   { target: null, title: 'Welcome to Manifold Lab',
-    body: 'Explore surfaces by seeing their geometry: tangent spaces $T_pM$, the metric $g_{ij}$, Christoffel symbols $\\Gamma^k_{ij}$ and parallel transport, with live equations that update as you move. This tour takes about a minute and you can skip it any time.' },
+    body: 'Explore surfaces by seeing their geometry: tangent spaces $T_pM$, the metric $g_{ij}$, Christoffel symbols $\\Gamma^k_{ij}$, parallel transport and geodesics, with live equations that update as you move. This tour takes about a minute and you can skip it any time.' },
   { target: 'nav', title: 'Modules',
-    body: 'Pick a module here. "Metric & tangent spaces" shows how lengths and angles are measured at a point. "Parallel transport" carries a vector around a loop and shows how it turns.' },
+    body: 'Pick a module here. "Metric & tangent spaces" shows how lengths and angles are measured at a point. "Parallel transport" carries a vector around a loop and shows how it turns. "Geodesics" shoots the straightest possible curves from a point.' },
   { target: 'surface-picker', title: 'Choose a surface',
     body: 'Switch between surfaces such as the sphere, torus and saddle. The Gaussian curvature $K$, and so the equations, change with the surface.' },
   { target: 'canvas', title: 'The 3D view', module: 'metric',
@@ -27,6 +27,8 @@ export const STEPS: TourStep[] = [
     body: 'Choose a loop (latitude circle, triangle, or your own clicked points). Press play, or scrub the slider to step through the transport by hand.' },
   { target: 'holonomy', title: 'Holonomy',
     body: 'When the loop closes, the angle between the starting and returning vector is the holonomy. For a loop bounding a region $R$ it equals $\\iint_R K\\,dA$ (Gauss–Bonnet).' },
+  { target: 'nav', title: 'Geodesics', module: 'geodesics',
+    body: 'The third module integrates $\\ddot u^k + \\Gamma^k_{ij}\\,\\dot u^i \\dot u^j = 0$ from a point $p$ with initial velocity $V$. Fan several geodesics out and watch positive $K$ refocus them and negative $K$ spread them.' },
   { target: null, title: 'You are set',
     body: 'Try the suggested tasks in each module. Press ? at any time to reopen this tour.' },
 ];

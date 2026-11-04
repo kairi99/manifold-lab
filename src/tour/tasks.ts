@@ -39,3 +39,22 @@ export const TASKS: Task[] = [
 ];
 
 export const tasksFor = (m: ModuleId) => TASKS.filter((t) => t.module === m);
+
+TASKS.push(
+  { id: 'g-conjugate', module: 'geodesics',
+    prompt: 'On the sphere, set length to $1\\pi$ and fan angle to $60^\\circ$. Where do the geodesics meet?',
+    hint: 'Watch the marked point $-p$ as playback reaches $s=\\pi$.',
+    answer: 'All geodesics from $p$ reconverge at the antipode $-p$ at $s=\\pi$: a conjugate point. The Jacobi field is $J(s)=\\sin(\\sqrt K\\,s)/\\sqrt K$ ($=\\sin s$ for the unit sphere), which vanishes again at $s=\\pi/\\sqrt K$.' },
+  { id: 'g-saddle', module: 'geodesics',
+    prompt: 'Choose the saddle and play a fan. Do the geodesics converge or spread?',
+    hint: 'Compare the spread readout with the sphere case. Sign of $K$?',
+    answer: 'They diverge: with $K<0$ the Jacobi equation $J\'\'=-KJ$ gives $(|J|)\'\'\\ge 0$, so $|J|$ is convex, grows at least linearly, and never returns to zero: no conjugate points.' },
+  { id: 'g-torus', module: 'geodesics',
+    prompt: 'On the torus, launch a geodesic at a small angle to the outer equator ($v=0$). How far into the tube does it go?',
+    hint: 'Clairaut: $c=(R+r\\cos v)^2\\dot u$ is conserved. Where does $\\dot u$ reach its largest allowed value?',
+    answer: 'It oscillates about the outer equator. Since $|\\dot u|\\le 1/(R+r\\cos v)$ forces $|c|\\le R+r\\cos v$, it turns where $R+r\\cos v=|c|$.' },
+  { id: 'g-pole', module: 'geodesics',
+    prompt: 'On the sphere, aim the direction handle along a meridian. What happens at the pole?',
+    hint: 'A meridian is a great circle. Is the pole special on the sphere itself?',
+    answer: 'The geodesic passes straight through the pole. The singularity is only in the $(\\theta,\\varphi)$ chart ($g_{\\varphi\\varphi}=\\sin^2\\theta=0$); the surface is smooth there with $K=1$.' },
+);
