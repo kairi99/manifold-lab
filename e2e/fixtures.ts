@@ -2,18 +2,23 @@ import { test as base, expect, type Locator, type Page } from '@playwright/test'
 
 export { expect }
 
-type Opts = { tourSeen: boolean }
+type Opts = { tourSeen: boolean; start: string }
 
-/** Every test fails on console errors or uncaught page errors; the tour is pre-dismissed unless `tourSeen` is false. */
+/** Every test fails on console errors or uncaught page errors. Opens `start` (default: the metric module, skipping
+ *  the start page); every module's guide is pre-dismissed unless `tourSeen` is false. */
 export const test = base.extend<Opts & { app: Page }>({
   tourSeen: [true, { option: true }],
-  app: async ({ page, tourSeen }, use) => {
+  start: ['/#metric', { option: true }],
+  app: async ({ page, tourSeen, start }, use) => {
     const errors: string[] = []
     page.on('console', (m) => { if (m.type() === 'error') errors.push(`console: ${m.text()}`) })
     page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`))
-    if (tourSeen) await page.addInitScript(() => localStorage.setItem('manifoldlab.tourSeen', '1'))
-    await page.goto('/')
-    await expect(page.locator('.canvas canvas')).toBeVisible()
+    if (tourSeen) await page.addInitScript(() => {
+      for (const m of ['metric', 'transport', 'geodesics', 'curvature', 'fields', 'relativity', 'spacetime', 'cosmos'])
+        localStorage.setItem(`manifoldlab.tourSeen.${m}`, '1')
+    })
+    await page.goto(start)
+    if (start.includes('#')) await expect(page.locator('.canvas canvas')).toBeVisible()
     await use(page)
     expect(errors).toEqual([])
   },

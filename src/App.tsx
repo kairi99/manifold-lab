@@ -1,7 +1,7 @@
 import { Suspense, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { useStore, type ModuleId } from './state/store';
+import { useStore } from './state/store';
 import 'katex/dist/katex.min.css';
 import { MODULE_VIEWS } from './modules/registry';
 import { Tour, TourButton, useFirstVisitTour } from './tour/Tour';
@@ -9,35 +9,38 @@ import { SuggestedTasks } from './tour/SuggestedTasks';
 import { CanvasAccess, KEYS_HELP } from './a11y/CanvasAccess';
 import { WebGLGuard } from './scene/WebGLGuard';
 import { FitCamera } from './scene/FitCamera';
-import { SURFACE_MODULES } from './state/modules';
-
-const MODULES: { id: ModuleId; label: string }[] = [
-  { id: 'metric', label: 'Metric & Tangent Spaces' },
-  { id: 'transport', label: 'Parallel Transport' },
-  { id: 'geodesics', label: 'Geodesics' },
-  { id: 'curvature', label: 'Curvature' },
-  { id: 'fields', label: 'Vector Fields & TM' },
-  { id: 'relativity', label: 'Relativity: Schwarzschild & Kerr' },
-  { id: 'spacetime', label: 'Curvature in 4D' },
-  { id: 'cosmos', label: 'Causal Structure & Cosmology' },
-];
+import { SURFACE_MODULES, MODULES, moduleFromHash } from './state/modules';
+import { Home } from './home/Home';
 
 export default function App() {
   const module = useStore((s) => s.module);
   const set = useStore((s) => s.set);
+  const onHome = useStore((s) => s.onHome);
   useFirstVisitTour();
+  // the URL hash is the source of truth: '' = start page, '#metric' = that module (back button works)
+  useEffect(() => {
+    const sync = () => {
+      const m = moduleFromHash(location.hash), s = useStore.getState();
+      if (!m) set({ onHome: true, tourOpen: false });
+      else if (s.onHome || s.module !== m) set({ module: m, onHome: false, playing: false, geoPlaying: false });
+    };
+    sync();
+    window.addEventListener('hashchange', sync);
+    return () => window.removeEventListener('hashchange', sync);
+  }, [set]);
   // honour prefers-reduced-motion: nothing animates until the user asks
   useEffect(() => { if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) set({ flowPlaying: false, grPlaying: false, stPlaying: false, csPlaying: false }); }, [set]);
   const { Scene, Panel } = MODULE_VIEWS[module];
-  // on phones the tabs scroll sideways; keep the active one visible (also when the tour switches module)
-  useEffect(() => { document.querySelector('.nav button.active')?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }, [module]);
+  // on phones the tabs scroll sideways; keep the active one visible
+  useEffect(() => { document.querySelector('.nav button.active')?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }, [module, onHome]);
+  if (onHome) return <Home />;
   return (
     <div className="app">
       <a className="skip" href="#controls" onClick={(e) => { e.preventDefault(); document.getElementById('controls')?.focus(); }}>Skip to controls</a>
       <nav className="nav" data-tour="nav" aria-label="Modules">
-        <h1>Manifold Lab</h1>
+        <h1><a href="#" className="home-link" title="Back to the start page">Manifold Lab</a></h1>
         {MODULES.map((m) => (
-          <button key={m.id} className={m.id === module ? 'active' : ''} aria-current={m.id === module ? 'page' : undefined} onClick={() => set({ module: m.id, playing: false, geoPlaying: false })}>
+          <button key={m.id} className={m.id === module ? 'active' : ''} aria-current={m.id === module ? 'page' : undefined} onClick={() => { location.hash = m.id; }}>
             {m.label}
           </button>
         ))}

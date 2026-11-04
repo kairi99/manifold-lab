@@ -34,7 +34,7 @@ export function CosmosPanel() {
   const view = useStore((s) => s.csView), set = useStore((s) => s.set);
   return (
     <div>
-      <div role="group" aria-label="View" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6, marginBottom: 12 }}>
+      <div data-tour="views" role="group" aria-label="View" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6, marginBottom: 12 }}>
         {VIEWS.map(([id, t]) => (
           <button key={id} aria-pressed={view === id} onClick={() => set({ csView: id })}
             style={{ padding: '6px', background: view === id ? 'var(--accent)' : 'var(--bg)', color: view === id ? 'var(--bg)' : 'var(--fg)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer' }}>

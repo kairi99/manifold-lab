@@ -1,21 +1,24 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useStore } from '../state/store';
 import { MathText } from '../panels/Tex';
-import { STEPS } from './steps';
+import { TOURS } from './steps';
 import './tour.css';
 
-const SEEN = 'manifoldlab.tourSeen';
+const seenKey = (m: string) => `manifoldlab.tourSeen.${m}`;
 
-function markSeen() {
-  try { localStorage.setItem(SEEN, '1'); } catch { /* ignore */ }
+function markSeen(m: string) {
+  try { localStorage.setItem(seenKey(m), '1'); } catch { /* ignore */ }
 }
 
+/** Opens a module's own guide the first time that module is visited. */
 export function useFirstVisitTour() {
+  const module = useStore((s) => s.module), onHome = useStore((s) => s.onHome);
   useEffect(() => {
+    if (onHome) return;
     let seen = false;
-    try { seen = localStorage.getItem(SEEN) !== null; } catch { /* treat as unseen */ }
-    if (!seen) useStore.getState().set({ tourOpen: true });
-  }, []);
+    try { seen = localStorage.getItem(seenKey(module)) !== null; } catch { /* treat as unseen */ }
+    useStore.getState().set({ tourOpen: !seen });
+  }, [module, onHome]);
 }
 
 function isTyping(t: EventTarget | null) {
@@ -44,24 +47,22 @@ export function TourButton() {
 
 export function Tour() {
   const open = useStore((s) => s.tourOpen);
+  const module = useStore((s) => s.module);
   const set = useStore((s) => s.set);
+  const STEPS = TOURS[module];
   const [i, setI] = useState(0);
+  useEffect(() => setI(0), [module]);
   const [rect, setRect] = useState<DOMRect | null>(null);
   const card = useRef<HTMLDivElement>(null);
-  const step = STEPS[i];
+  const step = STEPS[Math.min(i, STEPS.length - 1)];
 
-  const close = () => { markSeen(); set({ tourOpen: false }); setI(0); };
+  const close = () => { markSeen(module); set({ tourOpen: false }); setI(0); };
   const go = (d: number) => {
     const n = i + d;
     if (n < 0) return;
     if (n >= STEPS.length) return close();
     setI(n);
   };
-
-  // switch module for the step
-  useEffect(() => {
-    if (open && step.module) set({ module: step.module });
-  }, [open, i, step.module, set]);
 
   // locate target: lazy modules mount a few frames late, and targets low in a scrolling panel must be scrolled into view
   useLayoutEffect(() => {

@@ -167,7 +167,7 @@ export function RelativityPanel() {
 
   return (
     <div>
-      <div role="group" aria-label="View" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginBottom: 12 }}>
+      <div data-tour="views" role="group" aria-label="View" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginBottom: 12 }}>
         {VIEWS.map(([id, t]) => (
           <button key={id} aria-pressed={view === id} onClick={() => set({ grView: id })}
             style={{ padding: '6px', background: view === id ? 'var(--accent)' : 'var(--bg)', color: view === id ? 'var(--bg)' : 'var(--fg)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer' }}>

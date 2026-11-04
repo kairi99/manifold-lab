@@ -3,12 +3,15 @@ import type { Vec2 } from '../math/types';
 import { getSurface, setCustomSpec } from '../math';
 import { compileSpec, type CustomSpec } from '../math/surfaces/custom';
 import { DEFAULT_CUSTOM } from '../math/surfaces/presets';
+import { moduleFromHash } from './modules';
 
 export type ModuleId = 'metric' | 'transport' | 'geodesics' | 'curvature' | 'fields' | 'relativity' | 'spacetime' | 'cosmos';
 export type PathKind = 'latitude' | 'triangle' | 'free';
 
 export interface AppState {
   module: ModuleId;
+  /** start page shown instead of a module; mirrors an empty URL hash */
+  onHome: boolean;
   surfaceId: string; // 'sphere' | 'torus' | 'saddle' | 'paraboloid' | 'custom'
   customSpec: CustomSpec; // the user's surface, persisted under CUSTOM_KEY
   /** current point p in parameter coords */
@@ -119,8 +122,11 @@ export function applyCustomSpec(spec: CustomSpec, reset = true) {
     : { customSpec: spec });
 }
 
+const startModule = typeof location === 'undefined' ? null : moduleFromHash(location.hash);
+
 export const useStore = create<AppState>((set) => ({
-  module: 'metric',
+  module: startModule ?? 'metric',
+  onHome: startModule === null,
   surfaceId: 'sphere',
   customSpec: initialSpec,
   uv: [Math.PI / 3, 0.5],

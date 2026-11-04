@@ -18,7 +18,7 @@ export function SpacetimePanel() {
   const v = useStore((s) => s.stView), set = useStore((s) => s.set);
   return (
     <div>
-      <Seg label="View" value={v} items={VIEWS} onPick={(id) => set({ stView: id, stProgress: 0, stPlaying: id !== 'tensors' && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches })} />
+      <div data-tour="views"><Seg label="View" value={v} items={VIEWS} onPick={(id) => set({ stView: id, stProgress: 0, stPlaying: id !== 'tensors' && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches })} /></div>
       {v === 'tensors' ? <TensorsPanel /> : v === 'tidal' ? <TidalPanel /> : <GWPanel />}
     </div>
   );
