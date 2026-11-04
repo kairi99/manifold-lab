@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { Vec2 } from '../math/types';
 
-export type ModuleId = 'metric' | 'transport' | 'geodesics';
+export type ModuleId = 'metric' | 'transport' | 'geodesics' | 'curvature';
 export type PathKind = 'latitude' | 'triangle' | 'free';
 
 export interface AppState {
@@ -24,6 +24,9 @@ export interface AppState {
   geoLength: number; // arc length to integrate
   geoProgress: number; // 0..1 reveal along the length
   geoPlaying: boolean;
+  // curvature
+  curvRho: number; // geodesic-circle radius
+  curvShow: { heatmap: boolean; principal: boolean; circle: boolean };
   set: (p: Partial<AppState>) => void;
 }
 
@@ -43,5 +46,7 @@ export const useStore = create<AppState>((set) => ({
   geoLength: Math.PI,
   geoProgress: 1,
   geoPlaying: false,
+  curvRho: 0.5,
+  curvShow: { heatmap: true, principal: true, circle: true },
   set: (p) => set(p),
 }));

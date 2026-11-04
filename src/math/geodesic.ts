@@ -6,7 +6,11 @@ export function geodesicAccel(s: Surface, uv: Vec2, vel: Vec2): Vec2 {
   const out: Vec2 = [0, 0];
   for (let k = 0; k < 2; k++) {
     let a = 0;
-    for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) a += G[k][i][j] * vel[i] * vel[j];
+    for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) {
+      const w = vel[i] * vel[j];
+      // Γ may be infinite at a chart singularity (cot θ at a pole); a zero velocity component contributes nothing there
+      if (w !== 0) a += G[k][i][j] * w;
+    }
     out[k] = -a;
   }
   return out;
@@ -23,7 +27,10 @@ export function unitVelocity(s: Surface, uv: Vec2, angle: number): Vec2 {
   const e1: Vec2 = [1 / Math.sqrt(g[0][0]), 0];
   const wn = Math.sqrt(g[1][1] - (g[0][1] * g[0][1]) / g[0][0]);
   const e2: Vec2 = [-g[0][1] / g[0][0] / wn, 1 / wn];
-  const c = Math.cos(angle), sn = Math.sin(angle);
+  // snap cos/sin round-off (e.g. sin π ≈ 1.2e-16) to 0: on the sphere a 1e-16 φ̇ turns an exact meridian
+  // into a pole near-miss with φ̇ = c/sin²θ ≈ 1e16, which overflows RK4 at the pole
+  const snap = (x: number) => (Math.abs(x) < 1e-12 ? 0 : x);
+  const c = snap(Math.cos(angle)), sn = snap(Math.sin(angle));
   return [c * e1[0] + sn * e2[0], c * e1[1] + sn * e2[1]];
 }
 
@@ -51,6 +58,8 @@ function rk4(s: Surface, y: State, h: number): State {
 }
 
 const MAX_COORD_STEP = 0.02;
+const STEP_TOL = 1e-10;
+const MIN_STEP = 1e-13;
 
 export function geodesic(s: Surface, uv0: Vec2, vel0: Vec2, length: number, ds = 0.01): GeodesicPath {
   const n0 = speed(s, uv0, vel0);
@@ -74,8 +83,25 @@ export function geodesic(s: Surface, uv0: Vec2, vel0: Vec2, length: number, ds =
     const target = Math.min(length, (n + 1) * ds);
     while (target - arc > 1e-12) {
       const cmax = Math.max(Math.abs(y[2]), Math.abs(y[3]), 1e-12);
-      const h = Math.min(target - arc, Math.max(MAX_COORD_STEP / cmax, 1e-9));
-      let next = rk4(s, y, h);
+      let h = Math.min(target - arc, MAX_COORD_STEP / cmax);
+      // Step-doubling error control: near a chart singularity (sphere pole) φ̈ ~ c/θ³, so a
+      // displacement-only limit lets RK4 stages jump across the pole. Halve until one step
+      // and two half steps agree; NaN/Infinity counts as failure.
+      let next: State;
+      for (;;) {
+        const full = rk4(s, y, h);
+        const half = rk4(s, rk4(s, y, h / 2), h / 2);
+        let err = 0;
+        for (let i = 0; i < 4; i++) {
+          const e = Math.abs(half[i] - full[i]) / (i < 2 ? 1 : 1 + Math.abs(half[i]));
+          err = Number.isFinite(e) ? Math.max(err, e) : Infinity;
+        }
+        if (err <= STEP_TOL || h <= MIN_STEP) {
+          next = half.map((x, i) => x + (x - full[i]) / 15) as State; // Richardson: 5th order
+          break;
+        }
+        h /= 2;
+      }
       if (!inside(next)) {
         const w = s.chartWrap?.({ uv: [next[0], next[1]], vel: [next[2], next[3]] });
         if (s.chartWrap) {

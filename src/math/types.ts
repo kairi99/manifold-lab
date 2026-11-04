@@ -61,3 +61,35 @@ export interface GeodesicPath {
  * or null if the curve has truly left the surface. Sphere: (θ,φ) → (−θ, φ+π) through a pole.
  */
 export type ChartWrap = (st: ChartState) => ChartState | null;
+
+/** Riemann tensor of a 2-surface, riemann[k][l][i][j] = R^k_{lij} (convention R(∂_i,∂_j)∂_l = R^k_{lij} ∂_k). */
+export type Riemann2 = number[][][][];
+
+export interface CurvatureAt {
+  /** intrinsic: from g only, K = R_{1212} / det g */
+  Kintrinsic: number;
+  /** extrinsic: det(S) = det(II)/det(I) = κ1 κ2 */
+  Kextrinsic: number;
+  /** mean curvature H = (κ1 + κ2)/2, sign w.r.t. unit normal ∂_u × ∂_v */
+  H: number;
+  /** principal curvatures κ1 ≤ κ2 */
+  kappa: Vec2;
+  /** principal directions as tangent components (unit in g), matching kappa */
+  dirs: [Vec2, Vec2];
+  /** second fundamental form L_ij = ∂_i∂_j r · n */
+  II: Mat2;
+  riemann: Riemann2;
+  /** Ricci tensor R_ij = R^k_{ikj}; equals K g_ij in 2D */
+  ricci: Mat2;
+  /** scalar curvature g^ij R_ij = 2K in 2D */
+  scalar: number;
+}
+
+export interface GeodesicCircle {
+  rho: number;
+  /** closed polyline of geodesic-circle points in R^3 */
+  points: Vec3[];
+  circumference: number;
+  /** Bertrand–Diquet–Puiseux estimate K ≈ 3(2πρ − C)/(πρ³) */
+  Kestimate: number;
+}

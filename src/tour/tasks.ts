@@ -58,3 +58,22 @@ TASKS.push(
     hint: 'A meridian is a great circle. Is the pole special on the sphere itself?',
     answer: 'The geodesic passes straight through the pole. The singularity is only in the $(\\theta,\\varphi)$ chart ($g_{\\varphi\\varphi}=\\sin^2\\theta=0$); the surface is smooth there with $K=1$.' },
 );
+
+TASKS.push(
+  { id: 'c-torus', module: 'curvature',
+    prompt: 'On the torus, move p over the outer part, the inner part, and the top and bottom circles ($v=\\pm\\pi/2$). What is the sign of $K$?',
+    hint: 'Watch the heatmap colour and the intrinsic K readout.',
+    answer: '$K>0$ on the outer half ($|v|<\\pi/2$), $K<0$ on the inner half, and $K=0$ on the top and bottom circles $v=\\pm\\pi/2$, where $\\cos v=0$.' },
+  { id: 'c-saddle', module: 'curvature',
+    prompt: 'On the saddle, put p at the origin. Read $H$, $\\kappa_1$, $\\kappa_2$.',
+    hint: 'Compare $H=(\\kappa_1+\\kappa_2)/2$ with the principal curvatures.',
+    answer: '$\\kappa_1=-1$, $\\kappa_2=1$, so $H=0$: the saddle is minimal at the origin, and $K=\\kappa_1\\kappa_2=-1<0$.' },
+  { id: 'c-sphere', module: 'curvature',
+    prompt: 'On the sphere, check several points, then compare the geodesic circle circumference $C$ with $2\\pi\\rho$.',
+    hint: 'Is $\\kappa_1=\\kappa_2$? Try $\\rho=1$.',
+    answer: 'Every point is umbilic ($\\kappa_1=\\kappa_2=1$, $K=1$). A geodesic circle has $C=2\\pi\\sin\\rho<2\\pi\\rho$, matching $1-K\\rho^2/6$ for small $\\rho$.' },
+  { id: 'c-egregium', module: 'curvature',
+    prompt: 'Theorema Egregium: bending a flat sheet into a cylinder keeps $K$. Use the intrinsic and extrinsic numbers on each surface to see what is preserved.',
+    hint: 'Compare K intrinsic and K extrinsic and their difference at several points.',
+    answer: 'The two values agree everywhere (difference ~0), although II changes with the embedding. $K$ depends only on $g$, so an isometric bending (flat to cylinder) keeps $K=0$ even though $\\kappa_1\\ne0$.' },
+);

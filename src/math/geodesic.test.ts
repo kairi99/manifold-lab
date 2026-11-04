@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { clairaut, geodesic, speed, unitVelocity } from './geodesic';
+import { clairaut, geodesic, geodesicAccel, speed, unitVelocity } from './geodesic';
 import { cross, dot, norm, normalize, add, scale } from './vec';
 import { makeSphere, makeTorus, saddle } from './surfaces';
 import type { Vec2 } from './types';
@@ -60,5 +60,26 @@ describe('geodesic', () => {
     const p = geodesic(saddle, [0, 0], unitVelocity(saddle, [0, 0], 0), 5);
     for (const smp of p.samples) expect(Math.abs(smp.uv[1])).toBeLessThan(1e-9);
     expect(p.stopped).toBe('boundary');
+  });
+});
+
+describe('pole regression', () => {
+  it('geodesicAccel is finite exactly at a pole for a meridian (cot θ · 0)', () => {
+    const a = geodesicAccel(makeSphere(), [0, 0.3], [1, 0]);
+    expect(Number.isFinite(a[0]) && Number.isFinite(a[1])).toBe(true);
+  });
+});
+
+describe('near-pole accuracy', () => {
+  it('geodesics grazing the pole stay on their great circle', () => {
+    const s = makeSphere();
+    const uv: Vec2 = [1.2, 0.5];
+    for (const eps of [0, 1e-12, 1e-9, 1e-6, 1e-4, 1e-3]) {
+      const p = geodesic(s, uv, unitVelocity(s, uv, Math.PI + eps), 2);
+      const end = p.samples[p.samples.length - 1];
+      // heading north from θ=1.2 for arc 2 passes (near) the pole and ends at θ ≈ 0.8 on the far side
+      expect(Number.isFinite(end.uv[0] + end.uv[1])).toBe(true);
+      expect(Math.abs(end.uv[0] - 0.8)).toBeLessThan(1e-5);
+    }
   });
 });
