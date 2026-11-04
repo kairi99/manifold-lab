@@ -11,8 +11,9 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:5174',
     trace: 'on-first-retry',
-    // CI runners have no GPU: force Firefox's software WebGL (Mesa llvmpipe) so the 3D canvas exists
-    launchOptions: { firefoxUserPrefs: { 'webgl.force-enabled': true, 'webgl.disabled': false } },
+    // CI runners have no GPU and headless Firefox gets no WebGL there; Chromium's bundled SwiftShader
+    // renders WebGL in software on any machine, so the 3D canvas exists everywhere
+    launchOptions: { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] },
   },
   webServer: {
     // test the production bundle: the dev server re-optimizes deps on a cold start and reloads mid-test
@@ -25,12 +26,12 @@ export default defineConfig({
     {
       name: 'desktop',
       testIgnore: /layout\.spec\.ts/,
-      use: { browserName: 'firefox', viewport: { width: 1400, height: 850 } },
+      use: { browserName: 'chromium', viewport: { width: 1400, height: 850 } },
     },
     {
       name: 'phone',
       testMatch: /layout\.spec\.ts/,
-      use: { browserName: 'firefox', viewport: { width: 390, height: 844 }, hasTouch: true },
+      use: { browserName: 'chromium', viewport: { width: 390, height: 844 }, hasTouch: true },
     },
   ],
 })
