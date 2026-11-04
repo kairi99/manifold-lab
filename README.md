@@ -1,32 +1,29 @@
-# React + TypeScript + Vite
+# Manifold Lab
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+An interactive explorer for differential geometry and general relativity. Every 3D object on screen is tied to the equations that govern it: drag a point or a vector and the metric, Christoffel symbols, curvature and conserved quantities update live.
 
-Currently, two official plugins are available:
+**Live site:** https://kairi99.github.io/manifold-lab/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Modules
 
-## React Compiler
+- **Metric & tangent spaces** — tangent plane $T_pM$, coordinate basis $\partial_i$, the induced metric $g_{ij}$ and Christoffel symbols at a draggable point.
+- **Parallel transport** — RK4 transport of a vector around latitude, lune and hand-drawn loops; holonomy compared with $\iint K\,dA$ (Gauss–Bonnet).
+- **Geodesics** — fans of geodesics, conjugate points, Clairaut's constant, geodesic deviation.
+- **Curvature** — Gaussian-curvature heatmap, Theorema Egregium (intrinsic $R_{1212}/\det g$ vs extrinsic $\kappa_1\kappa_2$), principal directions, geodesic circles.
+- **Vector fields & the tangent bundle** — flows, Killing fields, Lie brackets ($[L_x, L_y] = -L_z$), Poincaré–Hopf.
+- **Relativity: Schwarzschild** — Flamm's paraboloid, timelike and null geodesics, effective potential, perihelion precession and light bending, with real objects (Mercury, S2 around Sgr A\*, the Hulse–Taylor pulsar, GPS, M87\* and Sgr A\* shadows).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Surfaces: sphere, torus, saddle, paraboloid. All closed-form geometry is checked against finite differences and known results in the test suite.
 
-## Expanding the Oxlint configuration
+A skippable guided tour opens on the first visit; press `?` to reopen it.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Development
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```sh
+npm install
+npm run dev      # http://localhost:5173
+npm test         # vitest
+npm run build
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Built with React, TypeScript, Vite, react-three-fiber and KaTeX. Pushing to `main` deploys to GitHub Pages through `.github/workflows/deploy.yml`.
