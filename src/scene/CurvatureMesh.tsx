@@ -37,7 +37,8 @@ export default function CurvatureMesh({ surface: s, heatmap, onPointerDown }: Cu
         const K = s.gaussK(du[0] + (i / nu) * (du[1] - du[0]), dv[0] + (j / nv) * (dv[1] - dv[0]));
         // constant K: one warm colour (grey if flat)
         if (constantK(r)) c.copy(Math.abs(r.max) < 1e-9 ? MID : r.max > 0 ? WARM : NEG);
-        else curvatureColor(K, scale, c);
+        else if (Number.isFinite(K)) curvatureColor(K, scale, c);
+        else c.copy(MID); // degenerate chart point (custom surfaces)
         c.toArray(col, (j * (nu + 1) + i) * 3);
       }
     g.setAttribute('color', new THREE.BufferAttribute(col, 3));

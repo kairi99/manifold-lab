@@ -29,12 +29,29 @@ export const circleLoop = (rho: number): ParamCurve => ({
   velocity: (t) => [-2 * Math.PI * rho * Math.sin(2 * Math.PI * t), 2 * Math.PI * rho * Math.cos(2 * Math.PI * t)],
 });
 
+/**
+ * Custom surfaces: a closed coordinate loop when a coordinate is periodic (position f across the other range),
+ * else an ellipse about the domain centre with radii f x half-extent.
+ */
+export function customLoop(s: Surface, f: number): ParamCurve {
+  const { u: [u0, u1], v: [v0, v1], periodicU, periodicV } = s.domain;
+  const TP = 2 * Math.PI;
+  if (periodicU) return { point: (t) => [u0 + t * (u1 - u0), v0 + f * (v1 - v0)], velocity: () => [u1 - u0, 0] };
+  if (periodicV) return { point: (t) => [u0 + f * (u1 - u0), v0 + t * (v1 - v0)], velocity: () => [0, v1 - v0] };
+  const [cu, cv, ru, rv] = [(u0 + u1) / 2, (v0 + v1) / 2, (f * (u1 - u0)) / 2, (f * (v1 - v0)) / 2];
+  return {
+    point: (t) => [cu + ru * Math.cos(TP * t), cv + rv * Math.sin(TP * t)],
+    velocity: (t) => [-TP * ru * Math.sin(TP * t), TP * rv * Math.cos(TP * t)],
+  };
+}
+
 export function availableKinds(surfaceId: string): PathKind[] {
   return surfaceId === 'sphere' ? ['latitude', 'triangle', 'free'] : ['latitude', 'free'];
 }
 
 /** Range and label of the single loop slider (store.latitude) per surface. */
 export function loopSlider(surfaceId: string) {
+  if (surfaceId === 'custom') return { label: 'loop position (fraction of range)', min: 0.1, max: 0.9, deg: false };
   if (surfaceId === 'sphere') return { label: 'θ0 (latitude)', min: 0.2, max: Math.PI - 0.2, deg: true };
   if (surfaceId === 'torus') return { label: 'v (tube angle)', min: 0, max: 2 * Math.PI, deg: true };
   return { label: 'ρ (circle radius)', min: 0.1, max: 1.1, deg: false };
@@ -66,8 +83,9 @@ export function useTransportData(): TransportData {
     if (kind === 'free') return freePoints.length >= 3 ? catmullRomLoop(freePoints) : null;
     if (surfaceId === 'sphere') return kind === 'triangle' ? geodesicTriangleSphere() : latitudeLoop(latitude);
     if (surfaceId === 'torus') return torusLoop(latitude);
+    if (surfaceId === 'custom') return customLoop(surface, Math.min(0.9, Math.max(0.1, latitude)));
     return circleLoop(Math.min(1.1, Math.max(0.1, latitude)));
-  }, [surfaceId, kind, latitude, freePoints]);
+  }, [surfaceId, surface, kind, latitude, freePoints]);
   const start = useMemo(() => (curve ? curve.point(0) : null), [curve]);
   const V0 = vector;
   const samples = useMemo(() => (curve ? transport(surface, curve, V0, STEPS) : null), [surface, curve, V0]);

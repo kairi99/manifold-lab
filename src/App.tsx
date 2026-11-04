@@ -8,6 +8,7 @@ import { Tour, TourButton, useFirstVisitTour } from './tour/Tour';
 import { SuggestedTasks } from './tour/SuggestedTasks';
 import { CanvasAccess, KEYS_HELP } from './a11y/CanvasAccess';
 import { WebGLGuard } from './scene/WebGLGuard';
+import { FitCamera } from './scene/FitCamera';
 import { SURFACE_MODULES } from './state/modules';
 
 const MODULES: { id: ModuleId; label: string }[] = [
@@ -49,6 +50,7 @@ export default function App() {
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
           <OrbitControls makeDefault />
+          <FitCamera />
           <Suspense fallback={null}><Scene /></Suspense>
         </Canvas>
         </WebGLGuard>

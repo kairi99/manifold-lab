@@ -1,16 +1,20 @@
 import { SURFACES } from '../math';
-import { useStore } from '../state/store';
+import { applyCustomSpec, useStore } from '../state/store';
+import { CustomSurfaceEditor } from './CustomSurfaceEditor';
 
 export function SurfacePicker({ only }: { only?: string[] }) {
   const surfaceId = useStore((st) => st.surfaceId);
+  const customName = useStore((st) => st.customSpec.name);
   const set = useStore((st) => st.set);
   const ids = only ?? Object.keys(SURFACES);
   return (
+    <>
     <label className="field" data-tour="surface-picker">
       <span>Surface</span>
       <select
         value={surfaceId}
         onChange={(e) => {
+          if (e.target.value === 'custom') return applyCustomSpec(useStore.getState().customSpec);
           const s = SURFACES[e.target.value];
           const { u, v } = s.domain;
           // reset p to the domain centre so it is valid on the new surface
@@ -21,7 +25,10 @@ export function SurfacePicker({ only }: { only?: string[] }) {
         }}
       >
         {ids.map((id) => <option key={id} value={id}>{SURFACES[id].name}</option>)}
+        {!only && <option value="custom">Custom…{surfaceId === 'custom' && customName ? ` (${customName})` : ''}</option>}
       </select>
     </label>
+    {surfaceId === 'custom' && <CustomSurfaceEditor />}
+    </>
   );
 }

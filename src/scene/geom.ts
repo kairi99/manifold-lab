@@ -32,7 +32,8 @@ export function buildSurfaceGeometry(s: Surface, nu: number, nv: number): THREE.
       const k = j * (nu + 1) + i;
       const a = i / nu, b = j / nv;
       const p = s.position(du[0] + a * (du[1] - du[0]), dv[0] + b * (dv[1] - dv[0]));
-      pos.set(p, k * 3);
+      // a non-finite vertex would poison the bounding sphere; custom surfaces are validated, this is a last resort
+      pos.set(p.every(Number.isFinite) ? p : [0, 0, 0], k * 3);
       uvs[k * 2] = a;
       uvs[k * 2 + 1] = b;
       if (i < nu && j < nv) {

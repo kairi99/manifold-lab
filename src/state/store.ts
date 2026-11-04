@@ -1,12 +1,16 @@
 import { create } from 'zustand';
 import type { Vec2 } from '../math/types';
+import { getSurface, setCustomSpec } from '../math';
+import { compileSpec, type CustomSpec } from '../math/surfaces/custom';
+import { DEFAULT_CUSTOM } from '../math/surfaces/presets';
 
 export type ModuleId = 'metric' | 'transport' | 'geodesics' | 'curvature' | 'fields' | 'relativity' | 'spacetime' | 'cosmos';
 export type PathKind = 'latitude' | 'triangle' | 'free';
 
 export interface AppState {
   module: ModuleId;
-  surfaceId: string;
+  surfaceId: string; // 'sphere' | 'torus' | 'saddle' | 'paraboloid' | 'custom'
+  customSpec: CustomSpec; // the user's surface, persisted under CUSTOM_KEY
   /** current point p in parameter coords */
   uv: Vec2;
   /** tangent vector components V^u, V^v at p */
@@ -83,9 +87,42 @@ export interface AppState {
   set: (p: Partial<AppState>) => void;
 }
 
+export const CUSTOM_KEY = 'manifoldlab.customSurface';
+
+const isSpec = (o: unknown): o is CustomSpec => {
+  const s = o as CustomSpec;
+  return !!s && typeof s === 'object' && ['x', 'y', 'z', 'f', 'name'].every((k) => typeof (s as unknown as Record<string, unknown>)[k] === 'string')
+    && (s.mode === 'parametric' || s.mode === 'graph') && Array.isArray(s.uRange) && Array.isArray(s.vRange) && Array.isArray(s.coords)
+    && typeof s.params?.a === 'number' && typeof s.params?.b === 'number'
+    && typeof s.periodicU === 'boolean' && typeof s.periodicV === 'boolean';
+};
+
+/** Stored spec, or the default if missing, corrupted or no longer compiles. */
+function loadCustom(): CustomSpec {
+  try {
+    const o: unknown = JSON.parse(localStorage.getItem(CUSTOM_KEY) ?? 'null');
+    if (isSpec(o) && compileSpec(o).c) return o;
+  } catch { /* corrupted or storage blocked */ }
+  return DEFAULT_CUSTOM;
+}
+
+const initialSpec = loadCustom();
+setCustomSpec(initialSpec);
+
+/** Make `spec` the custom surface and select it. `reset` also moves p to a generic interior point. */
+export function applyCustomSpec(spec: CustomSpec, reset = true) {
+  setCustomSpec(spec);
+  try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(spec)); } catch { /* storage blocked */ }
+  const { u, v } = getSurface('custom').domain;
+  useStore.setState(reset
+    ? { customSpec: spec, surfaceId: 'custom', uv: [u[0] + 0.7 * (u[1] - u[0]), v[0] + 0.43 * (v[1] - v[0])], progress: 0, playing: false, freePoints: [], fieldId: '', fieldId2: '', latitude: 0.5, vector: [0.5, 0] }
+    : { customSpec: spec });
+}
+
 export const useStore = create<AppState>((set) => ({
   module: 'metric',
   surfaceId: 'sphere',
+  customSpec: initialSpec,
   uv: [Math.PI / 3, 0.5],
   vector: [0.5, 0.5],
   pathKind: 'latitude',

@@ -78,6 +78,28 @@ export function fieldsFor(surfaceId: string): VectorField[] {
   }
 }
 
+/** Generic presets for a user surface: coordinate fields, gradient of height, and (non-periodic charts) rotation about the chart centre. */
+export function customFields(s: Surface): VectorField[] {
+  const [cu, cv] = s.coords;
+  const { u: [u0, u1], v: [v0, v1], periodicU, periodicV } = s.domain;
+  const out: VectorField[] = [
+    { id: 'du', name: 'coordinate field ∂ᵤ', latex: String.raw`X=\partial_{${cu}}`, killing: false, X: () => [1, 0], zeros: [] },
+    { id: 'dv', name: 'coordinate field ∂ᵥ', latex: String.raw`X=\partial_{${cv}}`, killing: false, X: () => [0, 1], zeros: [] },
+    { id: 'grad', name: 'gradient of height z', latex: String.raw`X=\nabla z=g^{ij}\partial_j z\,\partial_i`, killing: false,
+      X: (u, v) => { // height is the world-y component of the embedding; zeros (critical points) are not located
+        const g = s.metric(u, v), a = s.du(u, v)[1], b = s.dv(u, v)[1], d = det2(g);
+        return [(g[1][1] * a - g[0][1] * b) / d, (g[0][0] * b - g[0][1] * a) / d];
+      }, zeros: [] },
+  ];
+  const c: Vec2 = [(u0 + u1) / 2, (v0 + v1) / 2];
+  if (!periodicU && !periodicV && !s.singularAt?.(c[0], c[1])) {
+    out.push({ id: 'rot', name: 'rotation about the chart centre', latex: String.raw`X=-(${cv}-${cv}_0)\,\partial_{${cu}}+(${cu}-${cu}_0)\,\partial_{${cv}}`, killing: false,
+      X: (u, v) => [-(v - c[1]), u - c[0]],
+      zeros: [zero(s, 'chart centre', c, 1, circle(c, 0.2 * Math.min(u1 - u0, v1 - v0) / 2))] });
+  }
+  return out;
+}
+
 export const EULER_CHARACTERISTIC: Record<string, number | null> = { sphere: 2, torus: 0, saddle: null, paraboloid: null };
 
 /* ---------- flow ---------- */

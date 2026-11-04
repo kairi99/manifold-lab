@@ -3,7 +3,7 @@ import { Line } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { getSurface } from '../math';
-import { EULER_CHARACTERISTIC, fieldIndex, fieldsFor, flow, flowCommutator } from '../math/fields';
+import { EULER_CHARACTERISTIC, customFields, fieldIndex, fieldsFor, flow, flowCommutator } from '../math/fields';
 import { toWorld } from '../math/metric';
 import { norm } from '../math/vec';
 import type { Surface, Vec2, Vec3, VectorField } from '../math/types';
@@ -16,10 +16,10 @@ import { unitNormal } from './geom';
 
 const NU = 16, NV = 12, LIFT = 0.012, FLOW_T = 3, MAXLEN = 0.18;
 
-const fieldCache = new Map<string, VectorField[]>();
-const presets = (id: string) => {
-  let f = fieldCache.get(id);
-  if (!f) fieldCache.set(id, (f = fieldsFor(id)));
+const fieldCache = new WeakMap<Surface, VectorField[]>();
+const presets = (s: Surface) => {
+  let f = fieldCache.get(s);
+  if (!f) fieldCache.set(s, (f = s.id === 'custom' ? customFields(s) : fieldsFor(s.id)));
   return f;
 };
 const indexCache = new WeakMap<VectorField, number[]>();
@@ -33,14 +33,14 @@ export const indexLabel = (n: number) => `ind = ${n > 0 ? '+' : ''}${n}`;
 
 /** Current surface, X and optional Y (null when none or equal to X). */
 export function useFieldSel() {
-  const { surfaceId, fieldId, fieldId2 } = useStore();
+  const { surfaceId, customSpec, fieldId, fieldId2 } = useStore();
   return useMemo(() => {
     const surface = getSurface(surfaceId);
-    const all = presets(surfaceId);
+    const all = presets(surface);
     const X = all.find((f) => f.id === fieldId) ?? all[0]!;
     const Y = all.find((f) => f.id === fieldId2) ?? null;
     return { surface, all, X, Y: Y && Y !== X ? Y : null };
-  }, [surfaceId, fieldId, fieldId2]);
+  }, [surfaceId, customSpec, fieldId, fieldId2]);
 }
 
 const lift = (s: Surface, [u, v]: Vec2, h = LIFT): Vec3 => {
@@ -65,6 +65,7 @@ export function FieldsScene() {
       for (let i = 0; i < NU; i++) {
         const q: Vec2 = [u[0] + ((i + 0.5) / NU) * (u[1] - u[0]), v[0] + ((j + 0.5) / NV) * (v[1] - v[0])];
         if (s.id === 'sphere' && (q[0] < 0.12 || q[0] > Math.PI - 0.12)) continue;
+        if (s.singularAt?.(q[0], q[1])) continue;
         const W = toWorld(s, q[0], q[1], X.X(q[0], q[1]));
         const n = unitNormal(s, q[0], q[1]);
         pts.push({ uv: q, W, m: norm(W), n, pos: lift(s, q) });

@@ -111,6 +111,7 @@ export function curvatureRange(s: Surface, nu = 48, nv = 48): { min: number; max
   for (let i = 0; i < nu; i++)
     for (let j = 0; j < nv; j++) {
       const k = s.gaussK(u[0] + ((u[1] - u[0]) * i) / (nu - 1), v[0] + ((v[1] - v[0]) * j) / (nv - 1));
+      if (!Number.isFinite(k)) continue; // degenerate chart points
       if (k < min) min = k;
       if (k > max) max = k;
     }

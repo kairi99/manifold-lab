@@ -29,6 +29,8 @@ export interface Surface {
   christoffel(u: number, v: number): Christoffel;
   gaussK(u: number, v: number): number;
   latex: { param: string; metric: string; christoffel: string };
+  /** true where the chart degenerates (|∂_u×∂_v| ≈ 0) or the embedding is not finite; Γ and K are NaN there */
+  singularAt?(u: number, v: number): boolean;
   /** see ChartWrap; absent → periodic coords wrap, others stop at the boundary */
   chartWrap?: ChartWrap;
 }

@@ -70,6 +70,8 @@ export function FieldsPanel() {
       </div>
       {chi !== null ? (
         <p><Tex>{String.raw`\sum_i \operatorname{ind}_{p_i}X=\chi(M)`}</Tex>: here {sum} = {chi}. Hairy ball: the sphere (&chi;=2&ne;0) has no nowhere-vanishing field, while the torus (&chi;=0) does: <Tex>{String.raw`\partial_u`}</Tex>.</p>
+      ) : surfaceId === 'custom' ? (
+        <p>Poincar&eacute;&ndash;Hopf needs a closed surface and <em>all</em> zeros of X. For a custom surface the zeros are not searched for (only the chart-centre zero of the rotation field is listed), so there is no &chi; check here. Use the sphere or torus to see the theorem at work.</p>
       ) : (
         <p>This graph is non-compact (with boundary), so the theorem does not apply as stated; the shown zeros need not sum to anything.</p>
       )}

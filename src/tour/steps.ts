@@ -16,7 +16,7 @@ export const STEPS: TourStep[] = [
   { target: 'nav', title: 'Modules',
     body: 'Pick a module here. "Metric & tangent spaces" shows how lengths and angles are measured at a point. "Parallel transport" carries a vector around a loop and shows how it turns. "Geodesics" shoots the straightest possible curves from a point. "Curvature" compares intrinsic and extrinsic curvature. "Vector Fields & TM" explores flows, Lie brackets and zeros of vector fields. "Relativity" applies it all to Schwarzschild spacetime.' },
   { target: 'surface-picker', title: 'Choose a surface',
-    body: 'Switch between surfaces such as the sphere, torus and saddle. The Gaussian curvature $K$, and so the equations, change with the surface.' },
+    body: 'Switch between surfaces such as the sphere, torus and saddle. The Gaussian curvature $K$, and so the equations, change with the surface. Choose "Custom…" to type your own surface, either parametric $(x,y,z)(u,v)$ or a graph $z=f(u,v)$, or load a classic such as the catenoid or Möbius band: every module then works on it, with exact derivatives.' },
   { target: 'canvas', title: 'The 3D view', module: 'metric',
     body: 'Left-drag to orbit, right-drag to pan, scroll to zoom. Drag the yellow point to move $p$ on the surface. Drag the tip of the vector to edit $V = V^i\\,\\partial_i$. Keyboard: focus the 3D view (Tab or click), then arrow keys move $p$ (Shift = bigger steps), [ and ] rotate $V$, + and − scale it.' },
   { target: 'panel', title: 'Live equations',

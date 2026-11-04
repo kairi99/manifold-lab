@@ -27,7 +27,7 @@ export function vectorAngle(s: Surface, uv: Vec2, V: Vec2): number {
 export interface GeoFan { surface: Surface; paths: GeodesicPath[]; angle0: number; mid: number }
 
 export function useGeoFan(): GeoFan {
-  const { surfaceId, uv, vector, geoCount, geoSpread, geoLength } = useStore();
+  const { surfaceId, customSpec, uv, vector, geoCount, geoSpread, geoLength } = useStore();
   return useMemo(() => {
     const surface = getSurface(surfaceId);
     const angle0 = vectorAngle(surface, uv, vector);
@@ -37,7 +37,7 @@ export function useGeoFan(): GeoFan {
       return geodesic(surface, uv, unitVelocity(surface, uv, a), geoLength);
     });
     return { surface, paths, angle0, mid: Math.floor(mid) };
-  }, [surfaceId, uv, vector, geoCount, geoSpread, geoLength]);
+  }, [surfaceId, customSpec, uv, vector, geoCount, geoSpread, geoLength]);
 }
 
 /** Number of samples with s <= target (at least 1). */

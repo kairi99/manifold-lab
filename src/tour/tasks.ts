@@ -153,3 +153,18 @@ TASKS.push(
     hint: 'Compare its distance with the Hubble sphere, then look at the past light cone.',
     answer: 'Today it recedes at several times $c$ ($v=HD$ with $D\\approx34$ Gly beyond the Hubble radius). Light emitted toward us first receded too, but the Hubble sphere grew and overtook it, so the photons now reach us. Recession speed is not a velocity in a local inertial frame.' },
 );
+
+TASKS.push(
+  { id: 'c-bour', module: 'curvature',
+    prompt: 'Choose Custom… and load the Helicoid preset; note $K$ at $p$. Now load the Catenoid and compare $K$ at the same $(u,v)$.',
+    hint: 'Both presets are parametrised so that $g_{ij}$ is the same in $(u,v)$; one is a bent copy of the other.',
+    answer: '$K=-1/\\cosh^4 u$ for both: the helicoid and catenoid are locally isometric (Bour), and by Theorema Egregium $K$ cannot tell them apart although one is a screw and the other a neck. The bending keeps $g_{ij}$ fixed and changes only II.' },
+  { id: 'g-pseudo', module: 'geodesics',
+    prompt: 'Load the Pseudosphere preset and fan out geodesics. Do they ever refocus? Read $K$ in the Metric module.',
+    hint: '$K=-1$ everywhere, so the Jacobi equation is $J\'\'=J$.',
+    answer: 'They spread exponentially, $J\\sim\\sinh s$, and never meet again: constant negative curvature has no conjugate points. The pseudosphere is a piece of the hyperbolic plane; geodesics also run off its rim at $u=0.2$ (the chart edge).' },
+  { id: 'm-ellipsoid', module: 'metric',
+    prompt: 'Load the Ellipsoid preset and set the sliders $a=b=1$. What surface is this, and what is $K$?',
+    hint: 'Compare $g_{ij}$ with the sphere’s $\\mathrm{diag}(1,\\sin^2\\theta)$; then move $a$ away from 1.',
+    answer: '$a=b=1$ gives the unit sphere in the $(\\theta,\\varphi)$ chart: $g=\\mathrm{diag}(1,\\sin^2\\theta)$, $K=1$. For $a\\ne1$ the surface is stretched, $g_{12}\\ne0$ and $K$ varies but stays positive.' },
+);

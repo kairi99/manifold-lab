@@ -16,7 +16,7 @@ An interactive explorer for differential geometry and general relativity. Every 
 - **Causal structure & cosmology** — Penrose diagrams of Minkowski and maximally extended Schwarzschild with light cones and an infalling observer; the conformal diagram of our universe (Planck 2018) with past light cone, particle/event horizons, Hubble sphere and real high-redshift objects.
 - **Accessibility** — keyboard control of the 3D point and vector (arrows, `[` `]`, `+` `−`), screen-reader descriptions, reduced-motion support.
 
-Surfaces: sphere, torus, saddle, paraboloid. All closed-form geometry is checked against finite differences and known results in the test suite.
+Surfaces: sphere, torus, saddle, paraboloid, and Custom: type your own parametric surface or graph (`+ - * / ^`, `sin cos tan exp log sqrt abs sinh cosh tanh asin acos atan`, constants `pi e`, sliders `a b`) or load a classic (catenoid, helicoid, pseudosphere, ellipsoid, Enneper, monkey saddle, Möbius band, Dini, bumpy sphere); g, Γ and K are derived exactly by automatic differentiation. All closed-form geometry is checked against finite differences and known results in the test suite.
 
 A skippable guided tour opens on the first visit; press `?` to reopen it.
 
