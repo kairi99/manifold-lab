@@ -1,3 +1,4 @@
+import { FRONTIERS_TASKS, FRONTIERS_TASKS_ES } from '../frontiers/content';
 import { CURVES_TASKS, CURVES_TASKS_ES } from './curves.content';
 import type { AppState, ModuleId } from '../state/store';
 
@@ -386,7 +387,8 @@ const ES: Record<string, TaskText> = {
 };
 
 TASKS.unshift(...CURVES_TASKS);
-const CURVES_ES = new Map(CURVES_TASKS_ES.map((t) => [t.id, t]));
+TASKS.push(...FRONTIERS_TASKS);
+const CURVES_ES = new Map([...CURVES_TASKS_ES, ...FRONTIERS_TASKS_ES].map((t) => [t.id, t]));
 export const TASKS_ES: Task[] = TASKS.map((t) => CURVES_ES.get(t.id) ?? { ...t, ...ES[t.id] });
 
 export const tasksForLang = (m: ModuleId, lang: 'en' | 'es') => (lang === 'es' ? TASKS_ES : TASKS).filter((t) => t.module === m);

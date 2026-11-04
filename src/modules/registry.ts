@@ -21,4 +21,5 @@ export const MODULE_VIEWS: Record<ModuleId, { Scene: View; Panel: View }> = {
   relativity: load(() => import('./RelativityModule'), 'RelativityScene', 'RelativityPanel'),
   spacetime: load(() => import('./SpacetimeModule'), 'SpacetimeScene', 'SpacetimePanel'),
   cosmos: load(() => import('./CosmosModule'), 'CosmosScene', 'CosmosPanel'),
+  frontiers: load(() => import('./FrontiersModule'), 'FrontiersScene', 'FrontiersPanel'),
 };

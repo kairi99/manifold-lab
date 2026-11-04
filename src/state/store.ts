@@ -5,7 +5,7 @@ import { compileSpec, type CustomSpec } from '../math/surfaces/custom';
 import { DEFAULT_CUSTOM } from '../math/surfaces/presets';
 import { moduleFromHash } from './modules';
 
-export type ModuleId = 'curves' | 'metric' | 'transport' | 'geodesics' | 'curvature' | 'fields' | 'relativity' | 'spacetime' | 'cosmos';
+export type ModuleId = 'curves' | 'metric' | 'transport' | 'geodesics' | 'curvature' | 'fields' | 'relativity' | 'spacetime' | 'cosmos' | 'frontiers';
 export type Lang = 'en' | 'es';
 export type Theme = 'dark' | 'light';
 export type InfoPage = 'technical' | 'legal';

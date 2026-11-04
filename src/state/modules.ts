@@ -3,7 +3,7 @@ import type { ModuleId } from './store';
 /** Modules that work on the selected 2D surface (point p, vector V, keyboard control). */
 export const SURFACE_MODULES: ReadonlySet<ModuleId> = new Set<ModuleId>(['metric', 'transport', 'geodesics', 'curvature', 'fields']);
 
-export interface ModuleInfo { id: ModuleId; label: string; labelEs: string; blurb: string; blurbEs: string; group: 'surfaces' | 'spacetime' }
+export interface ModuleInfo { id: ModuleId; label: string; labelEs: string; blurb: string; blurbEs: string; group: 'surfaces' | 'spacetime' | 'frontiers' }
 
 /** Nav order; `blurb` is the one-line description on the start page. */
 export const MODULES: ModuleInfo[] = [
@@ -34,6 +34,9 @@ export const MODULES: ModuleInfo[] = [
   { id: 'cosmos', label: 'Causal Structure & Cosmology', labelEs: 'Estructura causal y cosmología', group: 'spacetime',
     blurbEs: 'Diagramas de Penrose, una caída a través del horizonte y el diagrama conforme de nuestro universo.',
     blurb: 'Penrose diagrams, a fall through the horizon, and the conformal diagram of our universe.' },
+  { id: 'frontiers', label: 'Frontiers: Open Problems', labelEs: 'Fronteras: problemas abiertos', group: 'frontiers',
+    blurbEs: 'Avanzado. Problemas del Milenio y conjeturas abiertas de geometría, con demos de flujo de Ricci, Willmore, Penrose y Yang–Mills.',
+    blurb: 'Advanced. Millennium Problems and open conjectures in geometry, with demos of Ricci flow, Willmore, Penrose and Yang–Mills.' },
 ];
 
 /** `#metric` → 'metric'; anything else (including no hash) means the start page. */

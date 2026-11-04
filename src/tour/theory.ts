@@ -1,3 +1,4 @@
+import { FRONTIERS_THEORY, FRONTIERS_THEORY_ES } from '../frontiers/content';
 import { CURVES_THEORY, CURVES_THEORY_ES } from './curves.content';
 import type { ModuleId } from '../state/store';
 
@@ -9,6 +10,7 @@ const r = String.raw;
 
 export const THEORY: Record<ModuleId, Theory> = {
   curves: CURVES_THEORY,
+  frontiers: FRONTIERS_THEORY,
   metric: {
     motivation: r`How do you measure length, angle and area on a curved surface using only its coordinates? The answer is the [[metric|metric]] tensor $g_{ij}$, the single object from which all intrinsic geometry follows. In general relativity the same object, $g_{\mu\nu}$, is the gravitational field.`,
     sections: [
@@ -162,6 +164,7 @@ about 35 M from $r_0=10M$, while a distant observer never sees them cross.` },
 
 export const THEORY_ES: Record<ModuleId, Theory> = {
   curves: CURVES_THEORY_ES,
+  frontiers: FRONTIERS_THEORY_ES,
   metric: {
     motivation: r`¿Cómo se miden longitudes, ángulos y áreas sobre una superficie curva usando solo sus coordenadas? La respuesta es el tensor métrico $g_{ij}$, el único objeto del que se deduce toda la geometría intrínseca. En relatividad general ese mismo objeto, $g_{\mu\nu}$, es el campo gravitatorio.`,
     sections: [

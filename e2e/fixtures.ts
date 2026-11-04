@@ -14,7 +14,7 @@ export const test = base.extend<Opts & { app: Page }>({
     page.on('console', (m) => { if (m.type() === 'error') errors.push(`console: ${m.text()}`) })
     page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`))
     if (tourSeen) await page.addInitScript(() => {
-      for (const m of ['curves', 'metric', 'transport', 'geodesics', 'curvature', 'fields', 'relativity', 'spacetime', 'cosmos'])
+      for (const m of ['curves', 'metric', 'transport', 'geodesics', 'curvature', 'fields', 'relativity', 'spacetime', 'cosmos', 'frontiers'])
         localStorage.setItem(`manifoldlab.tourSeen.${m}`, '1')
     })
     await page.goto(start)

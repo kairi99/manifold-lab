@@ -88,6 +88,7 @@ const BY_MODULE: Record<ModuleId, string[]> = {
   relativity: ['m', 'gv', 'gb', 'go', 'rp', 'ra', 'gB', 'fl', 'sp', 'rt', 'in', 'it', 'cp'],
   spacetime: ['m', 'sv', 'sm', 'sq', 'se', 'sb', 'sr', 'sl', 'so', 'sa', 'wd', 'ws', 'wr'],
   cosmos: ['m', 'cs_v', 'cs_s', 'cs_p', 'cs_r', 'cs_b', 'cs_t', 'cs_h', 'cs_m', 'cs_l', 'cs_o', 'cs_i'],
+  frontiers: ['m'],
 };
 
 /* ---------- custom spec ---------- */
