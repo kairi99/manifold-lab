@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { MathText as Rich } from '../panels/Tex';
 import type { ModuleId } from '../state/store';
-import { tasksFor } from './tasks';
+import { tasksForLang } from './tasks';
+import { useLang, useTr } from '../i18n';
 import './tour.css';
 
 const KEY = 'manifoldlab.tasksDone';
@@ -15,6 +16,7 @@ function save(ids: string[]) {
 
 
 export function SuggestedTasks({ module }: { module: ModuleId }) {
+  const lang = useLang(), t0 = useTr();
   const [done, setDone] = useState<string[]>(load);
   const [open, setOpen] = useState(true);
   const [shown, setShown] = useState<Record<string, 'hint' | 'answer' | undefined>>({});
@@ -26,11 +28,11 @@ export function SuggestedTasks({ module }: { module: ModuleId }) {
   return (
     <section className="tasks">
       <button className="tasks-head" aria-expanded={open} onClick={() => setOpen(!open)}>
-        {open ? '▾' : '▸'} Suggested tasks
+        {open ? '▾' : '▸'} {t0('Suggested tasks', 'Tareas sugeridas')}
       </button>
       {open && (
         <ul>
-          {tasksFor(module).map((t) => (
+          {tasksForLang(module, lang).map((t) => (
             <li key={t.id} className={done.includes(t.id) ? 'done' : ''}>
               <label>
                 <input type="checkbox" checked={done.includes(t.id)} onChange={() => toggle(t.id)} />
@@ -38,10 +40,10 @@ export function SuggestedTasks({ module }: { module: ModuleId }) {
               </label>
               <div className="task-actions">
                 <button aria-expanded={shown[t.id] === 'hint'} onClick={() => setShown({ ...shown, [t.id]: shown[t.id] === 'hint' ? undefined : 'hint' })}>
-                  {shown[t.id] === 'hint' ? 'Hide hint' : 'Show hint'}
+                  {shown[t.id] === 'hint' ? t0('Hide hint', 'Ocultar pista') : t0('Show hint', 'Ver pista')}
                 </button>
                 <button aria-expanded={shown[t.id] === 'answer'} onClick={() => setShown({ ...shown, [t.id]: shown[t.id] === 'answer' ? undefined : 'answer' })}>
-                  {shown[t.id] === 'answer' ? 'Hide answer' : 'Show answer'}
+                  {shown[t.id] === 'answer' ? t0('Hide answer', 'Ocultar respuesta') : t0('Show answer', 'Ver respuesta')}
                 </button>
               </div>
               {shown[t.id] && (

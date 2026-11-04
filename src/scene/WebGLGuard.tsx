@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from 'react';
+import { T } from '../i18n';
 
 /** True if the browser can create a WebGL context (hardware or software). */
 export function hasWebGL(): boolean {
@@ -13,8 +14,8 @@ export function hasWebGL(): boolean {
 function NoWebGL({ detail }: { detail?: string }) {
   return (
     <div className="no-webgl" role="alert">
-      <p><strong>The 3D view needs WebGL</strong>, which this browser could not start.</p>
-      <p>Enable hardware acceleration in the browser settings, or try another browser. The equations and readouts in the panel still work.</p>
+      <p><T en={<><strong>The 3D view needs WebGL</strong>, which this browser could not start.</>} es={<><strong>La vista 3D necesita WebGL</strong>, que este navegador no pudo iniciar.</>} /></p>
+      <p><T en="Enable hardware acceleration in the browser settings, or try another browser. The equations and readouts in the panel still work." es="Activa la aceleración por hardware en los ajustes del navegador o prueba con otro. Las ecuaciones y los valores del panel siguen funcionando." /></p>
       {detail && <p className="no-webgl-detail">{detail}</p>}
     </div>
   );

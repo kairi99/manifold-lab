@@ -4,6 +4,7 @@ import { useFrame } from '@react-three/fiber';
 import type * as THREE from 'three';
 import type { Vec3 } from '../math/types';
 import { makeFlamm, zOfR } from '../math/flamm';
+import { useTr } from '../i18n';
 import {
   B_CRIT, ISCO, PHOTON_SPHERE, R_S, deflection, integrateOrbit, orbitFromApsides,
 } from '../math/schwarzschild';
@@ -121,28 +122,31 @@ const ring = (r: number, flamm: boolean): Vec3[] =>
 
 function Rings({ flamm }: { flamm: boolean }) {
   // default camera looks from φ = π/4; labels at φ = π/4 ± π/2 sit left/right of the centre instead of stacking on it
+  const tt = useTr();
   const lbl = (r: number, phi: number): Vec3 => { const p = lift(r, phi, flamm); return [p[0], p[1] + 1.2, p[2]]; };
   return (
     <>
       <Line points={ring(PHOTON_SPHERE, flamm)} color="#ffd166" lineWidth={1.5} dashed dashSize={0.4} gapSize={0.3} />
       <Line points={ring(ISCO, flamm)} color="#35e0c2" lineWidth={1.5} />
-      <Label text="photon sphere 3M" position={lbl(PHOTON_SPHERE, Math.PI * 0.75)} color="#ffd166" height={1.6} />
-      <Label text="ISCO 6M" position={lbl(ISCO, -Math.PI * 0.25)} color="#35e0c2" height={1.6} />
+      <Label text={tt('photon sphere 3M', 'esfera de fotones 3M')} position={lbl(PHOTON_SPHERE, Math.PI * 0.75)} color="#ffd166" height={1.6} />
+      <Label text={tt('ISCO 6M', 'ISCO 6M')} position={lbl(ISCO, -Math.PI * 0.25)} color="#35e0c2" height={1.6} />
     </>
   );
 }
 
 function Horizon() {
+  const tt = useTr();
   return (
     <group>
       <mesh><sphereGeometry args={[R_S, 48, 32]} /><meshBasicMaterial color="#000000" /></mesh>
       <mesh><sphereGeometry args={[R_S * 1.04, 48, 32]} /><meshBasicMaterial color="#ff9f43" transparent opacity={0.35} side={1} depthWrite={false} /></mesh>
-      <Label text="horizon r = 2M" position={[0, -R_S - 2.5, 0]} color="#ff9f43" height={1.6} />
+      <Label text={tt('horizon r = 2M', 'horizonte r = 2M')} position={[0, -R_S - 2.5, 0]} color="#ff9f43" height={1.6} />
     </group>
   );
 }
 
 function OrbitView({ flamm }: { flamm: boolean }) {
+  const tt = useTr();
   const grBody = useStore((s) => s.grBody), grOrbit = useStore((s) => s.grOrbit);
   const grRp = useStore((s) => s.grRp), grRa = useStore((s) => s.grRa);
   const m = orbitModel(grBody, grOrbit, grRp, grRa);
@@ -181,13 +185,14 @@ function OrbitView({ flamm }: { flamm: boolean }) {
         <sphereGeometry args={[0.45, 16, 12]} />
         <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={0.7} />
       </mesh>
-      <Label text={m.toy ? 'strong-field illustration — real numbers in panel' : 'custom orbit (geometric units, M = 1)'} position={[0, top + 1, 0]} color={m.toy ? '#ffb347' : '#e6e6e6'} height={2} />
-      <Label text="grey dashed: Newtonian ellipse; pink: periapsides" position={[0, top - 2.5, 0]} color="#8a8f98" height={1.5} />
+      <Label text={m.toy ? tt('strong-field illustration — real numbers in panel', 'ilustración de campo fuerte — cifras reales en el panel') : tt('custom orbit (geometric units, M = 1)', 'órbita personalizada (unidades geométricas, M = 1)')} position={[0, top + 1, 0]} color={m.toy ? '#ffb347' : '#e6e6e6'} height={2} />
+      <Label text={tt('grey dashed: Newtonian ellipse; pink: periapsides', 'gris discontinuo: elipse newtoniana; rosa: periapsis')} position={[0, top - 2.5, 0]} color="#8a8f98" height={1.5} />
     </group>
   );
 }
 
 function LightView({ flamm }: { flamm: boolean }) {
+  const tt = useTr();
   const grBody = useStore((s) => s.grBody), grOrbit = useStore((s) => s.grOrbit), grB = useStore((s) => s.grB);
   const m = lightModel(grBody, grOrbit, grB);
   const lines = useMemo(() => m.rays.map((r) => r.traj.samples.map((q) => lift(q.r, q.phi, flamm))), [m, flamm]);
@@ -217,7 +222,7 @@ function LightView({ flamm }: { flamm: boolean }) {
           <Line points={asym.out} color="#ffd166" lineWidth={1} dashed dashSize={0.6} gapSize={0.4} />
         </>
       )}
-      <Label text={`light rays; red: b < b_c = 3√3 M ≈ ${B_CRIT.toFixed(2)} M (captured)`} position={[0, top + 1, 0]} color="#e6e6e6" height={2} />
+      <Label text={tt(`light rays; red: b < b_c = 3√3 M ≈ ${B_CRIT.toFixed(2)} M (captured)`, `rayos de luz; rojo: b < b_c = 3√3 M ≈ ${B_CRIT.toFixed(2)} M (capturados)`)} position={[0, top + 1, 0]} color="#e6e6e6" height={2} />
     </group>
   );
 }
@@ -227,6 +232,7 @@ const properS = (r: number) => Math.sqrt(r * (r - 2)) + 2 * Math.log((Math.sqrt(
 const rOfS = (s: number) => { let lo = 2, hi = 60; for (let i = 0; i < 50; i++) { const m = (lo + hi) / 2; if (properS(m) < s) lo = m; else hi = m; } return lo; };
 
 function FlammView() {
+  const tt = useTr();
   const ruler = useMemo(() => {
     const rm = rOfS(25);
     const line: Vec3[] = Array.from({ length: 81 }, (_, i) => { const r = rOfS((i / 80) * 25); return [r, zOfR(r) + 0.15, 0] as Vec3; });
@@ -235,8 +241,8 @@ function FlammView() {
   return (
     <group>
       <Line points={ring(R_S, true)} color="#ff9f43" lineWidth={2.5} />
-      <Label text="throat (Einstein–Rosen bridge)" position={[-R_S - 5, 1.5, 0]} color="#ff9f43" height={1.8} />
-      <Label text="not traversable: the full spacetime is dynamical" position={[-R_S - 5, -0.3, 0]} color="#8a8f98" height={1.3} />
+      <Label text={tt('throat (Einstein–Rosen bridge)', 'garganta (puente de Einstein–Rosen)')} position={[-R_S - 5, 1.5, 0]} color="#ff9f43" height={1.8} />
+      <Label text={tt('not traversable: the full spacetime is dynamical', 'no atravesable: el espaciotiempo completo es dinámico')} position={[-R_S - 5, -0.3, 0]} color="#8a8f98" height={1.3} />
       <Line points={ruler.line} color="#35e0c2" lineWidth={2} />
       {ruler.ticks.map((t, i) => (
         <group key={t.s}>
@@ -244,13 +250,14 @@ function FlammView() {
           {i % 2 === 0 && <Label text={`s = ${t.s}M (r = ${t.r.toFixed(1)}M)`} position={[t.r + 1.5, t.z + 1.2, 0]} color="#35e0c2" height={1.3} />}
         </group>
       ))}
-      <Label text="spatial slice t = const, both sheets (two exteriors)" position={[0, zOfR(42) + 6, 0]} color="#e6e6e6" height={2} />
+      <Label text={tt('spatial slice t = const, both sheets (two exteriors)', 'sección espacial t = const, ambas hojas (dos exteriores)')} position={[0, zOfR(42) + 6, 0]} color="#e6e6e6" height={2} />
     </group>
   );
 }
 
 export function RelativityScene() {
   const view = useStore((s) => s.grView), showFlamm = useStore((s) => s.grShowFlamm);
+  const tt = useTr();
   const surface = useMemo(() => makeFlamm(FLAMM_ZMAX), []);
   if (view === 'kerr' || view === 'image' || view === 'clocks') {
     return (
@@ -268,7 +275,7 @@ export function RelativityScene() {
       {view !== 'flamm' && <Horizon />}
       {view !== 'flamm' && <Rings flamm={showFlamm} />}
       {view !== 'flamm' && showFlamm && (
-        <Label text="spatial slice t = const (Flamm); curves drawn at their (r, φ)" position={[0, -2, 0]} color="#6cb6ff" height={1.6} />
+        <Label text={tt('spatial slice t = const (Flamm); curves drawn at their (r, φ)', 'sección espacial t = const (Flamm); curvas dibujadas en su (r, φ)')} position={[0, -2, 0]} color="#6cb6ff" height={1.6} />
       )}
       {view === 'orbits' && <OrbitView flamm={showFlamm} />}
       {view === 'light' && <LightView flamm={showFlamm} />}

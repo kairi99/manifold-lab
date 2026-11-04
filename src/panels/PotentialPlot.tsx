@@ -1,4 +1,5 @@
 import { richSvg } from './Tex';
+import { useTr } from '../i18n';
 import { Veff } from '../math/schwarzschild';
 
 export interface PotentialPlotProps {
@@ -15,6 +16,7 @@ const N = 400;
 
 /** V_eff(r) for the given L with the E² level, forbidden region (V > E²) shaded and turning points marked. */
 export function PotentialPlot({ L, E2, kind, rMax = 30 }: PotentialPlotProps) {
+  const t = useTr();
   const r0 = 2;
   const rs = Array.from({ length: N + 1 }, (_, i) => r0 + ((rMax - r0) * i) / N);
   const vs = rs.map((r) => Veff(r, L, kind));
@@ -41,7 +43,9 @@ export function PotentialPlot({ L, E2, kind, rMax = 30 }: PotentialPlotProps) {
   }
   const rt = Array.from({ length: 5 }, (_, k) => Math.round((r0 + ((rMax - r0) * k) / 4) * 10) / 10);
   const vt = [0, 0.5, 1].map((f) => f * yMax);
-  const label = `Effective potential for ${kind === 'null' ? 'light' : 'a massive particle'} with L = ${L.toFixed(3)} M, E squared = ${E2.toFixed(4)}; turning points at r = ${turning.map((t) => t.toFixed(2)).join(', ') || 'none'} M`;
+  const tp = turning.map((x) => x.toFixed(2)).join(', ');
+  const label = t(`Effective potential for ${kind === 'null' ? 'light' : 'a massive particle'} with L = ${L.toFixed(3)} M, E squared = ${E2.toFixed(4)}; turning points at r = ${tp || 'none'} M`,
+    `Potencial efectivo para ${kind === 'null' ? 'la luz' : 'una partícula masiva'} con L = ${L.toFixed(3)} M, E al cuadrado = ${E2.toFixed(4)}; puntos de retorno en r = ${tp || 'ninguno'} M`);
   const s = (c: string) => ({ stroke: c, fill: 'none' });
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={label} style={{ display: 'block', maxWidth: '100%' }}>

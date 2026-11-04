@@ -157,3 +157,155 @@ about 35 M from $r_0=10M$, while a distant observer never sees them cross.` },
     refs: ['Hawking & Ellis, The Large Scale Structure of Space-Time (1973), ch. 5', 'Misner, Thorne & Wheeler, Gravitation (1973), ch. 31 (Kruskal–Szekeres)', 'Davis & Lineweaver, PASA 21, 97 (2004)', 'Planck Collaboration, A&A 641, A6 (2020)'],
   },
 };
+
+export const THEORY_ES: Record<ModuleId, Theory> = {
+  metric: {
+    motivation: r`¿Cómo se miden longitudes, ángulos y áreas sobre una superficie curva usando solo sus coordenadas? La respuesta es el tensor métrico $g_{ij}$, el único objeto del que se deduce toda la geometría intrínseca. En relatividad general ese mismo objeto, $g_{\mu\nu}$, es el campo gravitatorio.`,
+    sections: [
+      { heading: 'Espacios tangentes', body: r`Una superficie $M\subset\mathbb{R}^3$ se describe mediante una parametrización $\mathbf{x}(u,v)$. En cada punto $p$ las derivadas parciales $\partial_u=\partial\mathbf{x}/\partial u$ y $\partial_v=\partial\mathbf{x}/\partial v$ generan el plano tangente $T_pM$. Un vector tangente es una combinación $V=V^i\partial_i$; sus componentes $V^i$ dependen de la carta, el vector no.` },
+      { heading: 'La métrica (primera forma fundamental)', body: r`El producto escalar de los vectores de la base define la métrica:
+
+$$g_{ij}=\partial_i\cdot\partial_j,\qquad ds^2=g_{ij}\,du^i du^j.$$
+
+Da la longitud $|V|^2=g_{ij}V^iV^j$, el ángulo entre dos vectores y el elemento de área $dA=\sqrt{\det g}\,du\,dv$. En la esfera unidad $g=\mathrm{diag}(1,\sin^2\theta)$: la dirección $\varphi$ se encoge hacia los polos, por eso los meridianos convergen.` },
+      { heading: 'Símbolos de Christoffel', body: r`Al mover $p$ cambia la base. La parte de ese cambio que permanece en el plano tangente la describen los símbolos de Christoffel, calculados solo a partir de la métrica:
+
+$$\Gamma^k_{ij}=\tfrac12 g^{kl}\left(\partial_i g_{jl}+\partial_j g_{il}-\partial_l g_{ij}\right).$$
+
+No son un tensor: las coordenadas cartesianas en un plano dan $\Gamma=0$, las polares sobre ese mismo plano no. Son el ingrediente del transporte paralelo y de la ecuación de las geodésicas.` },
+      { heading: 'Qué observar', body: r`Arrastra $p$ y observa cómo las flechas de la base se estiran e inclinan y cómo se deforma el círculo métrico $\{W: g(W,W)=1\}$. Compara $g_{ij}V^iV^j$ con la longitud euclídea de la flecha: coinciden, porque $g$ es el pull-back del producto escalar de $\mathbb{R}^3$. Cerca de los polos de la esfera $\det g\to 0$: fallan las coordenadas, no la superficie.` },
+    ],
+    refs: ['do Carmo, Differential Geometry of Curves and Surfaces, §2-5 (primera forma fundamental) y §4-3 (símbolos de Christoffel)', 'Lee, Introduction to Riemannian Manifolds (2.ª ed.), cap. 2', 'Carroll, Spacetime and Geometry, cap. 2-3'],
+  },
+
+  transport: {
+    motivation: r`En una superficie curva no existe una noción global de «la misma dirección» en dos puntos distintos. El transporte paralelo la define a lo largo de un camino, y que un vector no vuelva igual tras recorrer un lazo es la medida más directa de la curvatura. El péndulo de Foucault y la fase de Berry son ambos holonomías.`,
+    sections: [
+      { heading: 'La ecuación del transporte', body: r`Un campo vectorial $V$ a lo largo de una curva $u(t)$ es paralelo si su derivada covariante se anula:
+
+$$\frac{dV^k}{dt}+\Gamma^k_{ij}\,V^i\frac{du^j}{dt}=0.$$
+
+Visto desde $\mathbb{R}^3$, el vector cambia solo en la dirección normal a la superficie: no gira dentro de ella. El transporte paralelo conserva longitudes y ángulos, $g(V,W)$ es constante.` },
+      { heading: 'Holonomía y Gauss–Bonnet', body: r`Transporta un vector alrededor de un lazo cerrado que delimita una región simplemente conexa $R$. Vuelve rotado un ángulo
+
+$$\Delta\alpha=\iint_R K\,dA.$$
+
+En la esfera unidad un círculo de latitud con ángulo polar $\theta_0$ encierra un casquete de área $2\pi(1-\cos\theta_0)$, así que la holonomía es $2\pi(1-\cos\theta_0)$: $180^\circ$ para $\theta_0=60^\circ$, y cero (mod $2\pi$) en el ecuador, que es una geodésica.` },
+      { heading: 'Triángulos geodésicos', body: r`Para un triángulo de lados geodésicos el mismo teorema da el exceso angular $\alpha+\beta+\gamma-\pi=\iint K\,dA$. En una esfera los triángulos tienen más de $180^\circ$; en la silla, donde $K<0$, menos. Así la curvatura se puede medir desde dentro de la superficie, sin referencia a la inmersión.` },
+      { heading: 'Qué observar', body: r`Reproduce un lazo de latitud y compara la holonomía medida con $\iint K\,dA$. Dibuja tu propio lazo: solo importa la curvatura encerrada, no su forma. En el toro, los lazos del lado exterior ($K>0$) y del interior ($K<0$) rotan el vector en sentidos opuestos.` },
+    ],
+    refs: ['do Carmo, Differential Geometry of Curves and Surfaces, §4-4 (transporte paralelo) y §4-5 (Gauss–Bonnet)', 'Lee, Introduction to Riemannian Manifolds (2.ª ed.), cap. 4 y 9', 'Misner, Thorne & Wheeler, Gravitation (1973), cap. 10-11'],
+  },
+
+  geodesics: {
+    motivation: r`Las geodésicas son las curvas más rectas posibles: nunca giran dentro de la superficie. Son los círculos máximos de la esfera, las rutas de vuelo más cortas sobre la Tierra y, en el espacio-tiempo, las líneas de universo de los cuerpos en caída libre y de los rayos de luz.`,
+    sections: [
+      { heading: 'La ecuación de las geodésicas', body: r`Una geodésica transporta paralelamente su propia velocidad, $\nabla_{\dot\gamma}\dot\gamma=0$. En coordenadas:
+
+$$\ddot u^k+\Gamma^k_{ij}\,\dot u^i\dot u^j=0.$$
+
+La rapidez $g_{ij}\dot u^i\dot u^j$ se conserva, de modo que el parámetro es proporcional a la longitud de arco. Localmente, las geodésicas son las curvas de longitud extremal entre puntos cercanos.` },
+      { heading: 'Cantidades conservadas', body: r`Cada simetría da una constante del movimiento. En una superficie de revolución, la rotación en torno al eje da la relación de Clairaut $\rho\cos\psi=\text{const}$, donde $\rho$ es la distancia al eje y $\psi$ el ángulo con el paralelo. Esto explica por qué las geodésicas de un toro o de un paraboloide oscilan entre dos paralelos; es el análogo en superficies de la conservación del momento angular.` },
+      { heading: 'Desviación geodésica y puntos conjugados', body: r`La separación $J$ de geodésicas vecinas obedece la ecuación de Jacobi $\ddot J+K J=0$. Para $K>0$ las geodésicas vuelven a enfocarse: en la esfera unidad todas las geodésicas desde $p$ se reencuentran en el antípoda, a distancia $\pi$ (un punto conjugado). Para $K<0$ divergen exponencialmente. En relatividad la misma ecuación, con el tensor de Riemann en lugar de $K$, describe las fuerzas de marea.` },
+      { heading: 'Qué observar', body: r`Abre un abanico de geodésicas desde $p$. En la esfera vuelven a converger; en la silla se separan. Acorta o alarga el abanico para ver dónde se cruzan por primera vez las geodésicas vecinas.` },
+    ],
+    refs: ['do Carmo, Differential Geometry of Curves and Surfaces, §4-4 (geodésicas), §4-6 y §5-5 (campos de Jacobi)', 'Lee, Introduction to Riemannian Manifolds (2.ª ed.), cap. 4 y 10 (campos de Jacobi)', 'Misner, Thorne & Wheeler, Gravitation (1973), cap. 11 (desviación geodésica)'],
+  },
+
+  curvature: {
+    motivation: r`¿Está una superficie curvada en sí misma o solo doblada en el espacio? Una hoja de papel enrollada en un cilindro está doblada pero es intrínsecamente plana; una esfera no se puede aplanar sin estirarla. El Theorema Egregium de Gauss dice que la curvatura de Gauss $K$ puede medirla un habitante que nunca abandone la superficie, la idea que permite a la relatividad general hablar de espacio-tiempo curvo sin ningún espacio donde sumergirlo.`,
+    sections: [
+      { heading: 'Curvatura extrínseca', body: r`El operador de forma mide cómo gira la normal unitaria al mover $p$. Sus autovalores son las curvaturas principales $\kappa_1,\kappa_2$, con direcciones principales ortogonales. Su producto y su media son
+
+$$K=\kappa_1\kappa_2,\qquad H=\tfrac12(\kappa_1+\kappa_2).$$
+
+$K>0$: la superficie se curva hacia el mismo lado en todas las direcciones (esfera). $K<0$: una silla. $K=0$: al menos una dirección es recta (cilindro, plano).` },
+      { heading: 'Theorema Egregium', body: r`Gauss demostró que $K$ depende solo de la métrica:
+
+$$K=\frac{R_{1212}}{\det g},$$
+
+con $R_{1212}$ construido a partir de $g_{ij}$ y sus derivadas primeras y segundas. Doblar una superficie sin estirarla (una isometría) deja $K$ invariante, aunque $\kappa_1$ y $\kappa_2$ cambien.` },
+      { heading: 'Círculos geodésicos', body: r`Una tercera medida, puramente intrínseca: la circunferencia de un círculo geodésico de radio $\rho$ es
+
+$$C(\rho)=2\pi\rho\left(1-\tfrac{K}{6}\rho^2+O(\rho^4)\right).$$
+
+La curvatura positiva hace los círculos más cortos que $2\pi\rho$; la negativa, más largos.` },
+      { heading: 'Qué observar', body: r`El panel calcula $K$ de ambas formas en $p$ y coinciden salvo redondeo, en toda superficie, incluidas las que escribes tú. En el toro la mitad exterior tiene $K>0$, la interior $K<0$, y los círculos superior e inferior $K=0$; el total es $\iint K\,dA=2\pi\chi=0$.` },
+    ],
+    refs: ['do Carmo, Differential Geometry of Curves and Surfaces, §3-2, §3-3 y §4-3 (Theorema Egregium)', 'Gauss, Disquisitiones generales circa superficies curvas (1827)', 'Lee, Introduction to Riemannian Manifolds (2.ª ed.), cap. 8'],
+  },
+
+  fields: {
+    motivation: r`Los campos vectoriales describen flujos, simetrías y campos físicos como la velocidad y la fuerza. Reunir todos los planos tangentes en un solo espacio, el fibrado tangente $TM$, convierte un campo en un único objeto geométrico, y su topología restringe qué campos pueden existir: no se puede peinar plana una bola peluda.`,
+    sections: [
+      { heading: 'Secciones del fibrado tangente', body: r`El fibrado tangente $TM=\bigsqcup_p T_pM$ tiene la proyección $\pi:TM\to M$. Un campo vectorial es una sección $X:M\to TM$ con $\pi\circ X=\mathrm{id}$, es decir, la elección de un vector tangente en cada punto. Sus curvas integrales resuelven $\dot u=X(u)$; su colección es el flujo $\phi_t$.` },
+      { heading: 'Campos de Killing', body: r`Un campo cuyo flujo es una isometría satisface la ecuación de Killing
+
+$$\mathcal{L}_X g=0\iff\nabla_iX_j+\nabla_jX_i=0.$$
+
+Los campos de Killing son simetrías infinitesimales. Cada uno da una cantidad conservada $g(X,\dot\gamma)$ a lo largo de toda geodésica; en el espacio-tiempo de Schwarzschild, $\partial_t$ y $\partial_\varphi$ dan la energía y el momento angular de una órbita.` },
+      { heading: 'Corchetes de Lie', body: r`El corchete $[X,Y]=XY-YX$ mide el fallo de dos flujos al conmutar: fluye según $X$ durante un tiempo $t$, luego según $Y$, y vuelve por cada uno; el hueco resultante es $t^2[X,Y]+O(t^3)$. Los campos de rotación de la esfera cumplen $[L_x,L_y]=-L_z$ y cíclicas: el álgebra de Lie $\mathfrak{so}(3)$, que la mecánica cuántica conoce como momento angular.` },
+      { heading: 'Poincaré–Hopf', body: r`En un cero aislado el campo da un número entero de vueltas, su índice. El teorema afirma
+
+$$\sum_{\text{zeros}}\operatorname{ind}=\chi(M).$$
+
+La esfera tiene $\chi=2$, así que todo campo sobre ella se anula en algún punto (teorema de la bola peluda); el toro tiene $\chi=0$ y admite campos que no se anulan en ningún punto.` },
+    ],
+    refs: ['Lee, Introduction to Smooth Manifolds (2.ª ed.), cap. 8-9 (campos vectoriales, flujos, derivadas de Lie)', 'Milnor, Topology from the Differentiable Viewpoint (1965), §6 (Poincaré–Hopf)', 'Carroll, Spacetime and Geometry, §3.8 (vectores de Killing)'],
+  },
+
+  relativity: {
+    motivation: r`La relatividad general sustituye la fuerza gravitatoria por la curvatura del espacio-tiempo: los cuerpos libres y la luz siguen geodésicas de la métrica. Las soluciones de Schwarzschild y de Kerr describen el campo exterior a cualquier masa sin rotación o con rotación, y sus predicciones, desde el perihelio de Mercurio hasta las sombras de los agujeros negros, figuran entre los resultados mejor comprobados de la física.`,
+    sections: [
+      { heading: 'La métrica de Schwarzschild', body: r`Fuera de una masa $M$ esférica y sin rotación (unidades $G=c=1$):
+
+$$ds^2=-\Big(1-\frac{2M}{r}\Big)dt^2+\frac{dr^2}{1-2M/r}+r^2d\Omega^2.$$
+
+Los campos de Killing $\partial_t$ y $\partial_\varphi$ dan una energía $E$ y un momento angular $L$ conservados por unidad de masa. El horizonte está en $r_s=2M$; el paraboloide de Flamm sumerge en $\mathbb{R}^3$ la sección espacial $t=\text{const}$.` },
+      { heading: 'Potencial efectivo y órbitas', body: r`Para geodésicas temporales ecuatoriales,
+
+$$\dot r^2=E^2-\Big(1-\frac{2M}{r}\Big)\Big(1+\frac{L^2}{r^2}\Big).$$
+
+El término adicional $-2ML^2/r^3$ respecto a Newton hace que las órbitas precesen $6\pi M/[a(1-e^2)]$ por órbita (unos $43''$ por siglo para Mercurio) y elimina las órbitas circulares estables dentro de la ISCO (última órbita circular estable), en $r=6M$. La luz tiene una órbita circular en la esfera de fotones $r=3M$ y es capturada si el parámetro de impacto es $b<3\sqrt3\,M$; para $b$ grande se desvía $4M/b$.` },
+      { heading: 'Kerr: agujeros negros en rotación', body: r`Con espín $a=J/M$ el horizonte pasa a $r_+=M+\sqrt{M^2-a^2}$ y aparece una ergosfera, donde el arrastre de marcos obliga a todo a co-rotar. La ISCO prógrada se reduce de $6M$ para $a=0$ a $M$ cuando $a\to M$, de modo que la energía de ligadura $1-E_{\rm ISCO}$ radiada por un disco de acreción delgado sube del $5.7\%$ al $42\%$ (cerca del $32\%$ para $a=0.998$).` },
+      { heading: 'Imágenes y relojes', body: r`Trazar geodésicas nulas hacia atrás desde una cámara da la imagen lentificada de un disco y la sombra, cuyo borde para Schwarzschild tiene radio $3\sqrt3\,M$ en parámetro de impacto, próximo a lo que midió el EHT para M87* y Sgr A*. Los relojes estáticos marchan al ritmo $\sqrt{1-2M/r}$, lo que da el desplazamiento al rojo gravitatorio (Pound–Rebka, Gravity Probe A, GPS); la luz que pasa cerca del Sol se retrasa (Shapiro, Cassini) y un giroscopio en órbita precesa (Gravity Probe B).` },
+    ],
+    refs: ['Misner, Thorne & Wheeler, Gravitation (1973), cap. 25 (Schwarzschild orbits) y cap. 33 (Kerr)', 'Bardeen, Press & Teukolsky, ApJ 178, 347 (1972)', 'Will, Living Rev. Relativ. 17, 4 (2014)', 'Event Horizon Telescope Collaboration, ApJL 875, L1 (2019)'],
+  },
+
+  spacetime: {
+    motivation: r`En cuatro dimensiones la curvatura ya no es un solo número. El tensor de Riemann tiene 20 componentes independientes; las ecuaciones de Einstein fijan solo su parte de traza, el tensor de Ricci, a través de la materia presente. El resto, el tensor de Weyl, es libre: es el campo de marea de un agujero negro y la onda gravitacional que viaja por el espacio vacío.`,
+    sections: [
+      { heading: 'De la métrica a la curvatura', body: r`De $g_{\mu\nu}$ se obtienen los símbolos de Christoffel y el tensor de Riemann
+
+$$R^\rho{}_{\sigma\mu\nu}=\partial_\mu\Gamma^\rho_{\nu\sigma}-\partial_\nu\Gamma^\rho_{\mu\sigma}+\Gamma^\rho_{\mu\lambda}\Gamma^\lambda_{\nu\sigma}-\Gamma^\rho_{\nu\lambda}\Gamma^\lambda_{\mu\sigma},$$
+
+su traza $R_{\mu\nu}=R^\rho{}_{\mu\rho\nu}$, el escalar $R$ y $G_{\mu\nu}=R_{\mu\nu}-\tfrac12Rg_{\mu\nu}$. Invariantes como el escalar de Kretschmann $R_{\alpha\beta\gamma\delta}R^{\alpha\beta\gamma\delta}=48M^2/r^6$ (Schwarzschild) distinguen las singularidades reales de las de coordenadas.` },
+      { heading: 'Ecuaciones de Einstein', body: r`$$G_{\mu\nu}+\Lambda g_{\mu\nu}=8\pi T_{\mu\nu}.$$
+
+Schwarzschild y Kerr son soluciones de vacío, $R_{\mu\nu}=0$, pero su tensor de Riemann no es nulo: curvatura sin materia. Reissner–Nordström lleva el tensor energía-impulso de un campo eléctrico, de Sitter una constante cosmológica, ΛCDM polvo y energía oscura. El panel comprueba la ecuación componente a componente en el suceso elegido.` },
+      { heading: 'Fuerzas de marea', body: r`Dos partículas libres cercanas separadas por $\xi$ se aceleran alejándose según la desviación geodésica,
+
+$$\frac{D^2\xi^i}{d\tau^2}=-R^i{}_{0j0}\,\xi^j.$$
+
+En una caída radial en Schwarzschild, $E_{rr}=-2M/r^3$ estira a lo largo del radio y $E_{\theta\theta}=E_{\varphi\varphi}=+M/r^3$ comprime lateralmente: espaguetización. En el horizonte el estiramiento escala como $1/M^2$, letal para un agujero negro estelar, suave para Sgr A*.` },
+      { heading: 'Ondas gravitacionales', body: r`Linealizar $g=\eta+h$ en el vacío da ondas que viajan a $c$ con dos polarizaciones transversas y sin traza, $h_+$ y $h_\times$. Un anillo de partículas libres se comprime y se estira con una deformación $h\sim10^{-21}$ en la Tierra. GW150914, la primera detección, procedió de la fusión de dos agujeros negros de unas $36$ y $29\,M_\odot$ a 410 Mpc; la masa de chirp $\mathcal{M}=(m_1m_2)^{3/5}/(m_1+m_2)^{1/5}\approx28\,M_\odot$ fija con qué rapidez crece la frecuencia.` },
+    ],
+    refs: ['Misner, Thorne & Wheeler, Gravitation (1973), cap. 11, 14 y 35', 'Carroll, Spacetime and Geometry, cap. 3, 4 y 7', 'Abbott et al. (LIGO/Virgo), PRL 116, 061102 (2016)', 'Wald, General Relativity (1984), cap. 3'],
+  },
+
+  cosmos: {
+    motivation: r`¿Qué sucesos pueden influir en cuáles? En relatividad esta estructura causal la fijan los conos de luz, y en espacios-tiempos con horizontes o con un Big Bang resulta difícil de ver en coordenadas ordinarias. Los diagramas conformes (de Penrose) comprimen el infinito en una figura finita manteniendo los rayos de luz a $45^\circ$, de modo que horizontes, singularidades y los límites de lo observable se ven de un vistazo.`,
+    sections: [
+      { heading: 'Compactificación conforme', body: r`Un reescalado conforme $\tilde g=\Omega^2g$ cambia las distancias pero no los conos de luz. Para el espacio de Minkowski, las coordenadas nulas $u=t-r$, $v=t+r$ y la aplicación $U=\arctan u$, $V=\arctan v$ llevan el infinito a valores finitos: infinito temporal futuro y pasado $i^\pm$, infinito nulo $\mathscr{I}^\pm$ e infinito espacial $i^0$.` },
+      { heading: 'Schwarzschild y agujeros negros', body: r`Las coordenadas de Kruskal–Szekeres cubren la solución de vacío completa con la luz a $45^\circ$; al compactificarlas aparecen cuatro regiones: nuestro exterior, el interior del agujero negro, un agujero blanco y un segundo exterior. Dentro de $r=2M$ todo camino orientado al futuro llega a $r=0$. Un observador que cae desde el reposo en $r_0$ llega allí en un tiempo propio
+
+$$\tau=\pi\sqrt{r_0^3/8M},$$
+
+unos 35 M desde $r_0=10M$, mientras que un observador lejano nunca lo ve cruzar.` },
+      { heading: 'Nuestro universo', body: r`Un universo FLRW plano $ds^2=a(\eta)^2(-d\eta^2+d\chi^2+\chi^2d\Omega^2)$ es conformemente plano, así que la distancia comóvil frente al tiempo conforme $\eta=\int dt/a$ es un diagrama causal. Con los parámetros ΛCDM de Planck 2018 el universo tiene unos 13.8 Gyr; nuestro cono de luz pasado alcanza el CMB en $z\approx1100$; el horizonte de partículas está a unos 46 Gly comóviles y el horizonte de sucesos a unos 16 Gly, porque Λ hace que la expansión se acelere.` },
+      { heading: 'Recesión más rápida que la luz', body: r`La ley de Hubble $v=H_0D$ usa la distancia propia, y $v$ supera $c$ más allá de la esfera de Hubble, $D=c/H$. Las galaxias que vemos hoy con $z\gtrsim1.5$ se alejan ahora más deprisa que la luz. Esto no rompe ninguna regla: la relatividad especial limita solo las velocidades locales, y la luz que recibimos se emitió cuando esas galaxias estaban dentro de nuestro cono de luz pasado.` },
+    ],
+    refs: ['Hawking & Ellis, The Large Scale Structure of Space-Time (1973), cap. 5', 'Misner, Thorne & Wheeler, Gravitation (1973), cap. 31 (Kruskal–Szekeres)', 'Davis & Lineweaver, PASA 21, 97 (2004)', 'Planck Collaboration, A&A 641, A6 (2020)'],
+  },
+};

@@ -6,6 +6,7 @@ import { toWorld } from '../math/metric';
 import { curvatureAt, curvatureRange, geodesicCircle } from '../math/curvature';
 import type { Mat2, Vec3 } from '../math/types';
 import { useStore } from '../state/store';
+import { T, useTr } from '../i18n';
 import { SurfacePicker } from '../panels/SurfacePicker';
 import { Tex, fmt, coordText } from '../panels/Tex';
 import Arrow from '../scene/Arrow';
@@ -58,6 +59,7 @@ const pmatrix = (m: Mat2, d = 3) =>
   String.raw`\begin{pmatrix}${fmt(m[0][0], d)} & ${fmt(m[0][1], d)}\\ ${fmt(m[1][0], d)} & ${fmt(m[1][1], d)}\end{pmatrix}`;
 
 export function CurvaturePanel() {
+  const t = useTr();
   const { surfaceId, uv, curvRho, curvShow, set } = useStore();
   const surface = getSurface(surfaceId);
   const ca = useMemo(() => curvatureAt(surface, uv[0], uv[1]), [surface, uv]);
@@ -88,66 +90,70 @@ export function CurvaturePanel() {
     <div>
       <SurfacePicker />
       <fieldset className="field group">
-        <legend>Show</legend>
-        {toggle('heatmap', 'Gaussian curvature heatmap')}
-        {toggle('principal', 'Principal directions')}
-        {toggle('circle', 'Geodesic circle')}
+        <legend>{t('Show', 'Mostrar')}</legend>
+        {toggle('heatmap', t('Gaussian curvature heatmap', 'Mapa de calor de la curvatura de Gauss'))}
+        {toggle('principal', t('Principal directions', 'Direcciones principales'))}
+        {toggle('circle', t('Geodesic circle', 'Círculo geodésico'))}
       </fieldset>
       <label className="field">
-        <span>Geodesic circle radius ρ: {fmt(curvRho, 2)}</span>
+        <span>{t('Geodesic circle radius', 'Radio del círculo geodésico')} ρ: {fmt(curvRho, 2)}</span>
         <input type="range" min={0.05} max={1.5} step={0.01} value={curvRho} onChange={(e) => set({ curvRho: +e.target.value })} />
       </label>
       <div className="field">
-        <div role="img" aria-label={flat ? `Colour scale: K = ${fmt(range.max)} everywhere` : `Colour scale for K from ${fmt(-scale)} to ${fmt(scale)}`} style={{ height: 12, borderRadius: 4, background: gradient }} />
+        <div role="img" aria-label={flat ? t(`Colour scale: K = ${fmt(range.max)} everywhere`, `Escala de color: K = ${fmt(range.max)} en todas partes`) : t(`Colour scale for K from ${fmt(-scale)} to ${fmt(scale)}`, `Escala de color de K de ${fmt(-scale)} a ${fmt(scale)}`)} style={{ height: 12, borderRadius: 4, background: gradient }} />
         <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'ui-monospace, monospace', fontSize: 11 }}>
-          {flat ? <span>K = {fmt(range.max)} everywhere</span> : <><span>{fmt(-scale)}</span><span>0</span><span>{fmt(scale)}</span></>}
+          {flat ? <span>K = {fmt(range.max)} {t('everywhere', 'en todas partes')}</span> : <><span>{fmt(-scale)}</span><span>0</span><span>{fmt(scale)}</span></>}
         </div>
-        {!flat && <span>K on this surface ranges over [{fmt(range.min)}, {fmt(range.max)}]</span>}
+        {!flat && <span>{t('K on this surface ranges over', 'En esta superficie K varía en')} [{fmt(range.min)}, {fmt(range.max)}]</span>}
       </div>
 
       <div data-tour="curv-egregium">
-        <h2>Intrinsic vs extrinsic</h2>
+        <h2><T en="Intrinsic vs extrinsic" es="Intrínseca frente a extrínseca" /></h2>
         <Tex block>{String.raw`K = \frac{R_{1212}}{\det g}`}</Tex>
         <Tex block>{String.raw`K = \det\!\big(g^{-1}\mathrm{II}\big) = \kappa_1\kappa_2`}</Tex>
         <div className="readout">
-          <span>K intrinsic (from g)</span><span>{fmt(ca.Kintrinsic, 5)}</span>
-          <span>K extrinsic (κ₁κ₂)</span><span>{fmt(ca.Kextrinsic, 5)}</span>
-          <span>difference</span><span>{(ca.Kintrinsic - ca.Kextrinsic).toExponential(1)}</span>
+          <span>{t('K intrinsic (from g)', 'K intrínseca (a partir de g)')}</span><span>{fmt(ca.Kintrinsic, 5)}</span>
+          <span>{t('K extrinsic (κ₁κ₂)', 'K extrínseca (κ₁κ₂)')}</span><span>{fmt(ca.Kextrinsic, 5)}</span>
+          <span>{t('difference', 'diferencia')}</span><span>{(ca.Kintrinsic - ca.Kextrinsic).toExponential(1)}</span>
         </div>
-        <p>Theorema Egregium: K is computed from the metric g alone, although it was defined using the embedding. Bending without stretching changes II but not K.</p>
+        <p>{t('Theorema Egregium: K is computed from the metric g alone, although it was defined using the embedding. Bending without stretching changes II but not K.', 'Theorema Egregium: K se calcula únicamente a partir de la métrica g, aunque se definió usando la inmersión. Doblar sin estirar cambia II pero no K.')}</p>
       </div>
 
-      <h2>Principal curvatures</h2>
+      <h2><T en="Principal curvatures" es="Curvaturas principales" /></h2>
       <div className="readout">
         <span>κ₁</span><span>{fmt(ca.kappa[0], 4)}</span>
         <span>κ₂</span><span>{fmt(ca.kappa[1], 4)}</span>
         <span>H = (κ₁+κ₂)/2</span><span>{fmt(ca.H, 4)}</span>
       </div>
       <Tex block>{String.raw`\mathrm{II}=${pmatrix(ca.II)}`}</Tex>
-      {umbilic && <p>Umbilic point: κ₁ = κ₂, so every tangent direction is principal.</p>}
-      <p>κ₁, κ₂ are the extreme normal curvatures at p; their directions are orthogonal in g.</p>
+      {umbilic && <p>{t('Umbilic point: κ₁ = κ₂, so every tangent direction is principal.', 'Punto umbilical: κ₁ = κ₂, así que toda dirección tangente es principal.')}</p>}
+      <p>{t('κ₁, κ₂ are the extreme normal curvatures at p; their directions are orthogonal in g.', 'κ₁, κ₂ son las curvaturas normales extremas en p; sus direcciones son ortogonales respecto de g.')}</p>
 
-      <h2>Riemann and Ricci</h2>
-      <p>In 2D the only independent component is <Tex>{String.raw`R_{1212}`}</Tex>; the four nonzero <Tex>{String.raw`R^k{}_{lij}`}</Tex> follow from it.</p>
+      <h2><T en="Riemann and Ricci" es="Riemann y Ricci" /></h2>
+      <p><T
+        en={<>In 2D the only independent component is <Tex>{String.raw`R_{1212}`}</Tex>; the four nonzero <Tex>{String.raw`R^k{}_{lij}`}</Tex> follow from it.</>}
+        es={<>En 2D la única componente independiente es <Tex>{String.raw`R_{1212}`}</Tex>; las cuatro <Tex>{String.raw`R^k{}_{lij}`}</Tex> no nulas se deducen de ella.</>} /></p>
       <div className="readout">
         {comp(0, 1, 0, 1)}{comp(0, 1, 1, 0)}{comp(1, 0, 0, 1)}{comp(1, 0, 1, 0)}
         <span>({coordText(cu)}, {coordText(cv)})</span><span>(1, 2)</span>
       </div>
       <Tex block>{String.raw`R_{ij}=${pmatrix(ca.ricci)}=K\,g_{ij}`}</Tex>
       <div className="readout">
-        <span>scalar R = 2K</span><span>{fmt(ca.scalar, 4)}</span>
+        <span>{t('scalar R = 2K', 'escalar R = 2K')}</span><span>{fmt(ca.scalar, 4)}</span>
       </div>
 
-      <h2>Geodesic circle</h2>
+      <h2><T en="Geodesic circle" es="Círculo geodésico" /></h2>
       <Tex block>{String.raw`C(\rho)=2\pi\rho\left(1-\frac{K\rho^2}{6}+O(\rho^4)\right)`}</Tex>
       <div className="readout">
         <span>C</span><span>{fmt(ring.circumference, 4)}</span>
         <span>2πρ</span><span>{fmt(2 * Math.PI * curvRho, 4)}</span>
         <span>C / 2πρ</span><span>{fmt(ratio, 4)}</span>
-        <span>K estimate</span><span>{fmt(ring.Kestimate, 4)}</span>
+        <span>{t('K estimate', 'estimación de K')}</span><span>{fmt(ring.Kestimate, 4)}</span>
         <span>K</span><span>{fmt(ca.Kintrinsic, 4)}</span>
       </div>
-      <p>K &gt; 0 shrinks the circle below the flat value, K &lt; 0 enlarges it. Bertrand–Diquet–Puiseux: <Tex>{String.raw`K\approx 3(2\pi\rho-C)/(\pi\rho^3)`}</Tex>, accurate as ρ → 0.</p>
+      <p><T
+        en={<>K &gt; 0 shrinks the circle below the flat value, K &lt; 0 enlarges it. Bertrand–Diquet–Puiseux: <Tex>{String.raw`K\approx 3(2\pi\rho-C)/(\pi\rho^3)`}</Tex>, accurate as ρ → 0.</>}
+        es={<>K &gt; 0 reduce la circunferencia por debajo del valor plano, K &lt; 0 la aumenta. Bertrand–Diquet–Puiseux: <Tex>{String.raw`K\approx 3(2\pi\rho-C)/(\pi\rho^3)`}</Tex>, precisa cuando ρ → 0.</>} /></p>
     </div>
   );
 }

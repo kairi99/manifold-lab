@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { fmt, Rich } from './Tex';
+import { useTr } from '../i18n';
 
 export const sci = (x: number, d = 4) => (x === 0 || Math.abs(x) < 1e-14 ? '0' : Math.abs(x) >= 1e4 || Math.abs(x) < 1e-2 ? x.toExponential(d - 1) : fmt(x, d));
 
@@ -38,14 +39,15 @@ export function Grid4({ m, names, label, tol = 1e-12 }: { m: number[][]; names: 
 
 /** Play/Pause/Reset plus a scrub slider on stProgress. */
 export function Transport({ playing, progress, set, label }: { playing: boolean; progress: number; set: (p: { stPlaying?: boolean; stProgress?: number }) => void; label: string }) {
+  const t = useTr();
   return (
     <>
       <div className="field" style={{ flexDirection: 'row', gap: 8 }}>
-        <button onClick={() => set({ stPlaying: !playing })}>{playing ? 'Pause' : 'Play'}</button>
-        <button onClick={() => set({ stPlaying: false, stProgress: 0 })}>Reset</button>
+        <button onClick={() => set({ stPlaying: !playing })}>{playing ? t('Pause', 'Pausa') : t('Play', 'Reproducir')}</button>
+        <button onClick={() => set({ stPlaying: false, stProgress: 0 })}>{t('Reset', 'Reiniciar')}</button>
       </div>
       <label className="field"><span>{label} {fmt(progress * 100, 0)} %</span>
-        <input type="range" min={0} max={1} step={0.001} value={progress} aria-label={`Scrub ${label}`} onChange={(e) => set({ stPlaying: false, stProgress: +e.target.value })} /></label>
+        <input type="range" min={0} max={1} step={0.001} value={progress} aria-label={`${t('Scrub', 'Desplazar')} ${label}`} onChange={(e) => set({ stPlaying: false, stProgress: +e.target.value })} /></label>
     </>
   );
 }

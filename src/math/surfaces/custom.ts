@@ -25,11 +25,11 @@ export interface Compiled { asts: [Ast, Ast, Ast]; u: [number, number]; v: [numb
 const FIELDS = { parametric: ['x', 'y', 'z'], graph: ['f'] } as const;
 
 /** Parse everything; `errors` maps a field key (x, y, z, f, uMin, uMax, vMin, vMax, uRange, vRange) to a message with position. */
-export function compileSpec(spec: CustomSpec): { c?: Compiled; errors: Record<string, string> } {
-  const errors: Record<string, string> = {};
+export function compileSpec(spec: CustomSpec): { c?: Compiled; errors: Record<string, string>; errorsEs: Record<string, string> } {
+  const errors: Record<string, string> = {}, errorsEs: Record<string, string> = {};
   const tryParse = (key: string, src: string, names?: string[]): Ast | undefined => {
     try { return parse(src, names); } catch (e) {
-      if (e instanceof ExprError) errors[key] = e.message; else throw e;
+      if (e instanceof ExprError) { errors[key] = e.message; errorsEs[key] = e.es; } else throw e;
     }
   };
   const ast: Record<string, Ast | undefined> = {};
@@ -38,13 +38,13 @@ export function compileSpec(spec: CustomSpec): { c?: Compiled; errors: Record<st
     const lo = tryParse(`${key}Min`, r[0], []), hi = tryParse(`${key}Max`, r[1], []);
     if (!lo || !hi) return;
     const a = evaluate(lo, {}) as number, b = evaluate(hi, {}) as number;
-    if (!(Number.isFinite(a) && Number.isFinite(b) && a < b)) { errors[`${key}Range`] = 'range must satisfy min < max'; return; }
+    if (!(Number.isFinite(a) && Number.isFinite(b) && a < b)) { errors[`${key}Range`] = 'range must satisfy min < max'; errorsEs[`${key}Range`] = 'el rango debe cumplir mín < máx'; return; }
     return [a, b];
   };
   const u = range('u', spec.uRange), v = range('v', spec.vRange);
-  if (Object.keys(errors).length) return { errors };
+  if (Object.keys(errors).length) return { errors, errorsEs };
   const asts: [Ast, Ast, Ast] = spec.mode === 'graph' ? [parse('u'), parse('v'), ast.f!] : [ast.x!, ast.y!, ast.z!];
-  return { c: { asts, u: u!, v: v! }, errors };
+  return { c: { asts, u: u!, v: v! }, errors, errorsEs };
 }
 
 const lift = (j: J): Jet => (typeof j === 'number' ? constant(2, j) : j);
@@ -117,6 +117,9 @@ export interface Report {
   nonFinite: number;
   singular: number;
   errors: string[];
+  /** Spanish twins of errors / warnings (same order) */
+  errorsEs: string[];
+  warningsEs: string[];
   warnings: string[];
 }
 
@@ -143,8 +146,9 @@ export function validateSurface(s: Surface, N = 33): Report {
     if (!s.position(u, v).every(Number.isFinite)) { nonFinite++; ex ??= [u, v]; }
     else if (s.singularAt?.(u, v)) { singular++; rowU[i]++; colV[j]++; }
   }));
-  const errors: string[] = [], warnings: string[] = [];
+  const errors: string[] = [], warnings: string[] = [], errorsEs: string[] = [], warningsEs: string[] = [];
   if (nonFinite) errors.push(`not finite at ${nonFinite} of ${N * N} sample points (first at u = ${pretty(ex![0])}, v = ${pretty(ex![1])}): shrink the ranges or change the expression`);
+  if (nonFinite) errorsEs.push(`no es finita en ${nonFinite} de ${N * N} puntos de muestra (el primero en u = ${pretty(ex![0])}, v = ${pretty(ex![1])}): reduce los rangos o cambia la expresión`);
   if (singular) {
     const su = us.filter((_, i) => rowU[i] === N), sv = vs.filter((_, j) => colV[j] === N);
     const where = [
@@ -154,6 +158,9 @@ export function validateSurface(s: Surface, N = 33): Report {
     warnings.push(where
       ? `coordinates degenerate at ${where} (∂ᵤr × ∂ᵥr = 0): fine for drawing, avoid placing p there; Γ and K are undefined there`
       : `${singular} of ${N * N} sample points are singular (∂ᵤr × ∂ᵥr ≈ 0); Γ and K are undefined there`);
+    warningsEs.push(where
+      ? `las coordenadas degeneran en ${where.replace(' and ', ' y ')} (∂ᵤr × ∂ᵥr = 0): sirve para dibujar, evita colocar p ahí; Γ y K no están definidas ahí`
+      : `${singular} de ${N * N} puntos de muestra son singulares (∂ᵤr × ∂ᵥr ≈ 0); Γ y K no están definidas ahí`);
   }
-  return { total: N * N, nonFinite, singular, errors, warnings };
+  return { total: N * N, nonFinite, singular, errors, warnings, errorsEs, warningsEs };
 }

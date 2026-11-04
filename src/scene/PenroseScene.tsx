@@ -9,6 +9,7 @@ import { Label as Lbl } from './Label';
 const Label = (p: React.ComponentProps<typeof Lbl>) => <Lbl height={0.12} {...p} />;
 import { CosmoLine, apply, type Xf } from './CosmoLine';
 import { infallState, probeAt } from '../panels/PenroseModel';
+import { useTr } from '../i18n';
 
 const PI = Math.PI, HP = PI / 2, S = 3 / (2 * PI);
 const GRID_R = '#3f6fa3', GRID_T = '#7a5fb0', HOR = '#e8e8e8', SING = '#ff5a5a', SCRI = '#6cb6ff', CONE = '#ffd24a', OBS = '#5fe08a';
@@ -25,6 +26,7 @@ const Dot = ({ p, xf, color = '#fff' }: { p: Pt; xf: Xf; color?: string }) => (
 const at = (xf: Xf, x: number, y: number, dz = 0): [number, number, number] => { const q = apply(xf, [x, y]); return [q[0], q[1], dz]; };
 
 function Static({ space, xf }: { space: 'minkowski' | 'schwarzschild'; xf: Xf }) {
+  const t = useTr();
   const g = useMemo(() => {
     if (space === 'minkowski') {
       return { r: [0.5, 1, 2, 4, 10].map((r) => minkowskiConstR(r)), t: [-8, -4, -2, -1, 0, 1, 2, 4, 8].map((t) => minkowskiConstT(t)), r2: [] as Pt[][], t2: [] as Pt[][] };
@@ -64,7 +66,7 @@ function Static({ space, xf }: { space: 'minkowski' | 'schwarzschild'; xf: Xf })
       {[ni.scriPlusRight, ni.scriMinusRight, ni.scriPlusLeft, ni.scriMinusLeft].map((l, i) => <CosmoLine key={i} pts={l} xf={xf} color={SCRI} width={2.5} />)}
       {[ni.i0Right, ni.i0Left, ni.iPlusRight, ni.iMinusRight, ni.iPlusLeft, ni.iMinusLeft].map((p, i) => <Dot key={i} p={p} xf={xf} />)}
       <Label text="I" position={at(xf, HP, 0)} height={0.16} color="#fff" /><Label text="III" position={at(xf, -HP, 0)} height={0.16} />
-      <Label text="II (black hole)" position={at(xf, 0, 0.62)} height={0.1} color="#ffb4b4" /><Label text="IV (white hole)" position={at(xf, 0, -0.62)} height={0.1} color="#ffb4b4" />
+      <Label text={t('II (black hole)', 'II (agujero negro)')} position={at(xf, 0, 0.62)} height={0.1} color="#ffb4b4" /><Label text={t('IV (white hole)', 'IV (agujero blanco)')} position={at(xf, 0, -0.62)} height={0.1} color="#ffb4b4" />
       <Label text="r = 0" position={at(xf, 0, HP + 0.2)} color={SING} /><Label text="r = 0" position={at(xf, 0, -HP - 0.2)} color={SING} />
       <Label text="i⁰" position={at(xf, PI + 0.22, 0)} /><Label text="i⁰" position={at(xf, -PI - 0.22, 0)} />
       <Label text="i⁺" position={at(xf, HP + 0.25, HP + 0.15)} /><Label text="i⁻" position={at(xf, HP + 0.25, -HP - 0.15)} />

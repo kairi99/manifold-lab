@@ -17,6 +17,6 @@ test('start page lists every simulation, opens one, and is reachable again', asy
 
   await app.locator('.home-card', { hasText: 'Geodesics' }).click()
   await expect(app.locator('.nav button.active')).toHaveText('Geodesics')
-  await app.locator('.nav .home-link').click()
+  await app.locator('.topbar .home-link').click()
   await expect(app.locator('.home-card')).toHaveCount(8)
 })

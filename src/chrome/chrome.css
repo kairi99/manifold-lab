@@ -1,0 +1,22 @@
+.shell { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+.shell > .app, .shell > .home { flex: 1 1 auto; min-height: 0; height: auto; }
+.topbar { flex: none; display: flex; align-items: center; gap: 12px; padding: 6px 16px; background: var(--panel); border-bottom: 1px solid var(--border); }
+.topbar .brand { font-weight: 700; font-size: 17px; white-space: nowrap; }
+.topbar-tools { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.topbar button { background: none; color: var(--fg); border: 1px solid var(--control); border-radius: 6px; padding: 4px 10px; font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap; }
+.topbar button:hover { border-color: var(--accent); }
+.topbar .tb-icon { width: 32px; padding: 4px 0; font-size: 15px; }
+.tb-seg { display: flex; }
+.tb-seg button { border-radius: 0; padding: 4px 8px; }
+.tb-seg button:first-child { border-radius: 6px 0 0 6px; }
+.tb-seg button:last-child { border-radius: 0 6px 6px 0; border-left: none; }
+.tb-seg button[aria-pressed=true] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+@media (max-width: 600px) {
+  .topbar { padding: 6px 8px; gap: 8px; }
+  .topbar .brand { font-size: 15px; }
+  .topbar button { padding: 4px 7px; font-size: 12px; }
+}
+.info-body h3:first-child { margin-top: 14px; }
+.info-body code { font-size: 12px; }
+.info-body ul { margin: 0 0 8px; padding-left: 18px; }
+.info-body li { margin-bottom: 4px; }

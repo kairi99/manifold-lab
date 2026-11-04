@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useStore } from '../state/store';
+import { T, tr, useLang, useTr } from '../i18n';
 import { fmt } from './Tex';
 import { shadowBoundary } from '../math/shadow';
 import { shadowAngularRadius } from '../math/schwarzschild';
@@ -14,6 +15,7 @@ const ARCSEC = (180 / Math.PI) * 3600;
 const TICKS = [-10, -5, 0, 5, 10];
 
 export function BlackHoleImage() {
+  const t = useTr(), lang = useLang();
   const a = useStore((s) => s.grSpin), incl = useStore((s) => s.grIncl), res = useStore((s) => s.grImgRes);
   const target = useStore((s) => s.grImgTarget), grBody = useStore((s) => s.grBody), set = useStore((s) => s.set);
   const [overlay, setOverlay] = useState(true);
@@ -59,7 +61,8 @@ export function BlackHoleImage() {
     const ang = 2 * shadowAngularRadius(massInGeometricUnits(body.gm) / body.distanceM) * ARCSEC * 1e6;
     return { ang, p: LIGHT.find((l) => l.centralId === body.id && /shadow/.test(l.id)) };
   })() : null;
-  const desc = `Ray-traced image of a Kerr black hole with spin ${fmt(a, 3)}, seen at ${fmt(incl, 0)} degrees from the spin axis, showing ${target === 'disk' ? 'an accretion disk' : target === 'sky' ? 'a lensed sky checkerboard' : 'an accretion disk and a lensed sky checkerboard'}. The dark shadow is centred on the hole; the disk side moving towards the observer (left) is brighter.`;
+  const desc = t(`Ray-traced image of a Kerr black hole with spin ${fmt(a, 3)}, seen at ${fmt(incl, 0)} degrees from the spin axis, showing ${target === 'disk' ? 'an accretion disk' : target === 'sky' ? 'a lensed sky checkerboard' : 'an accretion disk and a lensed sky checkerboard'}. The dark shadow is centred on the hole; the disk side moving towards the observer (left) is brighter.`,
+    `Imagen por trazado de rayos de un agujero negro de Kerr con espín ${fmt(a, 3)}, visto a ${fmt(incl, 0)} grados del eje de espín, que muestra ${target === 'disk' ? 'un disco de acreción' : target === 'sky' ? 'un tablero de ajedrez del cielo con lente gravitacional' : 'un disco de acreción y un tablero de ajedrez del cielo con lente gravitacional'}. La sombra oscura está centrada en el agujero; el lado del disco que se mueve hacia el observador (izquierda) es más brillante.`);
   const btn = (v: 'disk' | 'sky' | 'both') => ({
     'aria-pressed': target === v, onClick: () => set({ grImgTarget: v }),
     style: { padding: 6, background: target === v ? 'var(--accent)' : 'var(--bg)', color: target === v ? 'var(--bg)' : 'var(--fg)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer' } as const,
@@ -67,21 +70,21 @@ export function BlackHoleImage() {
 
   return (
     <div data-tour="gr-image">
-      <label className="field"><span>Spin a/M = {fmt(a, 3)}</span>
-        <input type="range" min={0} max={0.998} step={0.001} value={a} aria-label="Black hole spin a over M" onChange={(e) => set({ grSpin: +e.target.value })} /></label>
-      <label className="field"><span>Inclination = {fmt(incl, 0)}° (0° face-on, 90° edge-on)</span>
-        <input type="range" min={1} max={89} step={1} value={incl} aria-label="Observer inclination in degrees" onChange={(e) => set({ grIncl: +e.target.value })} /></label>
-      <label className="field"><span>Resolution</span>
+      <label className="field"><span>{t('Spin', 'Espín')} a/M = {fmt(a, 3)}</span>
+        <input type="range" min={0} max={0.998} step={0.001} value={a} aria-label={t('Black hole spin a over M', 'Espín a sobre M del agujero negro')} onChange={(e) => set({ grSpin: +e.target.value })} /></label>
+      <label className="field"><span>{t('Inclination', 'Inclinación')} = {fmt(incl, 0)}° {t('(0° face-on, 90° edge-on)', '(0° de frente, 90° de canto)')}</span>
+        <input type="range" min={1} max={89} step={1} value={incl} aria-label={t('Observer inclination in degrees', 'Inclinación del observador en grados')} onChange={(e) => set({ grIncl: +e.target.value })} /></label>
+      <label className="field"><span>{t('Resolution', 'Resolución')}</span>
         <select value={res} onChange={(e) => set({ grImgRes: +e.target.value })}>
           {[80, 120, 160, 240, 320].map((n) => <option key={n} value={n}>{n} × {n}</option>)}
         </select></label>
-      <div role="group" aria-label="Ray-trace target" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginBottom: 10 }}>
-        <button {...btn('disk')}>Disk</button><button {...btn('sky')}>Sky</button><button {...btn('both')}>Both</button>
+      <div role="group" aria-label={t('Ray-trace target', 'Objetivo del trazado de rayos')} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginBottom: 10 }}>
+        <button {...btn('disk')}>{t('Disk', 'Disco')}</button><button {...btn('sky')}>{t('Sky', 'Cielo')}</button><button {...btn('both')}>{t('Both', 'Ambos')}</button>
       </div>
-      <label className="check"><input type="checkbox" checked={overlay} onChange={(e) => setOverlay(e.target.checked)} /> Overlay Bardeen shadow curve</label>
+      <label className="check"><input type="checkbox" checked={overlay} onChange={(e) => setOverlay(e.target.checked)} /> {t('Overlay Bardeen shadow curve', 'Superponer la curva de sombra de Bardeen')}</label>
 
       <div role="status" aria-live="polite" style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>
-        {pct < 100 ? `tracing… ${pct}%` : 'trace complete'}
+        {pct < 100 ? `${t('tracing', 'trazando')}… ${pct}%` : t('trace complete', 'trazado completo')}
       </div>
       <div style={{ position: 'relative', width: '100%', aspectRatio: '1', background: '#000', border: '1px solid var(--border)' }}>
         <canvas ref={canvas} width={res} height={res} role="img" aria-label={desc}
@@ -101,21 +104,21 @@ export function BlackHoleImage() {
         </svg>
       </div>
 
-      <h2>What you see</h2>
-      <p style={{ fontSize: 13 }}>Thin Keplerian disk from the ISCO ({fmt(iscoKerr(a, true), 2)} M) to {DISK_OUTER} M, ray-traced backwards through Kerr in Boyer–Lindquist coordinates. Brightness ∝ g⁴ (Doppler boosting plus gravitational redshift).</p>
+      <h2>{t('What you see', 'Qué se ve')}</h2>
+      <p style={{ fontSize: 13 }}>{t('Thin Keplerian disk from the ISCO', 'Disco kepleriano delgado desde la ISCO')} ({fmt(iscoKerr(a, true), 2)} M) {t('to', 'hasta')} {DISK_OUTER} M, {t('ray-traced backwards through Kerr in Boyer–Lindquist coordinates. Brightness ∝ g⁴ (Doppler boosting plus gravitational redshift).', 'con trazado de rayos hacia atrás en Kerr, en coordenadas de Boyer–Lindquist. Brillo ∝ g⁴ (intensificación Doppler más desplazamiento al rojo gravitacional).')}</p>
       <ul style={{ fontSize: 13, paddingLeft: 18 }}>
-        <li><b>Shadow:</b> the dark region is the set of rays that fall into the horizon. Its edge is the Bardeen critical curve (dashed). For a = 0 it is a circle of radius 3√3 M ≈ 5.196 M; with spin it is displaced and flattened (a D shape, most visible edge-on at a near 1).</li>
-        <li><b>Photon ring:</b> light that loops partly around the hole near the photon orbit piles up just outside the shadow edge as a thin bright ring (the higher-order images of the disk).</li>
-        <li><b>Doppler beaming:</b> the disk and hole rotate about the vertical axis. The side moving toward the observer is the left of the screen (α &lt; 0): blueshifted and much brighter. The right side recedes and is dimmer.</li>
+        <li><T en={<><b>Shadow:</b> the dark region is the set of rays that fall into the horizon. Its edge is the Bardeen critical curve (dashed). For a = 0 it is a circle of radius 3√3 M ≈ 5.196 M; with spin it is displaced and flattened (a D shape, most visible edge-on at a near 1).</>} es={<><b>Sombra:</b> la región oscura es el conjunto de rayos que caen en el horizonte. Su borde es la curva crítica de Bardeen (discontinua). Para a = 0 es una circunferencia de radio 3√3 M ≈ 5.196 M; con espín se desplaza y se aplana (forma de D, más visible de canto con a cercano a 1).</>} /></li>
+        <li><T en={<><b>Photon ring:</b> light that loops partly around the hole near the photon orbit piles up just outside the shadow edge as a thin bright ring (the higher-order images of the disk).</>} es={<><b>Anillo de fotones:</b> la luz que da media vuelta o más alrededor del agujero cerca de la órbita de fotones se acumula justo fuera del borde de la sombra como un anillo fino y brillante (las imágenes de orden superior del disco).</>} /></li>
+        <li><T en={<><b>Doppler beaming:</b> the disk and hole rotate about the vertical axis. The side moving toward the observer is the left of the screen (α &lt; 0): blueshifted and much brighter. The right side recedes and is dimmer.</>} es={<><b>Concentración Doppler:</b> el disco y el agujero rotan alrededor del eje vertical. El lado que se acerca al observador es la izquierda de la pantalla (α &lt; 0): desplazado al azul y mucho más brillante. El lado derecho se aleja y es más tenue.</>} /></li>
       </ul>
       {eht && body && (
         <>
-          <h2>{body.name}: shadow vs EHT</h2>
+          <h2>{tr(lang, body.name, body.nameEs ?? body.name)}: {t('shadow vs EHT', 'sombra frente al EHT')}</h2>
           <div className="readout">
-            <span>Schwarzschild shadow ⌀ 2·3√3·GM/(c²D)</span><span>{fmt(eht.ang, 1)} μas</span>
-            {eht.p?.observed && <><span>EHT ring ⌀</span><span>{eht.p.observed.value} ± {eht.p.observed.uncertainty} μas</span></>}
+            <span>{t('Schwarzschild shadow ⌀ 2·3√3·GM/(c²D)', 'Sombra de Schwarzschild ⌀ 2·3√3·GM/(c²D)')}</span><span>{fmt(eht.ang, 1)} μas</span>
+            {eht.p?.observed && <><span>{t('EHT ring ⌀', 'Anillo del EHT ⌀')}</span><span>{eht.p.observed.value} ± {eht.p.observed.uncertainty} μas</span></>}
           </div>
-          <p style={{ fontSize: 12 }}>The EHT images are at 230 GHz with emission from a hot, geometrically thick flow, not a thin disk,. The picture above is illustrative.</p>
+          <p style={{ fontSize: 12 }}>{t('The EHT images are at 230 GHz with emission from a hot, geometrically thick flow, not a thin disk,. The picture above is illustrative.', 'Las imágenes del EHT son a 230 GHz, con emisión de un flujo caliente y geométricamente grueso, no de un disco delgado. La imagen de arriba es ilustrativa.')}</p>
         </>
       )}
     </div>

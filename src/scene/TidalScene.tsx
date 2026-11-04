@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { useStore } from '../state/store';
 import { ringDeformation, ringInitial } from '../math/tidal';
 import { Label } from './Label';
+import { useTr } from '../i18n';
 
 const N = 48, STEPS = 240;
 const COL = ['#ffb347', '#6cb6ff', '#35e0c2']; // rings in planes (radial,θ̂), (radial,φ̂), (θ̂,φ̂)
@@ -27,6 +28,7 @@ const squash = (v: number) => (Math.abs(v) <= 3 ? v : Math.sign(v) * (3 + Math.l
 const SECONDS = 12;
 
 export function TidalScene() {
+  const t = useTr();
   const r0 = useStore((s) => s.stR0);
   const mesh = useRef<THREE.InstancedMesh>(null), marker = useRef<THREE.Mesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
@@ -59,13 +61,13 @@ export function TidalScene() {
       <Line points={[[0, 0, 0], [3, 0, 0]]} color="#ff6b6b" lineWidth={2} />
       <Line points={[[0, 0, 0], [0, 3, 0]]} color="#8a8f98" lineWidth={1} />
       <Line points={[[0, 0, 0], [0, 0, 3]]} color="#8a8f98" lineWidth={1} />
-      <Label text="radial: stretches" position={[3.4, 0.5, 0]} color="#ff6b6b" height={0.32} />
-      <Label text="θ̂ (squeezes)" position={[0, 3.6, 0]} color="#c8ccd4" height={0.28} />
-      <Label text="φ̂ (squeezes)" position={[0, 0, 3.8]} color="#c8ccd4" height={0.28} />
-      <Label text="3 rings of test particles (radius 1 at release)" position={[0, 4.3, 0]} color="#8a8f98" height={0.28} />
+      <Label text={t('radial: stretches', 'radial: estira')} position={[3.4, 0.5, 0]} color="#ff6b6b" height={0.32} />
+      <Label text={t('θ̂ (squeezes)', 'θ̂ (comprime)')} position={[0, 3.6, 0]} color="#c8ccd4" height={0.28} />
+      <Label text={t('φ̂ (squeezes)', 'φ̂ (comprime)')} position={[0, 0, 3.8]} color="#c8ccd4" height={0.28} />
+      <Label text={t('3 rings of test particles (radius 1 at release)', '3 anillos de partículas de prueba (radio 1 al soltarlas)')} position={[0, 4.3, 0]} color="#8a8f98" height={0.28} />
       <Line points={[[-3, -3.4, 0], [0, -3.4, 0]]} color="#8a8f98" lineWidth={1} />
       <mesh position={[-3, -3.4, 0]}><sphereGeometry args={[0.18, 12, 8]} /><meshBasicMaterial color="#000000" /></mesh>
-      <Label text="horizon 2M" position={[-3, -3.95, 0]} height={0.3} />
+      <Label text={t('horizon 2M', 'horizonte 2M')} position={[-3, -3.95, 0]} height={0.3} />
       <Label text={`r_0 = ${r0} M`} position={[0, -3.95, 0]} height={0.3} />
       <mesh ref={marker}><sphereGeometry args={[0.14, 12, 8]} /><meshBasicMaterial color="#ffffff" /></mesh>
     </group>

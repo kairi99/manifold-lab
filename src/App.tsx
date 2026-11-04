@@ -7,17 +7,22 @@ import { MODULE_VIEWS } from './modules/registry';
 import { Tour, TourButton, useFirstVisitTour } from './tour/Tour';
 import { SuggestedTasks } from './tour/SuggestedTasks';
 import { TheoryButton, TheoryDialog } from './tour/Theory';
-import { CanvasAccess, KEYS_HELP } from './a11y/CanvasAccess';
+import { CanvasAccess, keysHelp } from './a11y/CanvasAccess';
 import { WebGLGuard } from './scene/WebGLGuard';
 import { FitCamera } from './scene/FitCamera';
 import { SURFACE_MODULES, MODULES, moduleFromHash } from './state/modules';
 import { Home } from './home/Home';
+import { TopBar, useAppearance } from './chrome/TopBar';
+import { InfoDialog } from './chrome/InfoDialog';
+import { useTr } from './i18n';
 
 export default function App() {
   const module = useStore((s) => s.module);
   const set = useStore((s) => s.set);
   const onHome = useStore((s) => s.onHome);
+  const lang = useStore((s) => s.lang), t = useTr();
   useFirstVisitTour();
+  useAppearance();
   // the URL hash is the source of truth: '' = start page, '#metric' = that module (back button works)
   useEffect(() => {
     const sync = () => {
@@ -34,15 +39,15 @@ export default function App() {
   const { Scene, Panel } = MODULE_VIEWS[module];
   // on phones the tabs scroll sideways; keep the active one visible
   useEffect(() => { document.querySelector('.nav button.active')?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }, [module, onHome]);
-  if (onHome) return <Home />;
   return (
-    <div className="app">
-      <a className="skip" href="#controls" onClick={(e) => { e.preventDefault(); document.getElementById('controls')?.focus(); }}>Skip to controls</a>
-      <nav className="nav" data-tour="nav" aria-label="Modules">
-        <h1><a href="#" className="home-link" title="Back to the start page">Manifold Lab</a></h1>
+    <div className="shell">
+    <TopBar />
+    {onHome ? <Home /> : <div className="app">
+      <a className="skip" href="#controls" onClick={(e) => { e.preventDefault(); document.getElementById('controls')?.focus(); }}>{t('Skip to controls', 'Saltar a los controles')}</a>
+      <nav className="nav" data-tour="nav" aria-label={t('Modules', 'Módulos')}>
         {MODULES.map((m) => (
           <button key={m.id} className={m.id === module ? 'active' : ''} aria-current={m.id === module ? 'page' : undefined} onClick={() => { location.hash = m.id; }}>
-            {m.label}
+            {lang === 'es' ? m.labelEs : m.label}
           </button>
         ))}
       </nav>
@@ -60,15 +65,17 @@ export default function App() {
         </WebGLGuard>
         </CanvasAccess>
       </main>
-      <aside id="controls" className="panel" data-tour="panel" tabIndex={-1} aria-label="Controls and equations">
+      <aside id="controls" className="panel" data-tour="panel" tabIndex={-1} aria-label={t('Controls and equations', 'Controles y ecuaciones')}>
         <TheoryButton />
-        {SURFACE_MODULES.has(module) && <p id="kbd-help" className="kbd-help">{KEYS_HELP}</p>}
-        <Suspense fallback={<p className="loading">Loading module…</p>}><Panel /></Suspense>
+        {SURFACE_MODULES.has(module) && <p id="kbd-help" className="kbd-help">{keysHelp(lang)}</p>}
+        <Suspense fallback={<p className="loading">{t('Loading module…', 'Cargando módulo…')}</p>}><Panel /></Suspense>
         <SuggestedTasks module={module} />
         <TourButton />
       </aside>
       <Tour />
       <TheoryDialog />
+    </div>}
+    <InfoDialog />
     </div>
   );
 }

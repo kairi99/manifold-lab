@@ -8,6 +8,7 @@ import { toWorld } from '../math/metric';
 import { norm } from '../math/vec';
 import type { Surface, Vec2, Vec3, VectorField } from '../math/types';
 import { useStore } from '../state/store';
+import { useTr } from '../i18n';
 import Arrow from './Arrow';
 import DraggablePoint from './DraggablePoint';
 import { Label } from './Label';
@@ -29,7 +30,7 @@ export function zeroIndices(s: Surface, X: VectorField): number[] {
   if (!r) indexCache.set(X, (r = X.zeros.map((z) => fieldIndex(s, X, z))));
   return r;
 }
-export const indexLabel = (n: number) => `ind = ${n > 0 ? '+' : ''}${n}`;
+export const indexLabel = (n: number, es = false) => `${es ? 'índice' : 'ind'} = ${n > 0 ? '+' : ''}${n}`;
 
 /** Current surface, X and optional Y (null when none or equal to X). */
 export function useFieldSel() {
@@ -55,6 +56,7 @@ const polyline = (s: Surface, X: VectorField, uv: Vec2): Vec3[] => {
 export function FieldsScene() {
   const { surface: s, X, Y } = useFieldSel();
   const { uv, showFibers, flowPlaying, commT, set } = useStore();
+  const t = useTr();
   const particles = useRef<THREE.InstancedMesh>(null);
   const discs = useRef<THREE.InstancedMesh>(null);
 
@@ -163,7 +165,7 @@ export function FieldsScene() {
       {zeros.map(({ z, ind }, k) => (
         <group key={k}>
           <mesh position={z.point}><sphereGeometry args={[0.035, 12, 8]} /><meshBasicMaterial color="#ff4d6d" depthTest={false} transparent /></mesh>
-          <Label text={indexLabel(ind)} position={[z.point[0] * 1.0, z.point[1] * 1.0 + 0.0, z.point[2] + 0.12]} color="#ff9db0" />
+          <Label text={t(indexLabel(ind), indexLabel(ind, true))} position={[z.point[0] * 1.0, z.point[1] * 1.0 + 0.0, z.point[2] + 0.12]} color="#ff9db0" />
         </group>
       ))}
       {comm && (

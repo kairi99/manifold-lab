@@ -9,6 +9,7 @@ import TransportPath, {
 import { holonomyAngle, normSq } from '../math/transport';
 import type { Vec2 } from '../math/types';
 import { useStore, type PathKind } from '../state/store';
+import { T, useTr } from '../i18n';
 
 const SECONDS = 6;
 const DEG = 180 / Math.PI;
@@ -41,8 +42,10 @@ export function TransportScene() {
 }
 
 const KIND_LABEL: Record<PathKind, string> = { latitude: 'Coordinate loop', triangle: 'Geodesic triangle', free: 'Free draw' };
+const KIND_LABEL_ES: Record<PathKind, string> = { latitude: 'Lazo coordenado', triangle: 'Triángulo geodésico', free: 'Dibujo libre' };
 
 export function TransportPanel() {
+  const t = useTr();
   const { surface, kind, curve, start, V0, samples } = useTransportData();
   const { surfaceId, latitude, progress, freePoints, set } = useStore();
   const { drawing, setDrawing } = useDraw();
@@ -80,41 +83,41 @@ export function TransportPanel() {
   return (
     <div>
       <SurfacePicker />
-      <h2>Path</h2>
+      <h2><T en="Path" es="Trayectoria" /></h2>
       <fieldset className="field group">
-        <legend>Loop type</legend>
+        <legend>{t('Loop type', 'Tipo de lazo')}</legend>
         {availableKinds(surfaceId).map((k) => (
           <label key={k}>
-            <input type="radio" name="pk" checked={kind === k} onChange={() => { set({ pathKind: k, progress: 0, playing: false }); if (k !== 'free') setDrawing(false); }} /> {KIND_LABEL[k]}
+            <input type="radio" name="pk" checked={kind === k} onChange={() => { set({ pathKind: k, progress: 0, playing: false }); if (k !== 'free') setDrawing(false); }} /> {t(KIND_LABEL[k], KIND_LABEL_ES[k])}
           </label>
         ))}
       </fieldset>
       {kind === 'latitude' && (
         <label className="field">
-          <span>{sl.label}: {sl.deg ? `${fmt(latitude * DEG, 0)}°` : fmt(latitude, 2)}</span>
+          <span>{t(sl.label, sl.labelEs)}: {sl.deg ? `${fmt(latitude * DEG, 0)}°` : fmt(latitude, 2)}</span>
           <input type="range" min={sl.min} max={sl.max} step={0.01}
             value={Math.min(sl.max, Math.max(sl.min, latitude))}
             onChange={(e) => set({ latitude: +e.target.value, progress: 0, playing: false })} />
         </label>
       )}
       {kind === 'free' && (
-        <div className="field" role="group" aria-label="Free loop">
+        <div className="field" role="group" aria-label={t('Free loop', 'Lazo libre')}>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button aria-pressed={drawing} onClick={() => setDrawing(!drawing)}>{drawing ? 'Done drawing' : 'Draw loop'}</button>
-            <button onClick={() => set({ freePoints: [], progress: 0, playing: false })}>Clear</button>
+            <button aria-pressed={drawing} onClick={() => setDrawing(!drawing)}>{drawing ? t('Done drawing', 'Terminar dibujo') : t('Draw loop', 'Dibujar lazo')}</button>
+            <button onClick={() => set({ freePoints: [], progress: 0, playing: false })}>{t('Clear', 'Borrar')}</button>
           </div>
-          <span role="status">{drawing ? 'Click the surface to add points (need 3+).' : `${freePoints.length} points`}</span>
+          <span role="status">{drawing ? t('Click the surface to add points (need 3+).', 'Haz clic en la superficie para añadir puntos (se necesitan 3 o más).') : `${freePoints.length} ${t('points', 'puntos')}`}</span>
         </div>
       )}
       {start && (
         <label className="field">
-          <span>Initial vector angle: {fmt(angle * DEG, 0)}°</span>
+          <span>{t('Initial vector angle', 'Ángulo del vector inicial')}: {fmt(angle * DEG, 0)}°</span>
           <input type="range" min={-Math.PI} max={Math.PI} step={0.01} value={angle} onChange={(e) => setAngle(+e.target.value)} />
         </label>
       )}
       <TransportControls />
 
-      <h2>Transport equation</h2>
+      <h2><T en="Transport equation" es="Ecuación del transporte" /></h2>
       <Tex block>{String.raw`\frac{dV^k}{dt} + \Gamma^k_{ij}\,V^i\,\frac{du^j}{dt} = 0`}</Tex>
       {cur ? (
         <div className="readout">
@@ -124,24 +127,26 @@ export function TransportPanel() {
           <span>dV<sup>k</sup>/dt</span><span>({fmt(dV[0])}, {fmt(dV[1])})</span>
           <span>g(V,V)</span><span>{fmt(normSq(surface, cur.uv, cur.V), 5)}</span>
         </div>
-      ) : <p>Draw at least 3 points to define a loop.</p>}
+      ) : <p>{t('Draw at least 3 points to define a loop.', 'Dibuja al menos 3 puntos para definir un lazo.')}</p>}
 
-      <h2 data-tour="holonomy">Holonomy</h2>
+      <h2 data-tour="holonomy"><T en="Holonomy" es="Holonomía" /></h2>
       {measured !== null ? (
         <>
           <div className="readout">
-            <span>measured</span><span>{fmtDeg(measured)}° ({fmt(measured, 4)} rad)</span>
-            {predicted !== null && (<><span>predicted</span><span>{fmtDeg(predicted)}°</span></>)}
+            <span>{t('measured', 'medida')}</span><span>{fmtDeg(measured)}° ({fmt(measured, 4)} rad)</span>
+            {predicted !== null && (<><span>{t('predicted', 'predicha')}</span><span>{fmtDeg(predicted)}°</span></>)}
           </div>
-          <p>Angle = ∬<Tex>K\,dA</Tex> over the enclosed region (Gauss–Bonnet), for loops counter-clockwise in <Tex>{`(${cu},${cv})`}</Tex>.</p>
+          <p><T
+            en={<>Angle = ∬<Tex>K\,dA</Tex> over the enclosed region (Gauss–Bonnet), for loops counter-clockwise in <Tex>{`(${cu},${cv})`}</Tex>.</>}
+            es={<>Ángulo = ∬<Tex>K\,dA</Tex> sobre la región encerrada (Gauss–Bonnet), para lazos recorridos en sentido antihorario en <Tex>{`(${cu},${cv})`}</Tex>.</>} /></p>
           {isSphere && kind === 'latitude' && (
             <Tex block>{String.raw`\iint K\,dA = 2\pi(1-\cos\theta_0)`}</Tex>
           )}
           {isSphere && kind === 'triangle' && (
-            <Tex block>{String.raw`\iint K\,dA = \text{area} = \tfrac{\pi}{2}\cos 0.05`}</Tex>
+            <Tex block>{t(String.raw`\iint K\,dA = \text{area} = \tfrac{\pi}{2}\cos 0.05`, String.raw`\iint K\,dA = \text{área} = \tfrac{\pi}{2}\cos 0.05`)}</Tex>
           )}
         </>
-      ) : <p>No loop yet.</p>}
+      ) : <p>{t('No loop yet.', 'Aún no hay lazo.')}</p>}
     </div>
   );
 }

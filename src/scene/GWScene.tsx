@@ -6,12 +6,14 @@ import { useStore } from '../state/store';
 import { ringPositionExact } from '../math/gw';
 import { gwDisplay } from '../panels/GWModel';
 import { Label } from './Label';
+import { useTr } from '../i18n';
 
 const N = 64, R = 2, SECONDS = 10;
 
 /** Ring of free particles in the x–y plane (TT gauge, wave along z): coordinates fixed, proper separations oscillate. */
 export function GWScene() {
   const drive = useStore((s) => s.gwDrive);
+  const t = useTr();
   const mesh = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const ghostPts = useMemo(() => Array.from({ length: N + 1 }, (_, k) => [R * Math.cos((2 * Math.PI * k) / N), R * Math.sin((2 * Math.PI * k) / N), 0] as [number, number, number]), []);
@@ -33,10 +35,10 @@ export function GWScene() {
       </instancedMesh>
       <Line points={ghostPts} color="#8a8f98" lineWidth={1} dashed dashSize={0.1} gapSize={0.1} transparent opacity={0.6} />
       <Line points={[[0, 0, -1], [0, 0, 3]]} color="#6cb6ff" lineWidth={2} />
-      <Label text="z (wave)" position={[0, 0.3, 3.2]} color="#6cb6ff" height={0.26} />
+      <Label text={t('z (wave)', 'z (onda)')} position={[0, 0.3, 3.2]} color="#6cb6ff" height={0.26} />
       <Label text="x" position={[R + 0.6, 0, 0]} height={0.3} />
       <Label text="y" position={[0, R + 0.6, 0]} height={0.3} />
-      <Label text={drive === 'mono' ? `TT ring, amplitude exaggerated (real h ~ 1e-21)` : 'GW150914 NR template (H1), scaled up, slowed ~50x'} position={[0, -3.1, 0]} color="#ffb347" height={0.3} />
+      <Label text={drive === 'mono' ? t('TT ring, amplitude exaggerated (real h ~ 1e-21)', 'anillo TT, amplitud exagerada (h real ~ 1e-21)') : t('GW150914 NR template (H1), scaled up, slowed ~50x', 'plantilla RN de GW150914 (H1), ampliada, ralentizada ~50x')} position={[0, -3.1, 0]} color="#ffb347" height={0.3} />
     </group>
   );
 }

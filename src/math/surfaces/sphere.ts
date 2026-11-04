@@ -5,6 +5,7 @@ export function makeSphere(R = 1): Surface {
   return {
     id: 'sphere',
     name: 'Sphere',
+    nameEs: 'Esfera',
     coords: ['\\theta', '\\varphi'],
     domain: { u: [eps, Math.PI - eps], v: [0, 2 * Math.PI], periodicU: false, periodicV: true },
     position: (t, p) => [R * Math.sin(t) * Math.cos(p), R * Math.cos(t), R * Math.sin(t) * Math.sin(p)],

@@ -1,5 +1,6 @@
 import { richSvg } from './Tex';
 import { age, angularDiameterDistance, cosmicTime, type CosmoParams } from '../math/cosmology';
+import { useTr } from '../i18n';
 
 const W = 360, H = 190, ML = 42, MR = 10, MT = 10, MB = 30;
 interface Mark { x: number; y: number; label: string; color?: string }
@@ -32,23 +33,25 @@ function Plot({ pts, marks, xr, yr, xlab, ylab, xlog = false, title, xt, yt }: {
 
 /** Scale factor against cosmic time, with today and the selected object's emission event marked. */
 export function ScaleFactorPlot({ p, z }: { p: CosmoParams; z: number }) {
+  const t = useTr();
   const t0 = age(0, p), tMax = 2 * t0;
   const as = Array.from({ length: 70 }, (_, i) => 1e-3 * 4000 ** (i / 69)).filter((a) => cosmicTime(a, p) <= tMax);
   const pts = as.map((a): [number, number] => [cosmicTime(a, p), a]);
   const aMax = Math.max(1.2, ...pts.map((q) => q[1]));
   const te = age(z, p);
-  return <Plot title={`Scale factor against cosmic time: a = 1 at t = ${t0.toFixed(2)} Gyr; emission at t = ${te.toFixed(3)} Gyr, a = ${(1 / (1 + z)).toFixed(4)}`}
-    pts={pts} xr={[0, tMax]} yr={[0, aMax]} xlab="cosmic time t (Gyr)" ylab="a(t)" xt={[0, Math.round(t0), Math.round(tMax)]} yt={[0, 1]}
-    marks={[{ x: t0, y: 1, label: 'now' }, { x: te, y: 1 / (1 + z), label: 'emission', color: '#ff4fd8' }]} />;
+  return <Plot title={t(`Scale factor against cosmic time: a = 1 at t = ${t0.toFixed(2)} Gyr; emission at t = ${te.toFixed(3)} Gyr, a = ${(1 / (1 + z)).toFixed(4)}`, `Factor de escala frente al tiempo cósmico: a = 1 en t = ${t0.toFixed(2)} Gyr; emisión en t = ${te.toFixed(3)} Gyr, a = ${(1 / (1 + z)).toFixed(4)}`)}
+    pts={pts} xr={[0, tMax]} yr={[0, aMax]} xlab={t('cosmic time t (Gyr)', 'tiempo cósmico t (Gyr)')} ylab="a(t)" xt={[0, Math.round(t0), Math.round(tMax)]} yt={[0, 1]}
+    marks={[{ x: t0, y: 1, label: t('now', 'hoy') }, { x: te, y: 1 / (1 + z), label: t('emission', 'emisión'), color: '#ff4fd8' }]} />;
 }
 
 /** D_A(z) on a log redshift axis; the maximum is marked (distant objects look bigger beyond it). */
 export function AngularDiameterPlot({ p, z }: { p: CosmoParams; z: number }) {
+  const t = useTr();
   const zs = Array.from({ length: 70 }, (_, i) => 0.01 * 1.2e5 ** (i / 69));
   const da = zs.map((q) => angularDiameterDistance(q, p));
   let k = 0; da.forEach((v, i) => { if (v > da[k]) k = i; });
   const yMax = Math.ceil(da[k] / 1000) * 1000;
-  return <Plot title={`Angular diameter distance against redshift: maximum ${da[k].toFixed(0)} Mpc at z = ${zs[k].toFixed(2)}`}
-    pts={zs.map((q, i): [number, number] => [q, da[i]])} xr={[0.01, 1200]} yr={[0, yMax]} xlog xlab="redshift z (log)" ylab="D_A (Mpc)" xt={[0.01, 0.1, 1, 10, 100, 1000]} yt={[0, yMax / 2, yMax]}
-    marks={[{ x: zs[k], y: da[k], label: `max z=${zs[k].toFixed(2)}` }, { x: Math.max(0.01, z), y: angularDiameterDistance(z, p), label: 'object', color: '#ff4fd8' }]} />;
+  return <Plot title={t(`Angular diameter distance against redshift: maximum ${da[k].toFixed(0)} Mpc at z = ${zs[k].toFixed(2)}`, `Distancia de diámetro angular frente al desplazamiento al rojo: máximo ${da[k].toFixed(0)} Mpc en z = ${zs[k].toFixed(2)}`)}
+    pts={zs.map((q, i): [number, number] => [q, da[i]])} xr={[0.01, 1200]} yr={[0, yMax]} xlog xlab={t('redshift z (log)', 'desplazamiento al rojo z (log)')} ylab="D_A (Mpc)" xt={[0.01, 0.1, 1, 10, 100, 1000]} yt={[0, yMax / 2, yMax]}
+    marks={[{ x: zs[k], y: da[k], label: `max z=${zs[k].toFixed(2)}` }, { x: Math.max(0.01, z), y: angularDiameterDistance(z, p), label: t('object', 'objeto'), color: '#ff4fd8' }]} />;
 }

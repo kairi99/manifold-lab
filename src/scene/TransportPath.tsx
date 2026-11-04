@@ -51,10 +51,10 @@ export function availableKinds(surfaceId: string): PathKind[] {
 
 /** Range and label of the single loop slider (store.latitude) per surface. */
 export function loopSlider(surfaceId: string) {
-  if (surfaceId === 'custom') return { label: 'loop position (fraction of range)', min: 0.1, max: 0.9, deg: false };
-  if (surfaceId === 'sphere') return { label: 'θ0 (latitude)', min: 0.2, max: Math.PI - 0.2, deg: true };
-  if (surfaceId === 'torus') return { label: 'v (tube angle)', min: 0, max: 2 * Math.PI, deg: true };
-  return { label: 'ρ (circle radius)', min: 0.1, max: 1.1, deg: false };
+  if (surfaceId === 'custom') return { label: 'loop position (fraction of range)', labelEs: 'posición del lazo (fracción del rango)', min: 0.1, max: 0.9, deg: false };
+  if (surfaceId === 'sphere') return { label: 'θ0 (latitude)', labelEs: 'θ0 (latitud)', min: 0.2, max: Math.PI - 0.2, deg: true };
+  if (surfaceId === 'torus') return { label: 'v (tube angle)', labelEs: 'v (ángulo del tubo)', min: 0, max: 2 * Math.PI, deg: true };
+  return { label: 'ρ (circle radius)', labelEs: 'ρ (radio del círculo)', min: 0.1, max: 1.1, deg: false };
 }
 
 /** Orthonormal frame (e1, e2) of the tangent plane, in coordinate components. */

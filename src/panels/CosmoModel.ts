@@ -16,12 +16,15 @@ export function useCosmoParams(): CosmoParams {
 }
 
 /** Message if the model has no big bang or recollapses within a < 1000 (scale-factor scan), else null. */
-export function validity(p: CosmoParams): string | null {
-  if (!(p.H0 > 0) || p.Om + p.Or <= 0) return 'Needs H0 > 0 and some matter or radiation.';
+export function validity(p: CosmoParams, es = false): string | null {
+  if (!(p.H0 > 0) || p.Om + p.Or <= 0) return es ? 'Hace falta H0 > 0 y algo de materia o radiación.' : 'Needs H0 > 0 and some matter or radiation.';
   const ok = curvature(p);
   for (let i = 0; i <= 600; i++) {
     const a = 1e-4 * 1e7 ** (i / 600);
     if (p.Or + p.Om * a + ok * a * a + p.OL * a ** 4 <= 0) {
+      if (es) return a < 1
+        ? `Sin big bang: este modelo rebota en a ≈ ${a.toPrecision(2)} (H² = 0 antes del presente), así que no tiene edad finita. Baja Ω_Λ o sube Ω_m.`
+        : `Este modelo vuelve a colapsar (H = 0 en a ≈ ${a.toPrecision(2)}, un Big Crunch). El diagrama conforme y el horizonte de sucesos suponen expansión eterna; baja Ω_m o sube Ω_Λ.`;
       return a < 1
         ? `No big bang: this model bounces at a ≈ ${a.toPrecision(2)} (H² = 0 before the present), so there is no finite age. Lower Ω_Λ or raise Ω_m.`
         : `This model recollapses (H = 0 at a ≈ ${a.toPrecision(2)}, a Big Crunch). The conformal diagram and event horizon assume expansion forever; lower Ω_m or raise Ω_Λ.`;

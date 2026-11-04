@@ -6,6 +6,7 @@ import { getSurface } from '../math';
 import { geodesic, unitVelocity } from '../math/geodesic';
 import type { GeodesicPath, Surface, Vec2, Vec3 } from '../math/types';
 import { useStore } from '../state/store';
+import { useTr } from '../i18n';
 import DraggablePoint from './DraggablePoint';
 import { Label } from './Label';
 import SurfaceMesh from './SurfaceMesh';
@@ -55,6 +56,7 @@ const lift = (s: Surface, uv: Vec2): Vec3 => {
 export default function GeodesicFan() {
   const { surface, paths, mid, angle0 } = useGeoFan();
   const { uv, geoCount, geoLength, geoProgress, surfaceId, set } = useStore();
+  const t = useTr();
   const target = geoProgress * geoLength;
   const color = (i: number) => new THREE.Color().setHSL(0.55 + 0.45 * (geoCount === 1 ? 0 : i / (geoCount - 1)), 0.9, 0.62).getStyle();
 
@@ -88,7 +90,7 @@ export default function GeodesicFan() {
             <torusGeometry args={[0.06, 0.012, 8, 24]} />
             <meshBasicMaterial color="#ff6b9d" />
           </mesh>
-          <Label text="−p (conjugate point)" position={[-p3[0] * 1.12, -p3[1] * 1.12 - 0.1, -p3[2] * 1.12]} color="#ff9dbd" />
+          <Label text={t('−p (conjugate point)', '−p (punto conjugado)')} position={[-p3[0] * 1.12, -p3[1] * 1.12 - 0.1, -p3[2] * 1.12]} color="#ff9dbd" />
         </>
       )}
       {/* only the direction matters (geodesics are unit speed); draw short so it does not dominate */}

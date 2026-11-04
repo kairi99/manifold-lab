@@ -5,8 +5,9 @@ import { PenroseScene } from '../scene/PenroseScene';
 import { CosmoScene } from '../scene/CosmoScene';
 import { PenrosePanel } from '../panels/PenrosePanel';
 import { CosmoPanel } from '../panels/CosmoPanel';
+import { useTr } from '../i18n';
 
-const VIEWS = [['penrose', 'Penrose diagrams'], ['cosmology', 'Cosmology']] as const;
+const VIEWS = [['penrose', 'Penrose diagrams', 'Diagramas de Penrose'], ['cosmology', 'Cosmology', 'Cosmología']] as const;
 
 /** Flat diagrams: look head-on at the origin with rotation off; restore the shared default camera on exit. */
 export function CosmosScene() {
@@ -32,13 +33,14 @@ export function CosmosScene() {
 
 export function CosmosPanel() {
   const view = useStore((s) => s.csView), set = useStore((s) => s.set);
+  const tr = useTr();
   return (
     <div>
-      <div data-tour="views" role="group" aria-label="View" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6, marginBottom: 12 }}>
-        {VIEWS.map(([id, t]) => (
+      <div data-tour="views" role="group" aria-label={tr('View', 'Vista')} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6, marginBottom: 12 }}>
+        {VIEWS.map(([id, t, tEs]) => (
           <button key={id} aria-pressed={view === id} onClick={() => set({ csView: id })}
             style={{ padding: '6px', background: view === id ? 'var(--accent)' : 'var(--bg)', color: view === id ? 'var(--bg)' : 'var(--fg)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer' }}>
-            {t}
+            {tr(t, tEs)}
           </button>
         ))}
       </div>

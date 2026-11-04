@@ -8,10 +8,12 @@ export function makeGraph(
   f: F2, fx: F2, fy: F2, fxx: F2, fxy: F2, fyy: F2,
   latex: Surface['latex'],
   half = 1.2,
+  nameEs?: string,
 ): Surface {
   return {
     id,
     name,
+    nameEs,
     coords: ['x', 'y'],
     domain: { u: [-half, half], v: [-half, half], periodicU: false, periodicV: false },
     position: (x, y) => [x, f(x, y), y],
@@ -48,6 +50,7 @@ export const saddle = makeGraph(
   () => 1, () => 0, () => -1,
   { param: String.raw`\mathbf r(x,y)=\big(x,\ \tfrac12(x^2-y^2),\ y\big)`, metric: metricLatex,
     christoffel: String.raw`\Gamma^x_{xx}=\frac{x}{1+x^2+y^2},\ \Gamma^y_{yy}=\frac{y}{1+x^2+y^2},\ \text{(others }0\text{)}` },
+  1.2, 'Silla',
 );
 
 export const paraboloid = makeGraph(
@@ -56,4 +59,5 @@ export const paraboloid = makeGraph(
   () => 1, () => 0, () => 1,
   { param: String.raw`\mathbf r(x,y)=\big(x,\ \tfrac12(x^2+y^2),\ y\big)`, metric: metricLatex,
     christoffel: gammaLatex + String.raw`\ \Rightarrow\ \Gamma^x_{xx}=\frac{x}{1+x^2+y^2},\ \Gamma^y_{yy}=\frac{y}{1+x^2+y^2}` },
+  1.2, 'Paraboloide',
 );

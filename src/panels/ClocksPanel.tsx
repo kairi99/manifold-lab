@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '../state/store';
+import { T, tr, useLang, useTr } from '../i18n';
 import { Tex, fmt, Rich } from './Tex';
 import { REDSHIFT_TESTS, SHAPIRO_TESTS, FRAME_DRAG_TESTS } from '../data/grTests';
 import { bodyById, C, YEAR } from '../data/celestial';
@@ -12,6 +13,9 @@ const Src = ({ s }: { s: Source }) => (s.url ? <a href={s.url} target="_blank" r
 const ALL = [...REDSHIFT_TESTS, ...SHAPIRO_TESTS, ...FRAME_DRAG_TESTS];
 
 export function ClocksPanel() {
+  const t = useTr(), lang = useLang();
+  const nm = (o: { name: string; nameEs?: string }) => tr(lang, o.name, o.nameEs ?? o.name);
+  const qn = (o: { quantity: string; quantityEs?: string }) => tr(lang, o.quantity, o.quantityEs ?? o.quantity);
   const preset = useStore((s) => s.grClockPreset), set = useStore((s) => s.set);
   const [rGen, setRGen] = useState(6);
   const id = ALL.some((t) => t.id === preset) ? preset : REDSHIFT_TESTS[0].id;
@@ -22,29 +26,29 @@ export function ClocksPanel() {
 
   return (
     <div data-tour="gr-clocks">
-      <label className="field"><span>Test</span>
+      <label className="field"><span>{t('Test', 'Prueba')}</span>
         <select value={id} onChange={(e) => set({ grClockPreset: e.target.value })}>
-          <optgroup label="Gravitational redshift">{REDSHIFT_TESTS.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</optgroup>
-          <optgroup label="Shapiro delay">{SHAPIRO_TESTS.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</optgroup>
-          <optgroup label="Frame dragging">{FRAME_DRAG_TESTS.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</optgroup>
+          <optgroup label={t('Gravitational redshift', 'Desplazamiento al rojo gravitacional')}>{REDSHIFT_TESTS.map((t) => <option key={t.id} value={t.id}>{nm(t)}</option>)}</optgroup>
+          <optgroup label={t('Shapiro delay', 'Retraso de Shapiro')}>{SHAPIRO_TESTS.map((t) => <option key={t.id} value={t.id}>{nm(t)}</option>)}</optgroup>
+          <optgroup label={t('Frame dragging', 'Arrastre de marcos')}>{FRAME_DRAG_TESTS.map((t) => <option key={t.id} value={t.id}>{nm(t)}</option>)}</optgroup>
         </select></label>
-      <p style={{ fontSize: 12 }}>Central body: {body.name}. <Rich>{test.note}</Rich></p>
+      <p style={{ fontSize: 12 }}>{t('Central body', 'Cuerpo central')}: {nm(body)}. <Rich>{tr(lang, test.note, test.noteEs ?? test.note)}</Rich></p>
 
       {rs && (() => {
         const z = redshiftWeakSI(body.gm, rs.r1M, rs.r2M ?? Infinity);
         return (
           <>
-            <h2>Gravitational redshift</h2>
-            <p>A static clock at radius <Tex>r</Tex> ticks slower than one far away because <Tex>{String.raw`g_{tt}=-(1-2GM/rc^2)`}</Tex>. A photon climbing from <Tex>r_1</Tex> to <Tex>r_2</Tex> is shifted by (weak field):</p>
+            <h2>{t('Gravitational redshift', 'Desplazamiento al rojo gravitacional')}</h2>
+            <p><T en={<>A static clock at radius <Tex>r</Tex> ticks slower than one far away because <Tex>{String.raw`g_{tt}=-(1-2GM/rc^2)`}</Tex>. A photon climbing from <Tex>r_1</Tex> to <Tex>r_2</Tex> is shifted by (weak field):</>} es={<>Un reloj estático a radio <Tex>r</Tex> marcha más lento que uno lejano porque <Tex>{String.raw`g_{tt}=-(1-2GM/rc^2)`}</Tex>. Un fotón que asciende de <Tex>r_1</Tex> a <Tex>r_2</Tex> sufre un desplazamiento (campo débil):</>} /></p>
             <Tex block>{String.raw`\frac{\Delta\nu}{\nu}\approx\frac{GM}{c^2}\Big(\frac1{r_1}-\frac1{r_2}\Big)`}</Tex>
             <div className="readout">
               <span>r₁</span><span>{sci(rs.r1M)} m</span>
               <span>r₂</span><span>{rs.r2M === null ? '∞' : `${sci(rs.r2M)} m`}</span>
-              <span>GR predicted |Δν/ν|</span><span>{sci(Math.abs(z))}</span>
-              {rs.id === 'sirius-b' && <><span>as velocity</span><span>{fmt((Math.abs(z) * C) / 1000, 1)} km/s</span></>}
-              <span>observed</span><span>{unc(rs.observed)}</span>
+              <span>{t('GR predicted |Δν/ν|', '|Δν/ν| predicho por la RG')}</span><span>{sci(Math.abs(z))}</span>
+              {rs.id === 'sirius-b' && <><span>{t('as velocity', 'como velocidad')}</span><span>{fmt((Math.abs(z) * C) / 1000, 1)} km/s</span></>}
+              <span>{t('observed', 'observado')}</span><span>{unc(rs.observed)}</span>
             </div>
-            <p style={{ fontSize: 12 }}>{rs.observed.quantity}. Source: <Src s={rs.observed.source} /></p>
+            <p style={{ fontSize: 12 }}>{qn(rs.observed)}. {t('Source', 'Fuente')}: <Src s={rs.observed.source} /></p>
           </>
         );
       })()}
@@ -52,17 +56,17 @@ export function ClocksPanel() {
         const dt = shapiroDelaySI(body.gm, sh.r1M, sh.r2M, sh.bM);
         return (
           <>
-            <h2>Shapiro delay</h2>
-            <p>Light passing a mass is slowed in coordinate time. One way, for endpoints at <Tex>r_1,r_2</Tex> and closest approach <Tex>b</Tex>:</p>
+            <h2>{t('Shapiro delay', 'Retraso de Shapiro')}</h2>
+            <p><T en={<>Light passing a mass is slowed in coordinate time. One way, for endpoints at <Tex>r_1,r_2</Tex> and closest approach <Tex>b</Tex>:</>} es={<>La luz que pasa junto a una masa se retrasa en tiempo coordenado. En un sentido, para extremos en <Tex>r_1,r_2</Tex> y máximo acercamiento <Tex>b</Tex>:</>} /></p>
             <Tex block>{String.raw`\Delta t=(1+\gamma)\,\frac{GM}{c^3}\ln\frac{4r_1r_2}{b^2}`}</Tex>
             <div className="readout">
               <span>GM/c³</span><span>{sci(body.gm / C ** 3)} s</span>
               <span>b</span><span>{sci(sh.bM)} m</span>
-              <span>one-way delay</span><span>{fmt(dt * 1e6, 1)} μs</span>
-              <span>round trip</span><span>{fmt(dt * 2e6, 1)} μs</span>
-              <span>observed</span><span>{unc(sh.observed)}</span>
+              <span>{t('one-way delay', 'retraso de ida')}</span><span>{fmt(dt * 1e6, 1)} μs</span>
+              <span>{t('round trip', 'ida y vuelta')}</span><span>{fmt(dt * 2e6, 1)} μs</span>
+              <span>{t('observed', 'observado')}</span><span>{unc(sh.observed)}</span>
             </div>
-            <p style={{ fontSize: 12 }}>{sh.observed.quantity}. Source: <Src s={sh.observed.source} /></p>
+            <p style={{ fontSize: 12 }}>{qn(sh.observed)}. {t('Source', 'Fuente')}: <Src s={sh.observed.source} /></p>
           </>
         );
       })()}
@@ -72,29 +76,29 @@ export function ClocksPanel() {
         const lt = J !== undefined ? lenseThirringPolarSI(J, fd.orbitRadiusM) * MAS : null;
         return (
           <>
-            <h2>Gyroscope precession</h2>
-            <p>The geodetic (de Sitter) term comes from space curvature plus motion; the Lense–Thirring term from the rotating body dragging inertial frames:</p>
+            <h2>{t('Gyroscope precession', 'Precesión del giróscopo')}</h2>
+            <p>{t('The geodetic (de Sitter) term comes from space curvature plus motion; the Lense–Thirring term from the rotating body dragging inertial frames:', 'El término geodésico (de Sitter) procede de la curvatura del espacio más el movimiento; el término de Lense–Thirring, del cuerpo en rotación que arrastra los marcos inerciales:')}</p>
             <Tex block>{String.raw`\Omega_{\rm dS}=\tfrac32\frac{(GM)^{3/2}}{c^2a^{5/2}},\qquad \Omega_{\rm LT}=\frac{GJ}{2c^2a^3}`}</Tex>
             <table style={{ fontSize: 12, borderCollapse: 'collapse', width: '100%' }}>
-              <caption style={{ textAlign: 'left', color: 'var(--muted)' }}>{test.name}, mas/yr</caption>
-              <thead><tr><th scope="col" align="left"></th><th scope="col" align="left">formula</th><th scope="col" align="left">published</th><th scope="col" align="left">observed</th></tr></thead>
+              <caption style={{ textAlign: 'left', color: 'var(--muted)' }}>{nm(test)}, mas/{t('yr', 'año')}</caption>
+              <thead><tr><th scope="col" align="left"></th><th scope="col" align="left">{t('formula', 'fórmula')}</th><th scope="col" align="left">{t('published', 'publicado')}</th><th scope="col" align="left">{t('observed', 'observado')}</th></tr></thead>
               <tbody>
-                <tr><th scope="row" align="left">geodetic</th><td>{fmt(geo, 1)}</td><td>{fd.predicted.geodetic}</td><td>{fd.observed.geodetic.value} ± {fd.observed.geodetic.uncertainty}</td></tr>
-                <tr><th scope="row" align="left">frame dragging</th><td>{lt === null ? 'n/a' : fmt(lt, 1)}</td><td>{fd.predicted.frameDragging}</td><td>{fd.observed.frameDragging.value} ± {fd.observed.frameDragging.uncertainty}</td></tr>
+                <tr><th scope="row" align="left">{t('geodetic', 'geodésico')}</th><td>{fmt(geo, 1)}</td><td>{fd.predicted.geodetic}</td><td>{fd.observed.geodetic.value} ± {fd.observed.geodetic.uncertainty}</td></tr>
+                <tr><th scope="row" align="left">{t('frame dragging', 'arrastre de marcos')}</th><td>{lt === null ? t('n/a', 'n/d') : fmt(lt, 1)}</td><td>{fd.predicted.frameDragging}</td><td>{fd.observed.frameDragging.value} ± {fd.observed.frameDragging.uncertainty}</td></tr>
               </tbody>
             </table>
-            <p style={{ fontSize: 12 }}>The polar-orbit formula gives about 40.8 mas/yr; GP-B's 39.2 projects it onto the guide-star direction. Source: <Src s={fd.observed.source} /></p>
+            <p style={{ fontSize: 12 }}>{t("The polar-orbit formula gives about 40.8 mas/yr; GP-B's 39.2 projects it onto the guide-star direction.", 'La fórmula de órbita polar da unos 40.8 mas/año; los 39.2 de GP-B la proyectan sobre la dirección de la estrella guía.')} {t('Source', 'Fuente')}: <Src s={fd.observed.source} /></p>
           </>
         );
       })()}
 
-      <h2>Clock rate near a mass</h2>
+      <h2>{t('Clock rate near a mass', 'Ritmo del reloj cerca de una masa')}</h2>
       <label className="field"><span>r = {fmt(rGen, 1)} M</span>
-        <input type="range" min={2.1} max={50} step={0.1} value={rGen} aria-label="Emitter radius in units of M" onChange={(e) => setRGen(+e.target.value)} /></label>
+        <input type="range" min={2.1} max={50} step={0.1} value={rGen} aria-label={t('Emitter radius in units of M', 'Radio del emisor en unidades de M')} onChange={(e) => setRGen(+e.target.value)} /></label>
       <Tex block>{String.raw`1+z=\Big(1-\frac{2M}{r}\Big)^{-1/2},\qquad \frac{d\tau}{dt}=\sqrt{1-\frac{2M}{r}}`}</Tex>
       <div className="readout">
-        <span>redshift z (to ∞)</span><span>{fmt(gravRedshift(rGen), 4)}</span>
-        <span>clock rate dτ/dt</span><span>{fmt(Math.sqrt(1 - 2 / rGen), 4)}</span>
+        <span>{t('redshift z (to ∞)', 'desplazamiento al rojo z (hasta ∞)')}</span><span>{fmt(gravRedshift(rGen), 4)}</span>
+        <span>{t('clock rate dτ/dt', 'ritmo del reloj dτ/dt')}</span><span>{fmt(Math.sqrt(1 - 2 / rGen), 4)}</span>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { coordText } from '../panels/Tex';
 import { stModel } from '../panels/SpacetimeModel';
 import { sci } from '../panels/SpacetimeUi';
 import { Label } from './Label';
+import { useTr, useLang } from '../i18n';
 
 const PLANES = [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]];
 
@@ -11,6 +12,7 @@ const PLANES = [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]];
 export function TensorScene() {
   const id = useStore((s) => s.stMetric), params = useStore((s) => s.stParams), event = useStore((s) => s.stEvent);
   const m = stModel(id, params, event), names = m.metric.coords.map(coordText);
+  const t = useTr(), lang = useLang();
   const ks = PLANES.map(([a, b]) => m.K[a][b]), kmax = Math.max(...ks.map(Math.abs));
   const flat = kmax < 1e-12;
   return (
@@ -26,8 +28,8 @@ export function TensorScene() {
           </group>
         );
       })}
-      <Label text={`${m.metric.name}: sectional curvatures K`} position={[0, 3.2, 0]} height={0.3} />
-      <Label text={flat ? 'all zero: flat spacetime' : 'blue: K > 0, orange: K < 0; heights normalised to max |K|'} position={[0, -1.7, 0]} color={flat ? '#35e0c2' : '#8a8f98'} height={0.24} />
+      <Label text={lang === 'es' ? `${m.metric.nameEs ?? m.metric.name}: curvaturas seccionales K` : `${m.metric.name}: sectional curvatures K`} position={[0, 3.2, 0]} height={0.3} />
+      <Label text={flat ? t('all zero: flat spacetime', 'todo nulo: espaciotiempo plano') : t('blue: K > 0, orange: K < 0; heights normalised to max |K|', 'azul: K > 0, naranja: K < 0; alturas normalizadas al máximo |K|')} position={[0, -1.7, 0]} color={flat ? '#35e0c2' : '#8a8f98'} height={0.24} />
     </group>
   );
 }

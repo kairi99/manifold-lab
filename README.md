@@ -18,7 +18,7 @@ An interactive explorer for differential geometry and general relativity. Every 
 
 Surfaces: sphere, torus, saddle, paraboloid, and Custom: type your own parametric surface or graph (`+ - * / ^`, `sin cos tan exp log sqrt abs sinh cosh tanh asin acos atan`, constants `pi e`, sliders `a b`) or load a classic (catenoid, helicoid, pseudosphere, ellipsoid, Enneper, monkey saddle, Möbius band, Dini, bumpy sphere); g, Γ and K are derived exactly by automatic differentiation. All closed-form geometry is checked against finite differences and known results in the test suite.
 
-The site opens on a start page that describes each simulation. Every simulation has a "Motivation & theory" button with the background, key equations and references; links such as `#metric` or `#cosmos` open one directly. Each simulation has its own short, skippable guide that opens on its first visit; press `?` to replay it.
+A top bar switches between dark and light themes and between English and Spanish, and opens the technical notes (numerical and symbolic methods) and the legal page. The site opens on a start page that describes each simulation. Every simulation has a "Motivation & theory" button with the background, key equations and references; links such as `#metric` or `#cosmos` open one directly. Each simulation has its own short, skippable guide that opens on its first visit; press `?` to replay it.
 
 ## Development
 
@@ -31,3 +31,7 @@ npm run build
 ```
 
 Built with React, TypeScript, Vite, react-three-fiber and KaTeX. Pushing to `main` deploys to GitHub Pages through `.github/workflows/deploy.yml`.
+
+## License
+
+MIT © 2026 nightwing (kairi99). See [LICENSE](LICENSE). GW150914 data: GWOSC, CC BY 4.0.

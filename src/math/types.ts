@@ -17,6 +17,8 @@ export interface SurfaceParam {
 export interface Surface {
   id: string;
   name: string;
+  /** Spanish display name */
+  nameEs?: string;
   /** coordinate names for UI/LaTeX, e.g. ['\\theta', '\\varphi'] */
   coords: [string, string];
   /** parameter domain; periodic flags allow wrapping */
@@ -99,6 +101,7 @@ export interface GeodesicCircle {
 /** An exactly known zero of a preset vector field. */
 export interface FieldZero {
   name: string; // e.g. 'north pole (max)'
+  nameEs?: string;
   /** point on the surface in R^3 */
   point: Vec3;
   /** small closed loop in the chart encircling the zero once, counter-clockwise w.r.t. the outward/∂u×∂v orientation */
@@ -111,6 +114,7 @@ export interface FieldZero {
 export interface VectorField {
   id: string;
   name: string;
+  nameEs?: string;
   /** KaTeX for the components, e.g. 'X = \\partial_\\varphi' */
   latex: string;
   X(u: number, v: number): Vec2;

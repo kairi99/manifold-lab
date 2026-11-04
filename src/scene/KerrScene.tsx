@@ -3,6 +3,7 @@ import { Line } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import type { Vec3 } from '../math/types';
+import { useTr } from '../i18n';
 import {
   horizons, ergosphere, iscoKerr, photonOrbitKerr, frameDragging, kerrOrbitFromApsides, integrateKerr,
 } from '../math/kerr';
@@ -55,12 +56,13 @@ function at(traj: KTraj, p: number) {
 }
 
 function Horizon({ a, label = true }: { a: number; label?: boolean }) {
+  const tt = useTr();
   const { rPlus } = horizons(a);
   return (
     <group>
       <mesh><sphereGeometry args={[rPlus, 48, 32]} /><meshBasicMaterial color="#000000" /></mesh>
       <mesh><sphereGeometry args={[rPlus * 1.02, 48, 32]} /><meshBasicMaterial color="#ff9f43" transparent opacity={0.3} side={THREE.BackSide} depthWrite={false} /></mesh>
-      {label && <Label text="horizon r_{+} (a sphere in BL coordinates)" position={[0, -rPlus - 3.5, 0]} color="#ff9f43" height={1.6} />}
+      {label && <Label text={tt('horizon r_{+} (a sphere in BL coordinates)', 'horizonte r_{+} (una esfera en coordenadas BL)')} position={[0, -rPlus - 3.5, 0]} color="#ff9f43" height={1.6} />}
     </group>
   );
 }
@@ -98,6 +100,7 @@ function Zamos({ a }: { a: number }) {
 }
 
 export function KerrView() {
+  const tt = useTr();
   const a = useStore((s) => s.grSpin), rp = useStore((s) => s.grRp), ra = useStore((s) => s.grRa), retro = useStore((s) => s.grRetro);
   const orbits = kerrOrbits(a, rp, ra);
   const ref = useRef<THREE.Mesh>(null), ref2 = useRef<THREE.Mesh>(null);
@@ -122,27 +125,28 @@ export function KerrView() {
       <Horizon a={a} />
       <Ergo a={a} />
       <Arrow origin={[0, 0, 0]} dir={[0, 14, 0]} color="#ffffff" radius={0.25} opacity={0.8} />
-      <Label text="spin axis" position={[0, 16, 0]} color="#ffffff" height={1.5} />
+      <Label text={tt('spin axis', 'eje de espín')} position={[0, 16, 0]} color="#ffffff" height={1.5} />
       <Line points={ringPts(rings.iP)} color="#35e0c2" lineWidth={1.5} />
       <Line points={ringPts(rings.iR)} color="#ff6bd6" lineWidth={1.5} />
       <Line points={ringPts(rings.pP)} color="#ffd166" lineWidth={1.5} dashed dashSize={0.4} gapSize={0.3} />
       <Line points={ringPts(rings.pR)} color="#ffa94d" lineWidth={1.5} dashed dashSize={0.4} gapSize={0.3} />
-      <Label text="ISCO pro" position={lab(rings.iP, Math.PI * 0.75, 0)} color="#35e0c2" height={1.5} />
-      <Label text="ISCO retro" position={lab(rings.iR, -Math.PI * 0.25, 0)} color="#ff6bd6" height={1.5} />
-      <Label text="photon pro" position={lab(rings.pP + 5, Math.PI * 0.75, 2.2)} color="#ffd166" height={1.5} />
-      <Label text="photon retro" position={lab(rings.pR + 5, -Math.PI * 0.25, 2.2)} color="#ffa94d" height={1.5} />
-      <Label text="ergosphere (purple)" position={[0, -horizons(a).rPlus - 6.5, 0]} color="#c792ff" height={1.5} />
+      <Label text={tt('ISCO pro', 'ISCO progrado')} position={lab(rings.iP, Math.PI * 0.75, 0)} color="#35e0c2" height={1.5} />
+      <Label text={tt('ISCO retro', 'ISCO retrógrado')} position={lab(rings.iR, -Math.PI * 0.25, 0)} color="#ff6bd6" height={1.5} />
+      <Label text={tt('photon pro', 'fotón progrado')} position={lab(rings.pP + 5, Math.PI * 0.75, 2.2)} color="#ffd166" height={1.5} />
+      <Label text={tt('photon retro', 'fotón retrógrado')} position={lab(rings.pR + 5, -Math.PI * 0.25, 2.2)} color="#ffa94d" height={1.5} />
+      <Label text={tt('ergosphere (purple)', 'ergosfera (morado)')} position={[0, -horizons(a).rPlus - 6.5, 0]} color="#c792ff" height={1.5} />
       {lines.pro.length > 1 && <Line points={lines.pro} color="#6cb6ff" lineWidth={retro ? 1 : 2.5} transparent opacity={retro ? 0.5 : 1} />}
       {lines.retro.length > 1 && <Line points={lines.retro} color="#ff8fa3" lineWidth={retro ? 2.5 : 1} transparent opacity={retro ? 1 : 0.5} />}
       <mesh ref={ref}><sphereGeometry args={[0.4, 14, 10]} /><meshBasicMaterial color="#6cb6ff" /></mesh>
       <mesh ref={ref2}><sphereGeometry args={[0.4, 14, 10]} /><meshBasicMaterial color="#ff8fa3" /></mesh>
       <Zamos a={a} />
-      <Label text="blue: prograde orbit, pink: retrograde; white/teal dots: ZAMOs (L = 0)" position={[0, 21, 0]} color="#e6e6e6" height={1.7} />
+      <Label text={tt('blue: prograde orbit, pink: retrograde; white/teal dots: ZAMOs (L = 0)', 'azul: órbita prograda, rosa: retrógrada; puntos blancos/turquesa: ZAMOs (L = 0)')} position={[0, 21, 0]} color="#e6e6e6" height={1.7} />
     </group>
   );
 }
 
 export function ImageView() {
+  const tt = useTr();
   const a = useStore((s) => s.grSpin), incl = useStore((s) => s.grIncl);
   const { rPlus } = horizons(a);
   const rIn = iscoKerr(a, true);
@@ -157,14 +161,14 @@ export function ImageView() {
         <meshBasicMaterial color="#ff9f43" transparent opacity={0.55} side={THREE.DoubleSide} depthWrite={false} />
       </mesh>
       <Arrow origin={[0, 0, 0]} dir={[0, 14, 0]} color="#ffffff" radius={0.25} opacity={0.8} />
-      <Label text="spin axis" position={[0, 16, 0]} color="#ffffff" height={1.5} />
+      <Label text={tt('spin axis', 'eje de espín')} position={[0, 16, 0]} color="#ffffff" height={1.5} />
       <Line points={[obs, [0, 0, 0]]} color="#7fd6ff" lineWidth={1.2} dashed dashSize={0.8} gapSize={0.6} />
       <group position={obs} quaternion={quat}>
         <mesh><boxGeometry args={[3, 2, 2.5]} /><meshBasicMaterial color="#7fd6ff" /></mesh>
         <mesh position={[0, 0, 2]} rotation={[Math.PI / 2, 0, 0]}><coneGeometry args={[1.6, 2.2, 16]} /><meshBasicMaterial color="#7fd6ff" /></mesh>
       </group>
-      <Label text={`observer, inclination ${incl.toFixed(0)}°`} position={[obs[0], obs[1] + 4, obs[2]]} color="#7fd6ff" height={1.7} />
-      <Label text={`disk: ISCO ${rIn.toFixed(2)} M to ${DISK_OUTER} M (observer drawn nearer than the real distance)`} position={[0, -rPlus - 4, 0]} color="#ff9f43" height={1.5} />
+      <Label text={tt(`observer, inclination ${incl.toFixed(0)}°`, `observador, inclinación ${incl.toFixed(0)}°`)} position={[obs[0], obs[1] + 4, obs[2]]} color="#7fd6ff" height={1.7} />
+      <Label text={tt(`disk: ISCO ${rIn.toFixed(2)} M to ${DISK_OUTER} M (observer drawn nearer than the real distance)`, `disco: ISCO ${rIn.toFixed(2)} M a ${DISK_OUTER} M (observador dibujado más cerca que la distancia real)`)} position={[0, -rPlus - 4, 0]} color="#ff9f43" height={1.5} />
     </group>
   );
 }
@@ -172,6 +176,7 @@ export function ImageView() {
 const flat = (xs: [number, number][]): Vec3[] => xs.map(([x, y]) => [x, y, 0]);
 
 export function ClocksView() {
+  const tt = useTr();
   const id = useStore((s) => s.grClockPreset);
   const kind = SHAPIRO_TESTS.some((t) => t.id === id) ? 'shapiro' : FRAME_DRAG_TESTS.some((t) => t.id === id) ? 'drag' : 'redshift';
   // bend exaggerated for visibility
@@ -179,16 +184,16 @@ export function ClocksView() {
   return (
     <group>
       <mesh><sphereGeometry args={[6, 40, 28]} /><meshStandardMaterial color="#3a6ea5" emissive="#1c3350" /></mesh>
-      <Label text="central body (schematic, not to scale)" position={[0, -9, 0]} color="#6cb6ff" height={1.6} />
+      <Label text={tt('central body (schematic, not to scale)', 'cuerpo central (esquemático, fuera de escala)')} position={[0, -9, 0]} color="#6cb6ff" height={1.6} />
       {kind === 'shapiro' && (
         <>
           <Line points={flat([[-40, 9], [40, 9]])} color="#8a8f98" lineWidth={1} dashed dashSize={0.8} gapSize={0.6} />
           <Line points={path} color="#ffd166" lineWidth={2.5} />
           <mesh position={[-40, 9, 0]}><sphereGeometry args={[0.9, 12, 8]} /><meshBasicMaterial color="#35e0c2" /></mesh>
           <mesh position={[40, path[2][1], 0]}><sphereGeometry args={[0.9, 12, 8]} /><meshBasicMaterial color="#ff6bd6" /></mesh>
-          <Label text="signal source" position={[-36, 12, 0]} color="#35e0c2" height={1.5} />
-          <Label text="receiver" position={[36, 3, 0]} color="#ff6bd6" height={1.5} />
-          <Label text="path at impact parameter b, slight bend (schematic): extra delay" position={[0, 16, 0]} color="#ffd166" height={1.5} />
+          <Label text={tt('signal source', 'fuente de la señal')} position={[-36, 12, 0]} color="#35e0c2" height={1.5} />
+          <Label text={tt('receiver', 'receptor')} position={[36, 3, 0]} color="#ff6bd6" height={1.5} />
+          <Label text={tt('path at impact parameter b, slight bend (schematic): extra delay', 'trayectoria con parámetro de impacto b, ligera curvatura (esquemático): retraso adicional')} position={[0, 16, 0]} color="#ffd166" height={1.5} />
         </>
       )}
       {kind === 'redshift' && (
@@ -197,16 +202,16 @@ export function ClocksView() {
           <mesh position={[14, -2.5, 0]}><sphereGeometry args={[1, 12, 8]} /><meshBasicMaterial color="#35e0c2" /></mesh>
           <mesh position={[14, 10.5, 0]}><sphereGeometry args={[1, 12, 8]} /><meshBasicMaterial color="#ff6bd6" /></mesh>
           <Arrow origin={[11, -2, 0]} dir={[0, 12, 0]} color="#ffd166" radius={0.25} />
-          <Label text="tower (schematic)" position={[22, 4, 0]} color="#8a8f98" height={1.5} />
-          <Label text="photon climbs: redshifted" position={[26, 12, 0]} color="#ffd166" height={1.4} />
+          <Label text={tt('tower (schematic)', 'torre (esquemático)')} position={[22, 4, 0]} color="#8a8f98" height={1.5} />
+          <Label text={tt('photon climbs: redshifted', 'el fotón asciende: desplazado al rojo')} position={[26, 12, 0]} color="#ffd166" height={1.4} />
         </>
       )}
       {kind === 'drag' && (
         <>
           <Line points={Array.from({ length: 97 }, (_, k) => { const f = (k / 96) * 2 * Math.PI; return [0, 12 * Math.cos(f), 12 * Math.sin(f)] as Vec3; })} color="#ffd166" lineWidth={1.5} />
           <Arrow origin={[0, 0, 0]} dir={[0, 9, 0]} color="#ffffff" radius={0.3} />
-          <Label text="spin J" position={[0, 11, 0]} color="#ffffff" height={1.5} />
-          <Label text="polar orbit of the gyroscope (schematic)" position={[0, -16, 0]} color="#ffd166" height={1.5} />
+          <Label text={tt('spin J', 'espín J')} position={[0, 11, 0]} color="#ffffff" height={1.5} />
+          <Label text={tt('polar orbit of the gyroscope (schematic)', 'órbita polar del giróscopo (esquemático)')} position={[0, -16, 0]} color="#ffd166" height={1.5} />
         </>
       )}
     </group>

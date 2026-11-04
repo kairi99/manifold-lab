@@ -1,6 +1,19 @@
 import type { CustomSpec } from './custom';
 
-export interface CustomPreset { id: string; label: string; note: string; spec: CustomSpec }
+export interface CustomPreset { id: string; label: string; note: string; labelEs: string; noteEs: string; spec: CustomSpec }
+
+
+const ES: Record<string, [string, string]> = {
+  catenoid: ['Catenoide', 'Superficie mínima (H = 0), K = -1/cosh⁴u. Localmente isométrica al helicoide de más abajo.'],
+  helicoid: ['Helicoide', 'Parametrizado de modo que g coincide con la del catenoide: el mismo (u,v) da el mismo K = -1/cosh⁴u (Bour). Deformar una en la otra es una isometría.'],
+  pseudosphere: ['Pseudoesfera', 'Tractroide de revolución: K = -1 constante. El borde u = 0 es una arista de retroceso, por eso el rango empieza en 0.2.'],
+  ellipsoid: ['Elipsoide', 'Semiejes a, b, 1 (deslizadores). K > 0 en todas partes; la carta de tipo (θ,φ) degenera en los polos u = 0, π.'],
+  enneper: ['Superficie de Enneper', 'Superficie mínima con autointersecciones, K = -4/(1+u²+v²)⁴ (H = 0).'],
+  monkey: ['Silla de mono', 'Gráfica z = u³ - 3uv²: una silla triple con un punto plano (K = 0) en el origen, que es un cero del gradiente de índice -2.'],
+  mobius: ['Banda de Möbius', 'No orientable: la normal unitaria cambia de signo tras una vuelta completa. La costura u = 0 ≡ 2π se pega con v → -v, así que las geodésicas y el transporte se detienen ahí y los lazos que la cruzan no se cierran.'],
+  dini: ['Superficie de Dini', 'Pseudoesfera retorcida con K = -1/(a²+b²) constante (deslizadores: a = 1, b = 0.2 da -0.96).'],
+  bumpy: ['Esfera abollada', 'Esfera de radio 1 + 0.3a·sin3θ·cos2φ: a = 0 es la esfera redonda. Observa cómo K cambia de signo.'],
+};
 
 const P = (
   id: string, label: string, note: string,
@@ -8,7 +21,7 @@ const P = (
   uRange: [string, string], vRange: [string, string],
   extra: Partial<CustomSpec> = {},
 ): CustomPreset => ({
-  id, label, note,
+  id, label, note, labelEs: ES[id][0], noteEs: ES[id][1],
   spec: {
     name: label, mode: 'parametric', x, y, z, f: '0', uRange, vRange,
     periodicU: false, periodicV: false, coords: ['u', 'v'], params: { a: 1, b: 0 }, ...extra,
@@ -27,7 +40,7 @@ export const PRESETS: CustomPreset[] = [
   P('enneper', 'Enneper', 'Self-intersecting minimal surface, K = -4/(1+u²+v²)⁴ (H = 0).',
     'u-u^3/3+u*v^2', 'v-v^3/3+v*u^2', 'u^2-v^2', ['-1.3', '1.3'], ['-1.3', '1.3']),
   {
-    id: 'monkey', label: 'Monkey saddle', note: 'Graph z = u³ - 3uv²: a triple saddle with a flat point (K = 0) at the origin, which is a zero of the gradient of index -2.',
+    id: 'monkey', labelEs: ES.monkey[0], noteEs: ES.monkey[1], label: 'Monkey saddle', note: 'Graph z = u³ - 3uv²: a triple saddle with a flat point (K = 0) at the origin, which is a zero of the gradient of index -2.',
     spec: { name: 'Monkey saddle', mode: 'graph', x: 'u', y: 'v', z: '0', f: 'u^3-3*u*v^2', uRange: ['-1', '1'], vRange: ['-1', '1'], periodicU: false, periodicV: false, coords: ['x', 'y'], params: { a: 1, b: 0 } },
   },
   P('mobius', 'Möbius band', 'Non-orientable: the unit normal flips sign after one trip around the loop. The seam u = 0 ≡ 2π is glued with v → -v, so geodesics and transport stop there and loops that cross it do not close.',

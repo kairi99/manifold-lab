@@ -1,7 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useStore } from '../state/store';
 import { MathText } from '../panels/Tex';
-import { TOURS } from './steps';
+import { TOURS, TOURS_ES } from './steps';
+import { useTr } from '../i18n';
 import './tour.css';
 
 const seenKey = (m: string) => `manifoldlab.tourSeen.${m}`;
@@ -31,6 +32,7 @@ function isTyping(t: EventTarget | null) {
 
 export function TourButton() {
   const set = useStore((s) => s.set);
+  const t = useTr();
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
       if (e.key === '?' && !isTyping(e.target) && !e.ctrlKey && !e.metaKey) set({ tourOpen: true });
@@ -39,7 +41,7 @@ export function TourButton() {
     return () => window.removeEventListener('keydown', h);
   }, [set]);
   return (
-    <button className="tour-fab" aria-label="Open guided tour" title="Guided tour (?)" onClick={() => set({ tourOpen: true })}>
+    <button className="tour-fab" aria-label={t('Open guided tour', 'Abrir la visita guiada')} title={t('Guided tour (?)', 'Visita guiada (?)')} onClick={() => set({ tourOpen: true })}>
       ?
     </button>
   );
@@ -49,7 +51,8 @@ export function Tour() {
   const open = useStore((s) => s.tourOpen);
   const module = useStore((s) => s.module);
   const set = useStore((s) => s.set);
-  const STEPS = TOURS[module];
+  const t = useTr();
+  const STEPS = (t(TOURS, TOURS_ES))[module];
   const [i, setI] = useState(0);
   useEffect(() => setI(0), [module]);
   const [rect, setRect] = useState<DOMRect | null>(null);
@@ -140,9 +143,9 @@ export function Tour() {
         <p id="tour-body"><MathText text={step.body} /></p>
         <div className="tour-foot">
           <span className="tour-count">{i + 1} / {STEPS.length}</span>
-          <button onClick={close}>Skip</button>
-          <button onClick={() => go(-1)} disabled={i === 0}>Back</button>
-          <button className="primary" onClick={() => go(1)}>{last ? 'Done' : 'Next'}</button>
+          <button onClick={close}>{t('Skip', 'Saltar')}</button>
+          <button onClick={() => go(-1)} disabled={i === 0}>{t('Back', 'Atrás')}</button>
+          <button className="primary" onClick={() => go(1)}>{last ? t('Done', 'Hecho') : t('Next', 'Siguiente')}</button>
         </div>
       </div>
     </div>

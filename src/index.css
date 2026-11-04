@@ -1,4 +1,7 @@
-:root { --bg:#0f1117; --fg:#e6e6e6; --muted:#8a8f98; --accent:#6cb6ff; --panel:#161a22; --border:#262b36; --control:#6b7380; }
+:root { --bg:#0f1117; --fg:#e6e6e6; --muted:#8a8f98; --accent:#6cb6ff; --on-accent:#0f1117; --panel:#161a22; --border:#262b36; --control:#6b7380; color-scheme: dark; }
+:root[data-theme=light] { --bg:#f5f6f8; --fg:#1b1f27; --muted:#5a6170; --accent:#1a63c9; --on-accent:#ffffff; --panel:#ffffff; --border:#d9dde4; --control:#8d95a3; color-scheme: light; }
+/* the 3D viewport keeps its dark backdrop in both themes: scene colours and labels are tuned for it */
+.canvas { background: #0f1117; }
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; }
 body { background: var(--bg); color: var(--fg); font-family: system-ui, sans-serif; }

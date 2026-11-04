@@ -3,6 +3,7 @@ import { Line } from '@react-three/drei';
 import { getSurface, innerProduct, toWorld } from '../math';
 import type { Vec2, Vec3 } from '../math/types';
 import { useStore } from '../state/store';
+import { T } from '../i18n';
 import SurfaceMesh from '../scene/SurfaceMesh';
 import DraggablePoint from '../scene/DraggablePoint';
 import TangentPlane from '../scene/TangentPlane';
@@ -82,25 +83,31 @@ export function MetricPanel() {
   return (
     <div>
       <SurfacePicker />
-      <h2>Parametrization</h2>
-      <p>The surface is an embedding <Tex>{'r:U\\subset\\mathbb{R}^2\\to\\mathbb{R}^3'}</Tex>; its tangent space at p is spanned by the coordinate vectors <Tex>{'\\partial_i r'}</Tex>.</p>
+      <h2><T en="Parametrization" es="Parametrización" /></h2>
+      <p><T
+        en={<>The surface is an embedding <Tex>{'r:U\\subset\\mathbb{R}^2\\to\\mathbb{R}^3'}</Tex>; its tangent space at p is spanned by the coordinate vectors <Tex>{'\\partial_i r'}</Tex>.</>}
+        es={<>La superficie es una inmersión <Tex>{'r:U\\subset\\mathbb{R}^2\\to\\mathbb{R}^3'}</Tex>; su espacio tangente en p está generado por los vectores coordenados <Tex>{'\\partial_i r'}</Tex>.</>} /></p>
       <Tex block>{surface.latex.param}</Tex>
-      <h2>Metric</h2>
-      <p>The metric <Tex>{'g_{ij}=\\partial_i r\\cdot\\partial_j r'}</Tex> is the pull-back of the Euclidean dot product to the parameter domain.</p>
+      <h2><T en="Metric" es="Métrica" /></h2>
+      <p><T
+        en={<>The metric <Tex>{'g_{ij}=\\partial_i r\\cdot\\partial_j r'}</Tex> is the pull-back of the Euclidean dot product to the parameter domain.</>}
+        es={<>La métrica <Tex>{'g_{ij}=\\partial_i r\\cdot\\partial_j r'}</Tex> es el pull-back (la imagen recíproca) del producto escalar euclídeo al dominio de parámetros.</>} /></p>
       <Tex block>{surface.latex.metric}</Tex>
-      <h2>Christoffel symbols</h2>
-      <p>The Levi-Civita connection coefficients <Tex>{'\\Gamma^k_{ij}=\\tfrac12 g^{kl}(\\partial_i g_{jl}+\\partial_j g_{il}-\\partial_l g_{ij})'}</Tex> are determined by g alone.</p>
+      <h2><T en="Christoffel symbols" es="Símbolos de Christoffel" /></h2>
+      <p><T
+        en={<>The Levi-Civita connection coefficients <Tex>{'\\Gamma^k_{ij}=\\tfrac12 g^{kl}(\\partial_i g_{jl}+\\partial_j g_{il}-\\partial_l g_{ij})'}</Tex> are determined by g alone.</>}
+        es={<>Los coeficientes de la conexión de Levi-Civita <Tex>{'\\Gamma^k_{ij}=\\tfrac12 g^{kl}(\\partial_i g_{jl}+\\partial_j g_{il}-\\partial_l g_{ij})'}</Tex> quedan determinados únicamente por g.</>} /></p>
       <Tex block>{surface.latex.christoffel}</Tex>
 
       <div data-tour="metric-readout">
-        <h2>At p</h2>
-        <p>Coordinates <Tex>{`(${cu},${cv})`}</Tex> = ({fmt(uv[0])}, {fmt(uv[1])}).</p>
+        <h2><T en="At p" es="En p" /></h2>
+        <p><T en="Coordinates" es="Coordenadas" /> <Tex>{`(${cu},${cv})`}</Tex> = ({fmt(uv[0])}, {fmt(uv[1])}).</p>
         <Tex block>{`g_{ij}=${mat(r.g)}`}</Tex>
         <div className="readout">
           <span><Tex>{'\\det g'}</Tex></span><span>{fmt(r.det, 4)}</span>
           <span><Tex>{`|\\partial_{${cu}}|=\\sqrt{g_{11}}`}</Tex></span><span>{fmt(r.lu)}</span>
           <span><Tex>{`|\\partial_{${cv}}|=\\sqrt{g_{22}}`}</Tex></span><span>{fmt(r.lv)}</span>
-          <span>angle(∂₁,∂₂)</span><span>{fmt(r.angle, 2)}°</span>
+          <span><T en="angle" es="ángulo" />(∂₁,∂₂)</span><span>{fmt(r.angle, 2)}°</span>
           <span><Tex>{'K'}</Tex></span><span>{fmt(r.K, 4)}</span>
           {[[0,0,0],[0,0,1],[0,1,1],[1,0,0],[1,0,1],[1,1,1]]
             .map(([k, i, j]) => {
@@ -111,10 +118,12 @@ export function MetricPanel() {
               ];
             })}
         </div>
-        <p>The Gram matrix of the coordinate basis gives lengths and angles in <Tex>{'T_pM'}</Tex>; the purple ring is the metric circle <Tex>{'\\{W:g(W,W)=g(V,V)\\}'}</Tex>; it is round in space because g is induced by the embedding.</p>
+        <p><T
+          en={<>The Gram matrix of the coordinate basis gives lengths and angles in <Tex>{'T_pM'}</Tex>; the purple ring is the metric circle <Tex>{'\\{W:g(W,W)=g(V,V)\\}'}</Tex>; it is round in space because g is induced by the embedding.</>}
+          es={<>La matriz de Gram de la base coordenada da longitudes y ángulos en <Tex>{'T_pM'}</Tex>; el anillo morado es el círculo métrico <Tex>{'\\{W:g(W,W)=g(V,V)\\}'}</Tex>; es redondo en el espacio porque g está inducida por la inmersión.</>} /></p>
       </div>
 
-      <h2>Vector V</h2>
+      <h2><T en="Vector V" es="Vector V" /></h2>
       <div style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
         {[0, 1].map((i) => (
           <label key={i} className="field" style={{ marginBottom: 0 }}>
@@ -127,7 +136,9 @@ export function MetricPanel() {
         <span><Tex>{'g_{ij}V^iV^j'}</Tex></span><span>{fmt(r.gVV, 4)}</span>
         <span><Tex>{'|V|^2_{\\mathbb{R}^3}'}</Tex></span><span>{fmt(r.euc, 4)}</span>
       </div>
-      <p>The two numbers agree because the metric is the pull-back of the Euclidean dot product: <Tex>{'g(V,V)=|dr(V)|^2'}</Tex>.</p>
+      <p><T
+        en={<>The two numbers agree because the metric is the pull-back of the Euclidean dot product: <Tex>{'g(V,V)=|dr(V)|^2'}</Tex>.</>}
+        es={<>Los dos números coinciden porque la métrica es el pull-back del producto escalar euclídeo: <Tex>{'g(V,V)=|dr(V)|^2'}</Tex>.</>} /></p>
     </div>
   );
 }

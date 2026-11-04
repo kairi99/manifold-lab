@@ -11,6 +11,7 @@ export interface MetricParam { key: string; label: string; min: number; max: num
 export interface SpacetimeMetric {
   id: string;
   name: string;
+  nameEs?: string;
   coords: [string, string, string, string]; // LaTeX
   params: MetricParam[];
   lineElement: string; // LaTeX
@@ -20,6 +21,7 @@ export interface SpacetimeMetric {
   /** Covariant stress-energy T_μν at x; omitted = vacuum. */
   source?: (x: number[], p: Record<string, number>) => Mat4;
   domainNote?: string;
+  domainNoteEs?: string;
 }
 
 const Z = () => J.constant(4, 0);
@@ -28,7 +30,7 @@ const pv = (p: Record<string, number>, k: string, d: number) => p[k] ?? d;
 const mat = (f: (i: number, j: number) => number): Mat4 => Array.from({ length: 4 }, (_, i) => Array.from({ length: 4 }, (_, j) => f(i, j)));
 
 export const minkowskiSpherical: SpacetimeMetric = {
-  id: 'minkowski', name: 'Minkowski (spherical coordinates)',
+  id: 'minkowski', name: 'Minkowski (spherical coordinates)', nameEs: 'Minkowski (coordenadas esféricas)',
   coords: ['t', 'r', '\\theta', '\\varphi'], params: [],
   lineElement: 'ds^2=-dt^2+dr^2+r^2d\\theta^2+r^2\\sin^2\\theta\\,d\\varphi^2',
   defaultEvent: () => [0, 5, Math.PI / 2, 0],
@@ -39,6 +41,7 @@ export const minkowskiSpherical: SpacetimeMetric = {
     return m;
   },
   domainNote: 'r > 0, 0 < θ < π. Christoffels are nonzero here, yet Riemann vanishes: curved coordinates, flat space.',
+  domainNoteEs: 'r > 0, 0 < θ < π. Aquí los Christoffel no son nulos, pero Riemann se anula: coordenadas curvas, espacio plano.',
 };
 
 export const schwarzschild: SpacetimeMetric = {
@@ -55,6 +58,7 @@ export const schwarzschild: SpacetimeMetric = {
     return m;
   },
   domainNote: 'r > 2M (Schwarzschild coordinates are singular at the horizon), 0 < θ < π.',
+  domainNoteEs: 'r > 2M (las coordenadas de Schwarzschild son singulares en el horizonte), 0 < θ < π.',
 };
 
 export const kerr: SpacetimeMetric = {
@@ -79,6 +83,7 @@ export const kerr: SpacetimeMetric = {
     return m;
   },
   domainNote: 'Outside the outer horizon r₊ = M + √(M²−a²); ring singularity at r=0, θ=π/2.',
+  domainNoteEs: 'Fuera del horizonte exterior r₊ = M + √(M²−a²); singularidad en anillo en r=0, θ=π/2.',
 };
 
 export const reissnerNordstrom: SpacetimeMetric = {
@@ -105,6 +110,7 @@ export const reissnerNordstrom: SpacetimeMetric = {
     return T;
   },
   domainNote: 'r > r₊ = M + √(M²−Q²); need |Q| ≤ M for a black hole.',
+  domainNoteEs: 'r > r₊ = M + √(M²−Q²); hace falta |Q| ≤ M para un agujero negro.',
 };
 
 const flatScaled = (a: Jet): Jet[][] => {
@@ -114,7 +120,7 @@ const flatScaled = (a: Jet): Jet[][] => {
 };
 
 export const deSitter: SpacetimeMetric = {
-  id: 'desitter', name: 'de Sitter (flat slicing)',
+  id: 'desitter', name: 'de Sitter (flat slicing)', nameEs: 'de Sitter (foliación plana)',
   coords: ['t', 'x', 'y', 'z'],
   params: [{ key: 'H', label: 'H', min: 0.1, max: 2, step: 0.05, value: 1 }],
   lineElement: 'ds^2=-dt^2+e^{2Ht}(dx^2+dy^2+dz^2)',
@@ -131,7 +137,7 @@ export const deSitter: SpacetimeMetric = {
 export const lcdmScaleFactor = (t: number, Om: number) => (Om / (1 - Om)) ** (1 / 3) * Math.sinh(1.5 * Math.sqrt(1 - Om) * t) ** (2 / 3);
 
 export const flrwLCDM: SpacetimeMetric = {
-  id: 'flrw', name: 'Flat ΛCDM FLRW',
+  id: 'flrw', name: 'Flat ΛCDM FLRW', nameEs: 'FLRW ΛCDM plano',
   coords: ['t', 'x', 'y', 'z'],
   params: [{ key: 'Om', label: '\\Omega_m', min: 0.05, max: 0.95, step: 0.01, value: 0.3 }],
   lineElement: 'ds^2=-dt^2+a(t)^2(dx^2+dy^2+dz^2),\\quad a=(\\Omega_m/\\Omega_\\Lambda)^{1/3}\\sinh^{2/3}(\\tfrac32\\sqrt{\\Omega_\\Lambda}H_0t)',
@@ -148,6 +154,7 @@ export const flrwLCDM: SpacetimeMetric = {
     return mat((i, j) => (i !== j ? 0 : i === 0 ? rm + rl : -rl * a * a));
   },
   domainNote: 't > 0 (big-bang singularity at t = 0). Units H0 = 1.',
+  domainNoteEs: 't > 0 (singularidad del big bang en t = 0). Unidades H0 = 1.',
 };
 
 export const SPACETIMES: SpacetimeMetric[] = [minkowskiSpherical, schwarzschild, kerr, reissnerNordstrom, deSitter, flrwLCDM];

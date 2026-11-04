@@ -96,3 +96,92 @@ export const TOURS: Record<ModuleId, TourStep[]> = {
     THEORY_STEP, END,
   ],
 };
+
+// Spanish twin: same modules, same step order and same `target`s as TOURS
+const VIEW_3D_ES: TourStep = { target: 'canvas', title: 'La vista 3D',
+  body: 'Arrastra con el botón izquierdo para orbitar, con el derecho para desplazar, y usa la rueda o el gesto de pellizco para hacer zoom. Arrastra el punto amarillo para mover $p$ sobre la superficie y la punta de la flecha para editar $V = V^i\\,\\partial_i$. Teclado: enfoca la vista (Tab o clic); las flechas mueven $p$ (Shift = pasos mayores), [ y ] giran $V$, + y − lo escalan.' };
+const PICKER_ES: TourStep = { target: 'surface-picker', title: 'Elige una superficie',
+  body: 'Cambia entre esfera, toro, silla y paraboloide, o elige "Personalizada…" para escribir tu propia superficie, paramétrica $(x,y,z)(u,v)$ o un gráfico $z=f(u,v)$, o cargar un clásico como el catenoide. La geometría se deriva de forma exacta para la superficie que elijas.' };
+const ORBIT_3D_ES: TourStep = { target: 'canvas', title: 'La vista 3D',
+  body: 'Arrastra con el botón izquierdo para orbitar, con el derecho para desplazar, y usa la rueda o el pellizco para hacer zoom.' };
+const END_ES: TourStep = { target: 'nav', title: 'Otras simulaciones',
+  body: 'Cambia de simulación con estas pestañas, o pulsa "Manifold Lab" para volver a la página de inicio. Cada simulación tiene su propia guía breve; pulsa ? para repetir esta. Las tareas sugeridas al final del panel te proponen cosas que probar.' };
+
+const THEORY_STEP_ES: TourStep = { target: 'theory', title: 'Motivación y teoría',
+  body: 'Este botón abre el trasfondo: por qué importa el concepto, las ecuaciones y teoremas clave, y lecturas adicionales.' };
+
+export const TOURS_ES: Record<ModuleId, TourStep[]> = {
+  metric: [
+    { target: null, title: 'Métrica y espacios tangentes',
+      body: 'En cada punto $p$ de una superficie hay un plano tangente $T_pM$ generado por $\\partial_u, \\partial_v$. La métrica $g_{ij} = \\partial_i \\cdot \\partial_j$ mide allí longitudes y ángulos, y los símbolos de Christoffel $\\Gamma^k_{ij}$ indican cómo gira la base al moverse $p$.' },
+    VIEW_3D_ES, PICKER_ES,
+    { target: 'metric-readout', title: 'Ecuaciones en vivo',
+      body: 'Estos son $g_{ij}$, $\\Gamma^k_{ij}$ y la longitud de $V$ evaluados en el $p$ actual. Compara $|V|^2 = g_{ij}V^iV^j$ con la longitud euclídea de la flecha: coinciden.' },
+    THEORY_STEP_ES, END_ES,
+  ],
+  transport: [
+    { target: null, title: 'Transporte paralelo',
+      body: 'Desliza un vector a lo largo de un lazo cerrado de modo que $\\nabla_{\\dot\\gamma} V = 0$, es decir, sin girarlo intrínsecamente, y observa cómo vuelve rotado.' },
+    VIEW_3D_ES, PICKER_ES,
+    { target: 'transport-controls', title: 'Elige un lazo y reproduce',
+      body: 'Elige un lazo (círculo de latitud, triángulo o tus propios puntos). Pulsa reproducir, o arrastra el control deslizante para recorrer el transporte a mano.' },
+    { target: 'holonomy', title: 'Holonomía',
+      body: 'Cuando el lazo se cierra, el ángulo entre el vector inicial y el que regresa es la holonomía. Para un lazo que acota una región $R$ vale $\\iint_R K\\,dA$ (Gauss–Bonnet).' },
+    THEORY_STEP_ES, END_ES,
+  ],
+  geodesics: [
+    { target: null, title: 'Geodésicas',
+      body: 'Las geodésicas resuelven $\\ddot u^k + \\Gamma^k_{ij}\\,\\dot u^i \\dot u^j = 0$: son las curvas más rectas de la superficie, que parten de $p$ con velocidad $V$.' },
+    VIEW_3D_ES, PICKER_ES,
+    { target: 'geo-controls', title: 'Ábrelas en abanico',
+      body: 'Lanza varias geodésicas a la vez. Una $K$ positiva las vuelve a enfocar (puntos conjugados); una $K$ negativa las separa.' },
+    THEORY_STEP_ES, END_ES,
+  ],
+  curvature: [
+    { target: null, title: 'Curvatura',
+      body: 'La superficie se colorea según su curvatura de Gauss $K$: cálido para $K>0$, frío para $K<0$.' },
+    VIEW_3D_ES, PICKER_ES,
+    { target: 'curv-egregium', title: 'Theorema Egregium',
+      body: '$K$ se calcula dos veces: de forma intrínseca, $K = R_{1212}/\\det g$ solo a partir de la métrica, y de forma extrínseca, $K = \\kappa_1\\kappa_2$ a partir de cómo se curva la superficie en $\\mathbb{R}^3$. Siempre coinciden.' },
+    THEORY_STEP_ES, END_ES,
+  ],
+  fields: [
+    { target: null, title: 'Campos vectoriales y el fibrado tangente',
+      body: 'Un campo vectorial es una sección $X: M \\to TM$ del fibrado tangente. Elige uno y observa cómo su flujo mueve partículas sobre la superficie.' },
+    VIEW_3D_ES, PICKER_ES,
+    { target: 'poincare-hopf', title: 'Poincaré–Hopf',
+      body: 'Los índices de los ceros de un campo suman la característica de Euler, $\\sum \\operatorname{ind} = \\chi(M)$. El panel también muestra campos de Killing ($\\mathcal{L}_X g = 0$) y corchetes de Lie como $[L_x, L_y] = -L_z$.' },
+    THEORY_STEP_ES, END_ES,
+  ],
+  relativity: [
+    { target: null, title: 'Relatividad: Schwarzschild y Kerr',
+      body: 'Las órbitas y los rayos de luz son geodésicas de $ds^2 = -(1-\\tfrac{2M}{r})dt^2 + \\tfrac{dr^2}{1-2M/r} + r^2 d\\Omega^2$. Compara las predicciones con observaciones reales.' },
+    ORBIT_3D_ES,
+    { target: 'views', title: 'Vistas',
+      body: 'Órbitas y Luz integran geodésicas temporales y nulas. Flamm muestra la sección espacial embebida. Kerr añade el espín: horizontes, ergosfera e ISCO. Imagen traza rayos hacia un agujero negro. Relojes trata el desplazamiento al rojo, el retraso de Shapiro y el arrastre de marcos.' },
+    { target: 'gr-presets', title: 'Objetos reales',
+      body: 'Carga un sistema real, como Mercurio, la estrella S2 alrededor de Sgr A* o el púlsar de Hulse–Taylor, y compara la precesión predicha con la medida.' },
+    { target: 'gr-potential', title: 'Potencial efectivo',
+      body: 'El movimiento radial cumple $\\dot r^2 = E^2 - V_{\\text{eff}}(r)$. La gráfica marca la esfera de fotones en $3M$, la órbita marginalmente ligada en $4M$ y la ISCO en $6M$.' },
+    THEORY_STEP_ES, END_ES,
+  ],
+  spacetime: [
+    { target: null, title: 'Curvatura en 4D',
+      body: 'La curvatura completa del espaciotiempo, calculada de forma exacta en un suceso a tu elección para Minkowski, Schwarzschild, Kerr, Reissner–Nordström, de Sitter y ΛCDM.' },
+    ORBIT_3D_ES,
+    { target: 'views', title: 'Tres vistas',
+      body: 'Tensores lista $g_{\\mu\\nu}$, $\\Gamma^\\rho_{\\mu\\nu}$, $R_{\\rho\\sigma\\mu\\nu}$, $R_{\\mu\\nu}$ y $G_{\\mu\\nu}$ y comprueba $G_{\\mu\\nu}=8\\pi T_{\\mu\\nu}$. Marea deja caer un anillo de partículas en un agujero negro ($\\ddot\\xi^i=-R^i{}_{0j0}\\xi^j$). Ondas muestra las polarizaciones $+$ y $\\times$ y la deformación medida de GW150914.' },
+    { target: 'panel', title: 'Controles y números',
+      body: 'Elige aquí el espaciotiempo y el suceso; cada componente de los tensores y cada invariante se actualiza al moverte.' },
+    THEORY_STEP_ES, END_ES,
+  ],
+  cosmos: [
+    { target: null, title: 'Estructura causal y cosmología',
+      body: 'Los diagramas conformes comprimen espaciotiempos infinitos en una imagen finita manteniendo los rayos de luz a $45^\\circ$, de modo que la estructura causal se lee de un vistazo.' },
+    { target: 'views', title: 'Dos vistas',
+      body: 'Diagramas de Penrose muestra Minkowski y el espaciotiempo de Schwarzschild máximamente extendido: sigue a un observador a través del horizonte hasta $r=0$ en tiempo propio finito. Cosmología dibuja nuestro universo (Planck 2018) con el cono de luz pasado, los horizontes de partículas y de sucesos y la esfera de Hubble.' },
+    { target: 'canvas', title: 'El diagrama',
+      body: 'Arrastra para desplazar, usa la rueda o el pellizco para hacer zoom. Los conos de luz y los observadores del diagrama siguen los controles del panel.' },
+    THEORY_STEP_ES, END_ES,
+  ],
+};

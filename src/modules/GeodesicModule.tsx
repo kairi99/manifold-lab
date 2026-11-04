@@ -3,6 +3,7 @@ import { Tex, fmt, coordText } from '../panels/Tex';
 import GeodesicFan, { revealCount, useGeoFan } from '../scene/GeodesicFan';
 import { clairaut, geodesicAccel, speed } from '../math/geodesic';
 import { useStore } from '../state/store';
+import { T, useTr } from '../i18n';
 
 const DEG = 180 / Math.PI;
 
@@ -11,6 +12,7 @@ export function GeodesicScene() {
 }
 
 export function GeodesicPanel() {
+  const t = useTr();
   const { surface, paths, mid } = useGeoFan();
   const { surfaceId, geoCount, geoSpread, geoLength, geoProgress, geoPlaying, set } = useStore();
   const target = geoProgress * geoLength;
@@ -30,46 +32,48 @@ export function GeodesicPanel() {
     <div>
       <SurfacePicker />
       <label className="field">
-        <span>Number of geodesics: {geoCount}</span>
+        <span>{t('Number of geodesics', 'Número de geodésicas')}: {geoCount}</span>
         <input type="range" min={1} max={15} step={1} value={geoCount} onChange={(e) => set({ geoCount: +e.target.value })} />
       </label>
       <label className="field">
-        <span>Fan angle: {fmt(geoSpread * DEG, 0)}°</span>
+        <span>{t('Fan angle', 'Ángulo del abanico')}: {fmt(geoSpread * DEG, 0)}°</span>
         <input type="range" min={0} max={Math.PI / 2} step={0.01} value={geoSpread} onChange={(e) => set({ geoSpread: +e.target.value })} />
       </label>
       <label className="field">
-        <span>Length: {fmt(geoLength / Math.PI, 2)}π</span>
+        <span>{t('Length', 'Longitud')}: {fmt(geoLength / Math.PI, 2)}π</span>
         <input type="range" min={0.5} max={4 * Math.PI} step={0.01} value={geoLength} onChange={(e) => set({ geoLength: +e.target.value })} />
       </label>
-      <div data-tour="geo-controls" className="field" role="group" aria-label="Playback">
+      <div data-tour="geo-controls" className="field" role="group" aria-label={t('Playback', 'Reproducción')}>
         <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={() => set(geoPlaying ? { geoPlaying: false } : { geoPlaying: true, geoProgress: geoProgress >= 1 ? 0 : geoProgress })}>
-            {geoPlaying ? 'Pause' : 'Play'}
+            {geoPlaying ? t('Pause', 'Pausa') : t('Play', 'Reproducir')}
           </button>
-          <button onClick={() => set({ geoPlaying: false, geoProgress: 0 })}>Reset</button>
+          <button onClick={() => set({ geoPlaying: false, geoProgress: 0 })}>{t('Reset', 'Reiniciar')}</button>
         </div>
-        <label htmlFor="geo-progress">Progress {(geoProgress * 100).toFixed(0)}%</label>
+        <label htmlFor="geo-progress">{t('Progress', 'Progreso')} {(geoProgress * 100).toFixed(0)}%</label>
         <input id="geo-progress" type="range" min={0} max={1} step={0.001} value={geoProgress} onChange={(e) => set({ geoProgress: +e.target.value, geoPlaying: false })} />
       </div>
 
-      <h2>Geodesic equation</h2>
+      <h2><T en="Geodesic equation" es="Ecuación de la geodésica" /></h2>
       <Tex block>{String.raw`\ddot u^k + \Gamma^k_{ij}\,\dot u^i \dot u^j = 0`}</Tex>
       <Tex block>{surface.latex.christoffel}</Tex>
       <div className="readout">
         <span>({coordText(cu)}, {coordText(cv)})</span><span>({fmt(cur.uv[0])}, {fmt(cur.uv[1])})</span>
-        <span>velocity</span><span>({fmt(cur.vel[0])}, {fmt(cur.vel[1])})</span>
-        <span>acceleration</span><span>({fmt(acc[0])}, {fmt(acc[1])})</span>
-        <span>speed</span><span>{fmt(speed(surface, cur.uv, cur.vel), 5)}</span>
-        {c !== null && (<><span>Clairaut c</span><span>{fmt(c, 5)}</span></>)}
+        <span>{t('velocity', 'velocidad')}</span><span>({fmt(cur.vel[0])}, {fmt(cur.vel[1])})</span>
+        <span>{t('acceleration', 'aceleración')}</span><span>({fmt(acc[0])}, {fmt(acc[1])})</span>
+        <span>{t('speed', 'rapidez')}</span><span>{fmt(speed(surface, cur.uv, cur.vel), 5)}</span>
+        {c !== null && (<><span>{t('Clairaut c', 'c de Clairaut')}</span><span>{fmt(c, 5)}</span></>)}
       </div>
       {c !== null && (
-        <p>c stays constant along the geodesic: conserved because <Tex>{killing}</Tex> is a Killing field (Noether/Clairaut).</p>
+        <p><T en={<>c stays constant along the geodesic: conserved because <Tex>{killing}</Tex> is a Killing field (Noether/Clairaut).</>} es={<>c permanece constante a lo largo de la geodésica: se conserva porque <Tex>{killing}</Tex> es un campo de Killing (Noether/Clairaut).</>} /></p>
       )}
-      {stopped && <p>Left the chart at s = {fmt(stopped.samples[stopped.samples.length - 1].s, 2)}.</p>}
+      {stopped && <p>{t('Left the chart at', 'Sale de la carta en')} s = {fmt(stopped.samples[stopped.samples.length - 1].s, 2)}.</p>}
 
-      <h2>Geodesic deviation</h2>
-      <div className="readout"><span>outer spread</span><span>{fmt(chord, 4)}</span></div>
-      <p>Neighbouring geodesics obey the Jacobi equation <Tex>{String.raw`J'' + K J = 0`}</Tex>. If K &gt; 0 they refocus (sphere: conjugate point at distance <Tex>{String.raw`\pi/\sqrt K`}</Tex>); if K &lt; 0 they diverge (saddle).</p>
+      <h2><T en="Geodesic deviation" es="Desviación geodésica" /></h2>
+      <div className="readout"><span>{t('outer spread', 'separación exterior')}</span><span>{fmt(chord, 4)}</span></div>
+      <p><T
+        en={<>Neighbouring geodesics obey the Jacobi equation <Tex>{String.raw`J'' + K J = 0`}</Tex>. If K &gt; 0 they refocus (sphere: conjugate point at distance <Tex>{String.raw`\pi/\sqrt K`}</Tex>); if K &lt; 0 they diverge (saddle).</>}
+        es={<>Las geodésicas vecinas obedecen la ecuación de Jacobi <Tex>{String.raw`J'' + K J = 0`}</Tex>. Si K &gt; 0 vuelven a enfocarse (esfera: punto conjugado a distancia <Tex>{String.raw`\pi/\sqrt K`}</Tex>); si K &lt; 0 divergen (silla).</>} /></p>
     </div>
   );
 }

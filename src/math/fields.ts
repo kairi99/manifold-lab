@@ -21,8 +21,14 @@ const latitude = (th: number, dir: number): ParamCurve => ({
   velocity: () => [0, dir * TAU],
 });
 
+const ZERO_ES: Record<string, string> = {
+  'north pole': 'polo norte', 'south pole': 'polo sur', '+x axis': 'eje +x', '-x axis': 'eje -x',
+  '+z axis': 'eje +z', '-z axis': 'eje -z', 'north pole (double zero)': 'polo norte (cero doble)',
+  max: 'máximo', min: 'mínimo', saddle: 'silla', origin: 'origen', 'chart centre': 'centro de la carta',
+};
+
 const zero = (s: Surface, name: string, c: Vec2, expectedIndex: number, loop?: ParamCurve): FieldZero => ({
-  name, point: s.position(c[0], c[1]), loop: loop ?? circle(c), expectedIndex,
+  name, nameEs: ZERO_ES[name], point: s.position(c[0], c[1]), loop: loop ?? circle(c), expectedIndex,
 });
 
 const POLE = 0.15;
@@ -33,26 +39,26 @@ const poleS = (): FieldZero => zero(sphere, 'south pole', [Math.PI, 0], 1, latit
 const sphereFields = (): VectorField[] => {
   const h = Math.PI / 2;
   return [
-    { id: 'Lz', name: 'Lz: rotation about the polar (vertical) axis', latex: String.raw`X=\partial_\varphi`, killing: true,
+    { id: 'Lz', name: 'Lz: rotation about the polar (vertical) axis', nameEs: 'Lz: rotación en torno al eje polar (vertical)', latex: String.raw`X=\partial_\varphi`, killing: true,
       X: () => [0, 1], zeros: [poleN(), poleS()] },
-    { id: 'Lx', name: 'Lx: rotation about an equatorial axis (x)', latex: String.raw`X=-\sin\varphi\,\partial_\theta-\cot\theta\cos\varphi\,\partial_\varphi`, killing: true,
+    { id: 'Lx', name: 'Lx: rotation about an equatorial axis (x)', nameEs: 'Lx: rotación en torno a un eje ecuatorial (x)', latex: String.raw`X=-\sin\varphi\,\partial_\theta-\cot\theta\cos\varphi\,\partial_\varphi`, killing: true,
       X: (t, p) => [-Math.sin(p), -Math.cos(p) / Math.tan(t)],
       zeros: [zero(sphere, '+x axis', [h, 0], 1), zero(sphere, '-x axis', [h, Math.PI], 1)] },
-    { id: 'Ly', name: 'Ly: rotation about the other equatorial axis (y)', latex: String.raw`X=\cos\varphi\,\partial_\theta-\cot\theta\sin\varphi\,\partial_\varphi`, killing: true,
+    { id: 'Ly', name: 'Ly: rotation about the other equatorial axis (y)', nameEs: 'Ly: rotación en torno al otro eje ecuatorial (y)', latex: String.raw`X=\cos\varphi\,\partial_\theta-\cot\theta\sin\varphi\,\partial_\varphi`, killing: true,
       X: (t, p) => [Math.cos(p), -Math.sin(p) / Math.tan(t)],
       zeros: [zero(sphere, '+z axis', [h, h], 1), zero(sphere, '-z axis', [h, 3 * h], 1)] },
-    { id: 'gradHeight', name: 'gradient of height', latex: String.raw`X=\nabla\cos\theta=-\sin\theta\,\partial_\theta`, killing: false,
+    { id: 'gradHeight', name: 'gradient of height', nameEs: 'gradiente de la altura', latex: String.raw`X=\nabla\cos\theta=-\sin\theta\,\partial_\theta`, killing: false,
       X: (t) => [-Math.sin(t), 0], zeros: [poleN(), poleS()] },
-    { id: 'dipole', name: 'dipole (stereographic ∂ₓ)', latex: String.raw`X=-2\sin^2\tfrac\theta2\cos\varphi\,\partial_\theta-\tan\tfrac\theta2\sin\varphi\,\partial_\varphi`, killing: false,
+    { id: 'dipole', name: 'dipole (stereographic ∂ₓ)', nameEs: 'dipolo (∂ₓ estereográfico)', latex: String.raw`X=-2\sin^2\tfrac\theta2\cos\varphi\,\partial_\theta-\tan\tfrac\theta2\sin\varphi\,\partial_\varphi`, killing: false,
       X: (t, p) => [-2 * Math.sin(t / 2) ** 2 * Math.cos(p), -Math.sin(p) * Math.tan(t / 2)],
       zeros: [zero(sphere, 'north pole (double zero)', [0, 0], 2, latitude(POLE, 1))] },
   ];
 };
 
 const torusFields = (): VectorField[] => [
-  { id: 'du', name: 'longitude flow', latex: String.raw`X=\partial_u`, killing: true, X: () => [1, 0], zeros: [] },
-  { id: 'dv', name: 'meridian flow', latex: String.raw`X=\partial_v`, killing: false, X: () => [0, 1], zeros: [] },
-  { id: 'gradSide', name: 'gradient of x', latex: String.raw`X=\nabla\big((R+r\cos v)\cos u\big)=-\tfrac{\sin u}{R+r\cos v}\partial_u-\tfrac{\sin v\cos u}{r}\partial_v`, killing: false,
+  { id: 'du', name: 'longitude flow', nameEs: 'flujo en longitud', latex: String.raw`X=\partial_u`, killing: true, X: () => [1, 0], zeros: [] },
+  { id: 'dv', name: 'meridian flow', nameEs: 'flujo meridiano', latex: String.raw`X=\partial_v`, killing: false, X: () => [0, 1], zeros: [] },
+  { id: 'gradSide', name: 'gradient of x', nameEs: 'gradiente de x', latex: String.raw`X=\nabla\big((R+r\cos v)\cos u\big)=-\tfrac{\sin u}{R+r\cos v}\partial_u-\tfrac{\sin v\cos u}{r}\partial_v`, killing: false,
     X: (u, v) => [-Math.sin(u) / (1 + 0.4 * Math.cos(v)), -Math.sin(v) * Math.cos(u) / 0.4],
     zeros: [
       zero(torus, 'max', [0, 0], 1), zero(torus, 'min', [Math.PI, 0], 1),
@@ -61,10 +67,10 @@ const torusFields = (): VectorField[] => [
 ];
 
 const graphFields = (s: Surface, fx: (x: number, y: number) => number, fy: (x: number, y: number) => number, gradIdx: number, rotKilling: boolean): VectorField[] => [
-  { id: 'grad', name: 'gradient of f', latex: String.raw`X=g^{-1}df=\frac{(f_x,f_y)}{1+|\nabla f|^2}`, killing: false,
+  { id: 'grad', name: 'gradient of f', nameEs: 'gradiente de f', latex: String.raw`X=g^{-1}df=\frac{(f_x,f_y)}{1+|\nabla f|^2}`, killing: false,
     X: (x, y) => { const a = fx(x, y), b = fy(x, y), w = 1 + a * a + b * b; return [a / w, b / w]; },
     zeros: [zero(s, 'origin', [0, 0], gradIdx)] },
-  { id: 'rot', name: 'rotation in the chart', latex: String.raw`X=-y\,\partial_x+x\,\partial_y`, killing: rotKilling,
+  { id: 'rot', name: 'rotation in the chart', nameEs: 'rotación en la carta', latex: String.raw`X=-y\,\partial_x+x\,\partial_y`, killing: rotKilling,
     X: (x, y) => [-y, x], zeros: [zero(s, 'origin', [0, 0], 1)] },
 ];
 
@@ -83,9 +89,9 @@ export function customFields(s: Surface): VectorField[] {
   const [cu, cv] = s.coords;
   const { u: [u0, u1], v: [v0, v1], periodicU, periodicV } = s.domain;
   const out: VectorField[] = [
-    { id: 'du', name: 'coordinate field ∂ᵤ', latex: String.raw`X=\partial_{${cu}}`, killing: false, X: () => [1, 0], zeros: [] },
-    { id: 'dv', name: 'coordinate field ∂ᵥ', latex: String.raw`X=\partial_{${cv}}`, killing: false, X: () => [0, 1], zeros: [] },
-    { id: 'grad', name: 'gradient of height z', latex: String.raw`X=\nabla z=g^{ij}\partial_j z\,\partial_i`, killing: false,
+    { id: 'du', name: 'coordinate field ∂ᵤ', nameEs: 'campo coordenado ∂ᵤ', latex: String.raw`X=\partial_{${cu}}`, killing: false, X: () => [1, 0], zeros: [] },
+    { id: 'dv', name: 'coordinate field ∂ᵥ', nameEs: 'campo coordenado ∂ᵥ', latex: String.raw`X=\partial_{${cv}}`, killing: false, X: () => [0, 1], zeros: [] },
+    { id: 'grad', name: 'gradient of height z', nameEs: 'gradiente de la altura z', latex: String.raw`X=\nabla z=g^{ij}\partial_j z\,\partial_i`, killing: false,
       X: (u, v) => { // height is the world-y component of the embedding; zeros (critical points) are not located
         const g = s.metric(u, v), a = s.du(u, v)[1], b = s.dv(u, v)[1], d = det2(g);
         return [(g[1][1] * a - g[0][1] * b) / d, (g[0][0] * b - g[0][1] * a) / d];
@@ -93,7 +99,7 @@ export function customFields(s: Surface): VectorField[] {
   ];
   const c: Vec2 = [(u0 + u1) / 2, (v0 + v1) / 2];
   if (!periodicU && !periodicV && !s.singularAt?.(c[0], c[1])) {
-    out.push({ id: 'rot', name: 'rotation about the chart centre', latex: String.raw`X=-(${cv}-${cv}_0)\,\partial_{${cu}}+(${cu}-${cu}_0)\,\partial_{${cv}}`, killing: false,
+    out.push({ id: 'rot', name: 'rotation about the chart centre', nameEs: 'rotación en torno al centro de la carta', latex: String.raw`X=-(${cv}-${cv}_0)\,\partial_{${cu}}+(${cu}-${cu}_0)\,\partial_{${cv}}`, killing: false,
       X: (u, v) => [-(v - c[1]), u - c[0]],
       zeros: [zero(s, 'chart centre', c, 1, circle(c, 0.2 * Math.min(u1 - u0, v1 - v0) / 2))] });
   }

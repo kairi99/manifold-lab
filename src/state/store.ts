@@ -6,6 +6,9 @@ import { DEFAULT_CUSTOM } from '../math/surfaces/presets';
 import { moduleFromHash } from './modules';
 
 export type ModuleId = 'metric' | 'transport' | 'geodesics' | 'curvature' | 'fields' | 'relativity' | 'spacetime' | 'cosmos';
+export type Lang = 'en' | 'es';
+export type Theme = 'dark' | 'light';
+export type InfoPage = 'technical' | 'legal';
 export type PathKind = 'latitude' | 'triangle' | 'free';
 
 export interface AppState {
@@ -26,6 +29,10 @@ export interface AppState {
   playing: boolean;
   tourOpen: boolean;
   theoryOpen: boolean;
+  /** UI language and colour theme, persisted under manifoldlab.lang / manifoldlab.theme */
+  lang: Lang;
+  theme: Theme;
+  infoOpen: InfoPage | null;
   // geodesics
   geoCount: number; // geodesics in the fan (1 = single)
   geoSpread: number; // total fan opening angle, radians
@@ -123,6 +130,12 @@ export function applyCustomSpec(spec: CustomSpec, reset = true) {
     : { customSpec: spec });
 }
 
+const stored = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
+const nav = typeof navigator === 'undefined' ? undefined : navigator;
+const startLang: Lang = (stored('manifoldlab.lang') as Lang | null) ?? (nav?.language?.toLowerCase().startsWith('es') ? 'es' : 'en');
+const startTheme: Theme = (stored('manifoldlab.theme') as Theme | null)
+  ?? (typeof matchMedia !== 'undefined' && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+
 const startModule = typeof location === 'undefined' ? null : moduleFromHash(location.hash);
 
 export const useStore = create<AppState>((set) => ({
@@ -139,6 +152,9 @@ export const useStore = create<AppState>((set) => ({
   playing: false,
   tourOpen: false,
   theoryOpen: false,
+  lang: startLang === 'es' ? 'es' : 'en',
+  theme: startTheme === 'light' ? 'light' : 'dark',
+  infoOpen: null,
   geoCount: 9,
   geoSpread: Math.PI / 6,
   geoLength: Math.PI,

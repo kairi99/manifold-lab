@@ -1,19 +1,22 @@
 import { richSvg } from './Tex';
 import { GW150914_H1 as H1, GW150914_L1 as L1, GW150914_H1_TEMPLATE as TPL } from '../data/gw150914';
 import { T0, T1 } from './GWModel';
+import { useTr } from '../i18n';
 
 const W = 360, ML = 34, MR = 8, RH = 100, GAP = 14, MT = 8, MB = 26, H = MT + 2 * RH + GAP + MB;
 export const L1_SHIFT = 0.0069; // s: L1 arrives ~6.9 ms before H1
 
 /** Row 1: measured H1 with the NR template. Row 2: H1 and L1 (L1 shifted +6.9 ms and inverted as in PRL Fig. 1, unless raw). Playhead at time `t`. */
 export function GWPlot({ t, rawL1 }: { t: number; rawL1: boolean }) {
+  const tt = useTr();
   const x = (v: number) => ML + ((v - T0) / (T1 - T0)) * (W - ML - MR);
   const rowTop = (r: number) => MT + r * (RH + GAP);
   const Y = 1.3; // ±1.3e-21
   const y = (r: number, v: number) => rowTop(r) + RH / 2 - (Math.max(-Y, Math.min(Y, v)) / Y) * (RH / 2);
   const path = (r: number, ts: number[], hs: number[], sh = 0, sg = 1, step = 2) =>
     ts.filter((_, i) => i % step === 0).map((tt, k) => `${k ? 'L' : 'M'}${x(tt + sh).toFixed(1)},${y(r, sg * hs[k * step]).toFixed(1)}`).join('');
-  const label = `GW150914 strain in units of 1e-21 over ${T0.toFixed(2)} to ${T1.toFixed(2)} s relative to merger. Top: measured Hanford strain and the numerical-relativity template. Bottom: Hanford and Livingston measured strain${rawL1 ? ' (Livingston as recorded, arriving 6.9 ms earlier)' : ' (Livingston shifted by 6.9 ms and inverted as in the LIGO paper)'}. Playhead at ${t.toFixed(3)} s.`;
+  const label = tt(`GW150914 strain in units of 1e-21 over ${T0.toFixed(2)} to ${T1.toFixed(2)} s relative to merger. Top: measured Hanford strain and the numerical-relativity template. Bottom: Hanford and Livingston measured strain${rawL1 ? ' (Livingston as recorded, arriving 6.9 ms earlier)' : ' (Livingston shifted by 6.9 ms and inverted as in the LIGO paper)'}. Playhead at ${t.toFixed(3)} s.`,
+    `Deformación de GW150914 en unidades de 1e-21 de ${T0.toFixed(2)} a ${T1.toFixed(2)} s respecto a la fusión. Arriba: deformación medida en Hanford y la plantilla de relatividad numérica. Abajo: deformación medida en Hanford y Livingston${rawL1 ? ' (Livingston tal como se registró, llega 6.9 ms antes)' : ' (Livingston desplazada 6.9 ms e invertida como en el artículo de LIGO)'}. Cursor en ${t.toFixed(3)} s.`);
   const ticks = [-0.15, -0.1, -0.05, 0, 0.05].filter((v) => v >= T0 && v <= T1);
   return (
     <>
@@ -33,11 +36,11 @@ export function GWPlot({ t, rawL1 }: { t: number; rawL1: boolean }) {
         <path d={path(1, L1.t, L1.h, rawL1 ? 0 : L1_SHIFT, rawL1 ? 1 : -1)} fill="none" strokeWidth="1.2" style={{ stroke: '#ffa94d' }} />
         {[0, 1].map((r) => <line key={r} x1={x(t)} x2={x(t)} y1={rowTop(r)} y2={rowTop(r) + RH} strokeWidth="1.5" style={{ stroke: 'var(--fg)' }} />)}
         {ticks.map((v) => <text key={v} x={x(v)} y={H - MB + 12} fontSize="9" textAnchor="middle" style={{ fill: 'var(--fg)' }}>{v}</text>)}
-        <text x={(ML + W - MR) / 2} y={H - 3} fontSize="9" textAnchor="middle" style={{ fill: 'var(--muted)' }}>{richSvg('t − t_merger (s)')}</text>
-        <text x={ML + 4} y={rowTop(0) + 10} fontSize="9" style={{ fill: '#6cb6ff' }}>H1 measured</text>
-        <text x={ML + 70} y={rowTop(0) + 10} fontSize="9" style={{ fill: '#ff6bd6' }}>NR template (model)</text>
+        <text x={(ML + W - MR) / 2} y={H - 3} fontSize="9" textAnchor="middle" style={{ fill: 'var(--muted)' }}>{richSvg(tt('t − t_merger (s)', 't − t_{fusión} (s)'))}</text>
+        <text x={ML + 4} y={rowTop(0) + 10} fontSize="9" style={{ fill: '#6cb6ff' }}>{tt('H1 measured', 'H1 medida')}</text>
+        <text x={ML + 70} y={rowTop(0) + 10} fontSize="9" style={{ fill: '#ff6bd6' }}>{tt('NR template (model)', 'plantilla RN (modelo)')}</text>
         <text x={ML + 4} y={rowTop(1) + 10} fontSize="9" style={{ fill: '#6cb6ff' }}>H1</text>
-        <text x={ML + 24} y={rowTop(1) + 10} fontSize="9" style={{ fill: '#ffa94d' }}>{rawL1 ? 'L1 as recorded' : 'L1 shifted +6.9 ms, inverted'}</text>
+        <text x={ML + 24} y={rowTop(1) + 10} fontSize="9" style={{ fill: '#ffa94d' }}>{rawL1 ? tt('L1 as recorded', 'L1 tal como se registró') : tt('L1 shifted +6.9 ms, inverted', 'L1 desplazada +6.9 ms, invertida')}</text>
       </svg>
     </>
   );
@@ -45,10 +48,12 @@ export function GWPlot({ t, rawL1 }: { t: number; rawL1: boolean }) {
 
 /** f(t) of the illustrative chirp. */
 export function ChirpPlot({ f, t }: { f: (t: number) => number; t: number }) {
+  const tt = useTr();
   const w = 360, h = 130, ml = 34, mr = 8, mt = 8, mb = 24, N = 80, ts = Array.from({ length: N + 1 }, (_, i) => T0 + ((T1 - T0) * i) / N);
   const fs = ts.map(f), fmax = 400;
   const x = (v: number) => ml + ((v - T0) / (T1 - T0)) * (w - ml - mr), y = (v: number) => mt + (1 - Math.min(v, fmax) / fmax) * (h - mt - mb);
-  const label = `Illustrative gravitational-wave frequency versus time: rising from ${fs[0].toFixed(0)} Hz to ${Math.max(...fs).toFixed(0)} Hz at the merger, then constant at the ringdown frequency.`;
+  const label = tt(`Illustrative gravitational-wave frequency versus time: rising from ${fs[0].toFixed(0)} Hz to ${Math.max(...fs).toFixed(0)} Hz at the merger, then constant at the ringdown frequency.`,
+    `Frecuencia ilustrativa de la onda gravitacional frente al tiempo: sube de ${fs[0].toFixed(0)} Hz a ${Math.max(...fs).toFixed(0)} Hz en la fusión y luego queda constante en la frecuencia de ringdown.`);
   return (
     <svg viewBox={`0 0 ${w} ${h}`} width="100%" role="img" aria-label={label} style={{ display: 'block', maxWidth: '100%' }}>
       <title>{label}</title>
@@ -57,7 +62,7 @@ export function ChirpPlot({ f, t }: { f: (t: number) => number; t: number }) {
       <line x1={x(t)} x2={x(t)} y1={mt} y2={h - mb} strokeWidth="1.5" style={{ stroke: 'var(--fg)' }} />
       {[0, 100, 200, 300, 400].map((v) => <text key={v} x={ml - 4} y={y(v) + 3} fontSize="9" textAnchor="end" style={{ fill: 'var(--fg)' }}>{v}</text>)}
       {[-0.15, -0.1, -0.05, 0].map((v) => <text key={v} x={x(v)} y={h - mb + 11} fontSize="9" textAnchor="middle" style={{ fill: 'var(--fg)' }}>{v}</text>)}
-      <text x={(ml + w - mr) / 2} y={h - 2} fontSize="9" textAnchor="middle" style={{ fill: 'var(--muted)' }}>{richSvg('t − t_merger (s); f in Hz')}</text>
+      <text x={(ml + w - mr) / 2} y={h - 2} fontSize="9" textAnchor="middle" style={{ fill: 'var(--muted)' }}>{richSvg(tt('t − t_merger (s); f in Hz', 't − t_{fusión} (s); f en Hz'))}</text>
     </svg>
   );
 }

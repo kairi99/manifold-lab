@@ -13,9 +13,12 @@ import type { J, Jet } from './jet';
 
 export class ExprError extends Error {
   pos: number;
-  constructor(msg: string, pos: number) {
+  /** Spanish message for the UI */
+  es: string;
+  constructor(msg: string, pos: number, es: string = msg) {
     super(`${msg} at ${pos}`);
     this.pos = pos;
+    this.es = `${es} en ${pos}`;
   }
 }
 
@@ -48,7 +51,7 @@ function tokenize(src: string): Tok[] {
     if (i >= src.length) break;
     re.lastIndex = i;
     const m = re.exec(src);
-    if (!m) throw new ExprError(`unexpected character '${src[i]}'`, i);
+    if (!m) throw new ExprError(`unexpected character '${src[i]}'`, i, `carácter inesperado '${src[i]}'`);
     if (m[1] !== undefined) out.push({ k: 'num', v: parseFloat(m[1]), pos: i });
     else if (m[2] !== undefined) out.push({ k: 'id', s: m[2], pos: i });
     else out.push({ k: 'op', s: m[3], pos: i });
@@ -65,9 +68,10 @@ export function parse(src: string, names: readonly string[] = VARS): Ast {
   const peek = () => toks[p];
   const isOp = (s: string) => peek().k === 'op' && (peek() as { s: string }).s === s;
   const expect = (s: string) => {
-    if (!isOp(s)) throw new ExprError(`expected '${s}'`, peek().pos);
+    if (!isOp(s)) throw new ExprError(`expected '${s}'`, peek().pos, `se esperaba '${s}'`);
     p++;
   };
+  const describeEs = (t: Tok) => (t.k === 'end' ? 'el final de la entrada' : t.k === 'num' ? 'un número' : `'${t.s}'`);
   const describe = (t: Tok) => (t.k === 'end' ? 'end of input' : t.k === 'num' ? 'number' : t.k === 'id' ? `'${t.s}'` : `'${t.s}'`);
 
   function expr(): Ast {
@@ -103,27 +107,28 @@ export function parse(src: string, names: readonly string[] = VARS): Ast {
       p++;
       const call = isOp('(');
       if (call) {
-        if (!(t.s in FUNCS)) throw new ExprError(`unknown function '${t.s}'`, t.pos);
+        if (!(t.s in FUNCS)) throw new ExprError(`unknown function '${t.s}'`, t.pos, `función desconocida '${t.s}'`);
         p++;
         const a = expr();
         expect(')');
         return { t: 'call', fn: t.s, a };
       }
-      if (t.s in FUNCS) throw new ExprError(`'${t.s}' is a function; write ${t.s}(...)`, t.pos);
-      if (!(t.s in CONSTS) && !names.includes(t.s)) throw new ExprError(`unknown variable '${t.s}'`, t.pos);
+      if (t.s in FUNCS) throw new ExprError(`'${t.s}' is a function; write ${t.s}(...)`, t.pos, `'${t.s}' es una función; escribe ${t.s}(...)`);
+      if (!(t.s in CONSTS) && !names.includes(t.s)) throw new ExprError(`unknown variable '${t.s}'`, t.pos, `variable desconocida '${t.s}'`);
       return { t: 'var', name: t.s, pos: t.pos };
     }
     if (isOp('(')) { p++; const a = expr(); expect(')'); return a; }
-    throw new ExprError(`expected a value, found ${describe(t)}`, t.pos);
+    throw new ExprError(`expected a value, found ${describe(t)}`, t.pos, `se esperaba un valor, se encontró ${describeEs(t)}`);
   }
 
-  if (toks.length === 1) throw new ExprError('empty expression', 0);
+  if (toks.length === 1) throw new ExprError('empty expression', 0, 'expresión vacía');
   const ast = expr();
   const rest = peek();
   if (rest.k !== 'end') {
     if (rest.k === 'num' || rest.k === 'id' || (rest.k === 'op' && rest.s === '('))
-      throw new ExprError(`missing operator before ${describe(rest)} (implicit multiplication is not supported; write '*')`, rest.pos);
-    throw new ExprError(`unexpected ${describe(rest)}`, rest.pos);
+      throw new ExprError(`missing operator before ${describe(rest)} (implicit multiplication is not supported; write '*')`, rest.pos,
+        `falta un operador antes de ${describeEs(rest)} (no se admite la multiplicación implícita; escribe '*')`);
+    throw new ExprError(`unexpected ${describe(rest)}`, rest.pos, `${describeEs(rest)} inesperado`);
   }
   return ast;
 }
