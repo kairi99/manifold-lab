@@ -16,3 +16,4 @@ body { background: var(--bg); color: var(--fg); font-family: system-ui, sans-ser
 .panel h2 { font-size: 15px; margin: 16px 0 8px; color: var(--accent); }
 .tex-block { display: block; overflow-x: auto; margin: 6px 0; }
 .readout { font-family: ui-monospace, monospace; font-size: 12px; display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; }
+.check { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }

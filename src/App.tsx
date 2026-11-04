@@ -6,6 +6,7 @@ import { MetricScene, MetricPanel } from './modules/MetricModule';
 import { TransportScene, TransportPanel } from './modules/TransportModule';
 import { GeodesicScene, GeodesicPanel } from './modules/GeodesicModule';
 import { CurvatureScene, CurvaturePanel } from './modules/CurvatureModule';
+import { FieldsScene, FieldsPanel } from './modules/FieldsModule';
 import { Tour, TourButton, useFirstVisitTour } from './tour/Tour';
 import { SuggestedTasks } from './tour/SuggestedTasks';
 
@@ -14,6 +15,7 @@ const MODULES: { id: ModuleId; label: string }[] = [
   { id: 'transport', label: 'Parallel Transport' },
   { id: 'geodesics', label: 'Geodesics' },
   { id: 'curvature', label: 'Curvature' },
+  { id: 'fields', label: 'Vector Fields & TM' },
 ];
 
 export default function App() {
@@ -36,11 +38,11 @@ export default function App() {
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
           <OrbitControls makeDefault />
-          {module === 'metric' ? <MetricScene /> : module === 'transport' ? <TransportScene /> : module === 'geodesics' ? <GeodesicScene /> : <CurvatureScene />}
+          {module === 'metric' ? <MetricScene /> : module === 'transport' ? <TransportScene /> : module === 'geodesics' ? <GeodesicScene /> : module === 'curvature' ? <CurvatureScene /> : <FieldsScene />}
         </Canvas>
       </main>
       <aside className="panel" data-tour="panel">
-        {module === 'metric' ? <MetricPanel /> : module === 'transport' ? <TransportPanel /> : module === 'geodesics' ? <GeodesicPanel /> : <CurvaturePanel />}
+        {module === 'metric' ? <MetricPanel /> : module === 'transport' ? <TransportPanel /> : module === 'geodesics' ? <GeodesicPanel /> : module === 'curvature' ? <CurvaturePanel /> : <FieldsPanel />}
         <SuggestedTasks module={module} />
       </aside>
       <Tour />

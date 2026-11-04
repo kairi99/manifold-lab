@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { Vec2 } from '../math/types';
 
-export type ModuleId = 'metric' | 'transport' | 'geodesics' | 'curvature';
+export type ModuleId = 'metric' | 'transport' | 'geodesics' | 'curvature' | 'fields';
 export type PathKind = 'latitude' | 'triangle' | 'free';
 
 export interface AppState {
@@ -27,6 +27,13 @@ export interface AppState {
   // curvature
   curvRho: number; // geodesic-circle radius
   curvShow: { heatmap: boolean; principal: boolean; circle: boolean };
+  // vector fields
+  fieldId: string; // primary field X ('' = first preset for the surface)
+  fieldId2: string; // second field Y for the Lie bracket
+  showFibers: boolean; // draw tangent-plane discs (fibres of TM)
+  flowPlaying: boolean;
+  flowPhase: number; // particle animation phase in [0,1)
+  commT: number; // flow-commutator parameter t
   set: (p: Partial<AppState>) => void;
 }
 
@@ -48,5 +55,11 @@ export const useStore = create<AppState>((set) => ({
   geoPlaying: false,
   curvRho: 0.5,
   curvShow: { heatmap: true, principal: true, circle: true },
+  fieldId: '',
+  fieldId2: '',
+  showFibers: false,
+  flowPlaying: true,
+  flowPhase: 0,
+  commT: 0.3,
   set: (p) => set(p),
 }));

@@ -14,7 +14,7 @@ export function SurfacePicker({ only }: { only?: string[] }) {
           const s = SURFACES[e.target.value];
           const { u, v } = s.domain;
           // reset p to the domain centre so it is valid on the new surface
-          set({ surfaceId: s.id, uv: [(u[0] + u[1]) / 2, (v[0] + v[1]) / 2 + 0.3], progress: 0, playing: false, freePoints: [],
+          set({ surfaceId: s.id, uv: [(u[0] + u[1]) / 2, (v[0] + v[1]) / 2 + 0.3], progress: 0, playing: false, freePoints: [], fieldId: '', fieldId2: '',
             // loop slider means θ0 on sphere, v on torus, radius ρ on graphs
             latitude: s.id === 'sphere' ? Math.PI / 3 : s.id === 'torus' ? 0 : 0.6,
             vector: [0.5, 0] });

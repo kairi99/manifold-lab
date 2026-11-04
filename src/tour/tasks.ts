@@ -77,3 +77,22 @@ TASKS.push(
     hint: 'Compare K intrinsic and K extrinsic and their difference at several points.',
     answer: 'The two values agree everywhere (difference ~0), although II changes with the embedding. $K$ depends only on $g$, so an isometric bending (flat to cylinder) keeps $K=0$ even though $\\kappa_1\\ne0$.' },
 );
+
+TASKS.push(
+  { id: 'f-hairy', module: 'fields',
+    prompt: 'On the sphere, try every preset field. Does any have no zeros? Add up the indices.',
+    hint: 'Read the Poincaré–Hopf table; compare with $\\chi(S^2)$.',
+    answer: 'Every preset has zeros and the indices sum to $2=\\chi(S^2)$. The dipole has a single zero of index $2$. By the hairy ball theorem no field on $S^2$ is nowhere zero.' },
+  { id: 'f-torus', module: 'fields',
+    prompt: 'On the torus pick $\\partial_u$, then the gradient of the side field (gradSide). Compare zeros and $\\chi$.',
+    hint: 'Count zeros and their signs.',
+    answer: '$\\partial_u$ has no zeros, consistent with $\\chi(T^2)=0$. gradSide has a max, a min and 2 saddles: $1+1-1-1=0=\\chi$.' },
+  { id: 'f-so3', module: 'fields',
+    prompt: 'On the sphere set X = Lx and Y = Ly, then vary t. What is $[X,Y]$?',
+    hint: 'Compare the bracket with the other rotation fields; gap$/t^2$ should approach it.',
+    answer: '$[L_x,L_y]=-L_z$ and cyclic, with $L_i=\\epsilon_{ijk}x_j\\partial_k$ in the frame where $z$ is the polar axis. The rotation fields form $\\mathfrak{so}(3)$, the angular momentum algebra; the commutator gap is $\\approx t^2[X,Y]$. (Quantum mechanics writes $\\hat L_i=-i\\hbar L_i$, turning this into $[\\hat L_x,\\hat L_y]=i\\hbar\\hat L_z$.)' },
+  { id: 'f-killing', module: 'fields',
+    prompt: 'Compare $\\mathcal L_Xg$ and $\\operatorname{div}X$ for Lz and for gradHeight on the sphere.',
+    hint: 'Which one has $\\mathcal L_Xg=0$?',
+    answer: 'Lz is Killing: $\\mathcal L_Xg=0$, $\\operatorname{div}X=0$, its flow is rotation (isometry). gradHeight has $\\operatorname{div}X\\ne0$, so its flow does not preserve area, hence not an isometry.' },
+);

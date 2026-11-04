@@ -93,3 +93,33 @@ export interface GeodesicCircle {
   /** Bertrand–Diquet–Puiseux estimate K ≈ 3(2πρ − C)/(πρ³) */
   Kestimate: number;
 }
+
+/** An exactly known zero of a preset vector field. */
+export interface FieldZero {
+  name: string; // e.g. 'north pole (max)'
+  /** point on the surface in R^3 */
+  point: Vec3;
+  /** small closed loop in the chart encircling the zero once, counter-clockwise w.r.t. the outward/∂u×∂v orientation */
+  loop: ParamCurve;
+  /** index predicted analytically (tests compare the numeric winding number to this) */
+  expectedIndex: number;
+}
+
+/** Tangent vector field X = X^u ∂_u + X^v ∂_v on a surface (components in the surface's chart). */
+export interface VectorField {
+  id: string;
+  name: string;
+  /** KaTeX for the components, e.g. 'X = \\partial_\\varphi' */
+  latex: string;
+  X(u: number, v: number): Vec2;
+  /** all zeros on the surface (or in the shown domain for graphs) */
+  zeros: FieldZero[];
+  /** true if the field is Killing (L_X g = 0); tests verify */
+  killing: boolean;
+}
+
+export interface FlowLine {
+  /** chart samples along the integral curve, t ∈ [0, T] */
+  samples: { t: number; uv: Vec2 }[];
+  stopped?: 'boundary';
+}
