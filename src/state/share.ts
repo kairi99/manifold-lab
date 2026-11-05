@@ -5,23 +5,25 @@ import { SURFACES } from '../math';
 import { compileSpec, makeCustomSurface, validateSurface, type CustomSpec } from '../math/surfaces/custom';
 import type { Surface, Vec2 } from '../math/types';
 import type { AppState, ModuleId, PathKind } from './store';
+import { MODULES } from './modules';
+import { periodsOf, unwrapPath } from '../math/curves';
 
 type Rec = Record<string, unknown>;
 const MAX_ENCODED = 6000;
 
-const MODULE_IDS: ModuleId[] = ['curves', 'metric', 'transport', 'geodesics', 'curvature', 'fields', 'relativity', 'spacetime', 'cosmos'];
+const MODULE_IDS: ModuleId[] = MODULES.map((m) => m.id);
 const SURFACE_IDS = ['sphere', 'torus', 'saddle', 'paraboloid', 'custom'];
 
 /* ---------- value checkers: return the cleaned value or undefined (= drop the key) ---------- */
 
-type Check<T> = (v: unknown) => T | undefined;
+export type Check<T> = (v: unknown) => T | undefined;
 const round = (x: number) => Math.round(x * 1e4) / 1e4;
-const num = (lo: number, hi: number): Check<number> => (v) => (typeof v === 'number' && Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : undefined);
-const int = (lo: number, hi: number): Check<number> => (v) => { const n = num(lo, hi)(v); return n === undefined ? undefined : Math.round(n); };
-const bool: Check<boolean> = (v) => (typeof v === 'boolean' ? v : undefined);
-const oneOf = <T extends string>(xs: readonly T[]): Check<T> => (v) => (typeof v === 'string' && (xs as readonly string[]).includes(v) ? (v as T) : undefined);
+export const num = (lo: number, hi: number): Check<number> => (v) => (typeof v === 'number' && Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : undefined);
+export const int = (lo: number, hi: number): Check<number> => (v) => { const n = num(lo, hi)(v); return n === undefined ? undefined : Math.round(n); };
+export const bool: Check<boolean> = (v) => (typeof v === 'boolean' ? v : undefined);
+export const oneOf = <T extends string>(xs: readonly T[]): Check<T> => (v) => (typeof v === 'string' && (xs as readonly string[]).includes(v) ? (v as T) : undefined);
 /** catalogue ids (bodies, orbits, fields…): short, restricted charset; consumers already fall back for unknown ids */
-const id: Check<string> = (v) => (typeof v === 'string' && /^[A-Za-z0-9_.+-]{0,40}$/.test(v) ? v : undefined);
+export const id: Check<string> = (v) => (typeof v === 'string' && /^[A-Za-z0-9_.+-]{0,40}$/.test(v) ? v : undefined);
 const pair = (lo: number, hi: number): Check<Vec2> => (v) => {
   if (!Array.isArray(v) || v.length !== 2) return undefined;
   const a = num(lo, hi)(v[0]), b = num(lo, hi)(v[1]);
@@ -40,6 +42,12 @@ const stEvent: Check<number[] | null> = (v) => {
   if (v === null) return null;
   if (!Array.isArray(v) || v.length !== 4) return undefined;
   const xs = v.map(num(-1e6, 1e6));
+  return xs.every((x) => x !== undefined) ? (xs as number[]) : undefined;
+};
+/** fixed-length list of numbers in [lo, hi] */
+export const nums = (n: number, lo: number, hi: number): Check<number[]> => (v) => {
+  if (!Array.isArray(v) || v.length !== n) return undefined;
+  const xs = v.map(num(lo, hi));
   return xs.every((x) => x !== undefined) ? (xs as number[]) : undefined;
 };
 const freePoints: Check<Vec2[]> = (v) => {
@@ -91,6 +99,43 @@ const BY_MODULE: Record<ModuleId, string[]> = {
   limits: ['m'],
   frontiers: ['m'],
 };
+
+/* ---------- module-owned stores (Curves, Limits, Frontiers keep their state outside AppState) ---------- */
+
+/** One zustand store: the fields that go into a link, each with its checker. `apply` replaces setState when the store needs it. */
+export interface SharePart { store: { getState: () => object; setState: (p: Rec) => void }; fields: Record<string, Check<unknown>>; apply?: (v: Rec) => void }
+const EXT: Partial<Record<ModuleId, Record<string, SharePart>>> = {};
+let pendingExt: { module: ModuleId; x: Rec } | null = null;
+// 6 significant digits: these stores hold values like a0 ~ 1e-10 or γ − 1 ~ 1e-5 that 1e-4 rounding would erase
+const sig = (v: unknown): unknown => (typeof v === 'number' ? +v.toPrecision(6) : Array.isArray(v) ? v.map(sig) : v);
+
+function applyExt(parts: Record<string, SharePart>, x: Rec) {
+  for (const [k, part] of Object.entries(parts)) {
+    const r = x[k];
+    if (!r || typeof r !== 'object' || Array.isArray(r)) continue;
+    const out: Rec = {};
+    for (const [f, check] of Object.entries(part.fields)) {
+      if (!Object.prototype.hasOwnProperty.call(r, f)) continue;
+      const v = check((r as Rec)[f]);
+      if (v !== undefined) out[f] = v;
+    }
+    if (Object.keys(out).length) (part.apply ?? part.store.setState)(out);
+  }
+}
+
+/** Called by a (lazily loaded) module at import: its stores join share links, and a link that arrived before it loaded is applied now. */
+export function registerShare(module: ModuleId, parts: Record<string, SharePart>) {
+  EXT[module] = parts;
+  if (pendingExt?.module === module) { const { x } = pendingExt; pendingExt = null; applyExt(parts, x); }
+}
+
+/** Apply the module-owned part of a share string (the `x` key); queued until the module registers. */
+export function applyShareExt(module: ModuleId, s: string) {
+  const x = parseRaw(s)?.x;
+  if (!x || typeof x !== 'object' || Array.isArray(x)) return;
+  const parts = EXT[module];
+  if (parts) applyExt(parts, x as Rec); else pendingExt = { module, x: x as Rec };
+}
 
 /* ---------- custom spec ---------- */
 
@@ -155,7 +200,22 @@ export function encodeShare(state: Partial<AppState> & Pick<AppState, 'module'>)
     out[k] = roundDeep(v);
   }
   if (out.sf === 'custom' && state.customSpec) out.cs = packSpec(state.customSpec);
+  const parts = EXT[state.module];
+  if (parts) {
+    out.x = Object.fromEntries(Object.entries(parts).map(([k, part]) => {
+      const st = part.store.getState() as Rec;
+      return [k, Object.fromEntries(Object.keys(part.fields).filter((f) => st[f] !== undefined && st[f] !== null).map((f) => [f, sig(st[f])]))];
+    }));
+  }
   return toB64(JSON.stringify(out));
+}
+
+/** base64url JSON object, or null for anything else */
+function parseRaw(s: string): Rec | null {
+  if (typeof s !== 'string' || s.length === 0 || s.length > MAX_ENCODED || !/^[A-Za-z0-9_-]+$/.test(s)) return null;
+  let raw: unknown;
+  try { raw = JSON.parse(fromB64(s)); } catch { return null; }
+  return raw && typeof raw === 'object' && !Array.isArray(raw) ? (raw as Rec) : null;
 }
 
 /**
@@ -163,11 +223,8 @@ export function encodeShare(state: Partial<AppState> & Pick<AppState, 'module'>)
  * If the result has `customSpec`, the caller should `applyCustomSpec(res.customSpec, false)` before `set(rest)`.
  */
 export function decodeShare(s: string): Partial<AppState> {
-  if (typeof s !== 'string' || s.length === 0 || s.length > MAX_ENCODED || !/^[A-Za-z0-9_-]+$/.test(s)) return {};
-  let raw: unknown;
-  try { raw = JSON.parse(fromB64(s)); } catch { return {}; }
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
-  const r = raw as Rec;
+  const r = parseRaw(s);
+  if (!r) return {};
   const out: Record<string, unknown> = {};
   for (const [k, [field, check]] of Object.entries(FIELDS)) {
     if (!Object.prototype.hasOwnProperty.call(r, k)) continue;
@@ -188,7 +245,10 @@ export function decodeShare(s: string): Partial<AppState> {
     const { u, v } = surf.domain;
     const inDom = (p: Vec2): Vec2 => [Math.min(u[1], Math.max(u[0], p[0])), Math.min(v[1], Math.max(v[0], p[1]))];
     if (out.uv) out.uv = inDom(out.uv as Vec2);
-    if (out.freePoints) out.freePoints = (out.freePoints as Vec2[]).map(inDom);
+    // loop points may sit on periodic images outside the chart (seam crossings): wrap them in, clamp the rest, re-unwrap
+    const per = periodsOf(surf.domain), lo: Vec2 = [u[0], v[0]];
+    const wrap = (p: Vec2): Vec2 => inDom([0, 1].map((c) => (per[c] ? p[c] - per[c] * Math.floor((p[c] - lo[c]) / per[c]) : p[c])) as Vec2);
+    if (out.freePoints) out.freePoints = unwrapPath((out.freePoints as Vec2[]).map(wrap), per);
   }
   return out as Partial<AppState>;
 }

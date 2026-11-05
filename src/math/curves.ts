@@ -27,9 +27,34 @@ export function polylineLoop(points: Vec2[], closed = true): ParamCurve {
 }
 
 /** Closed uniform Catmull-Rom spline through points; analytic velocity. */
-export function catmullRomLoop(points: Vec2[]): ParamCurve {
+/** Coordinate periods of a chart domain; 0 = that coordinate does not wrap. */
+export const periodsOf = (d: { u: [number, number]; v: [number, number]; periodicU: boolean; periodicV: boolean }): Vec2 =>
+  [d.periodicU ? d.u[1] - d.u[0] : 0, d.periodicV ? d.v[1] - d.v[0] : 0];
+
+/** Image of `p` under the coordinate periods that lies nearest to `ref`. */
+export function nearestImage(p: Vec2, ref: Vec2, per: Vec2): Vec2 {
+  return [0, 1].map((c) => (per[c] ? p[c] + per[c] * Math.round((ref[c] - p[c]) / per[c]) : p[c])) as Vec2;
+}
+
+/** Shift each point to the image nearest its predecessor, so a loop drawn across a periodic seam stays continuous. */
+export function unwrapPath(points: Vec2[], per: Vec2): Vec2[] {
+  const out: Vec2[] = [];
+  for (const p of points) out.push(out.length ? nearestImage(p, out[out.length - 1], per) : p);
+  return out;
+}
+
+/**
+ * Closed Catmull–Rom spline through `points`. On a periodic chart pass `per`: the loop closes through the image of
+ * the first point nearest the last, so a loop that winds around the surface (net shift of whole periods) stays smooth.
+ */
+export function catmullRomLoop(points: Vec2[], per: Vec2 = [0, 0]): ParamCurve {
   const n = points.length;
-  const P = (i: number) => points[((i % n) + n) % n];
+  const first = points[0], close = nearestImage(first, points[n - 1], per);
+  const W: Vec2 = [close[0] - first[0], close[1] - first[1]]; // winding shift added per lap
+  const P = (i: number): Vec2 => {
+    const k = Math.floor(i / n), q = points[i - k * n];
+    return [q[0] + k * W[0], q[1] + k * W[1]];
+  };
   const eval_ = (t: number, d: boolean): Vec2 => {
     const s = Math.min(Math.max(t, 0), 1) * n;
     const i = Math.min(Math.floor(s), n - 1);

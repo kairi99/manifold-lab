@@ -21,3 +21,19 @@ test('a hostile share payload is ignored, not executed', async ({ app }) => {
   await app.goto('/#metric?s=' + encodeURIComponent('<script>alert(1)</script>'))
   await expect(app.locator('.nav button.active')).toHaveText('Metric & Tangent Spaces')
 })
+
+test('share link restores a Frontiers demo (view and sliders live in the module store)', async ({ app, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  await app.goto('/#frontiers')
+  await app.locator('[data-tour="views"]').getByRole('button', { name: 'Penrose inequality', exact: true }).click()
+  await app.getByLabel('spin a over m').fill('0.25')
+  await expect(app.getByText('a/m = 0.250')).toBeVisible()
+  await app.locator('.topbar').getByRole('button', { name: /Copy link/ }).click()
+  const url = await app.evaluate(() => navigator.clipboard.readText())
+  expect(url).toMatch(/#frontiers\?s=/)
+
+  const fresh = await context.newPage()
+  await fresh.addInitScript(() => localStorage.setItem('manifoldlab.tourSeen.frontiers', '1'))
+  await fresh.goto(url)
+  await expect(fresh.getByText('a/m = 0.250')).toBeVisible()
+})

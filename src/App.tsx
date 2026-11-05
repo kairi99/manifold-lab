@@ -12,7 +12,7 @@ import { WebGLGuard } from './scene/WebGLGuard';
 import { FitCamera } from './scene/FitCamera';
 import { SURFACE_MODULES, MODULES, moduleFromHash } from './state/modules';
 import { Home } from './home/Home';
-import { parseShareHash, decodeShare } from './state/share';
+import { parseShareHash, decodeShare, applyShareExt } from './state/share';
 import { applyCustomSpec } from './state/store';
 // lazy: it pulls the scene helpers (three, drei) that the module chunks already load
 const ChartInset = lazy(() => import('./scene/ChartInset'));
@@ -36,6 +36,7 @@ export default function App() {
         const { customSpec, ...rest } = decodeShare(sh.s);
         if (customSpec) applyCustomSpec(customSpec, false);
         set({ ...rest, module: sh.module, onHome: false });
+        applyShareExt(sh.module, sh.s);
       }
       const m = moduleFromHash(location.hash), s = useStore.getState();
       if (!m) set({ onHome: true, tourOpen: false, theoryOpen: false });

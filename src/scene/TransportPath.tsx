@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Line } from '@react-three/drei';
 import { create } from 'zustand';
 import { getSurface } from '../math';
-import { catmullRomLoop, geodesicTriangleSphere, latitudeLoop } from '../math/curves';
+import { catmullRomLoop, geodesicTriangleSphere, latitudeLoop, periodsOf } from '../math/curves';
 import { transport } from '../math/transport';
 import type { ParamCurve, Surface, TransportSample, Vec2, Vec3 } from '../math/types';
 import { useStore, type PathKind } from '../state/store';
@@ -87,7 +87,7 @@ export function useTransportData(): TransportData {
   const surface = getSurface(surfaceId);
   const kind = availableKinds(surfaceId).includes(pathKind) ? pathKind : 'latitude';
   const curve = useMemo<ParamCurve | null>(() => {
-    if (kind === 'free') return freePoints.length >= 3 ? catmullRomLoop(freePoints) : null;
+    if (kind === 'free') return freePoints.length >= 3 ? catmullRomLoop(freePoints, periodsOf(surface.domain)) : null;
     if (surfaceId === 'sphere') return kind === 'triangle' ? geodesicTriangleSphere() : latitudeLoop(latitude);
     if (surfaceId === 'torus') return torusLoop(latitude);
     if (surfaceId === 'custom') return customLoop(surface, Math.min(0.9, Math.max(0.1, latitude)));

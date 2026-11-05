@@ -7,6 +7,11 @@ import { ChartsScene, GRID_SPH, GRID_ST } from '../scene/ChartsScene';
 import { CURVES, arcLength, frenet, type CurveId } from '../math/frenet';
 import { detJ, gSph, jacobian, lambdaStereo, pullbackStereo, toStereo } from '../math/charts';
 import { PAL } from '../theme/palette';
+import { registerShare, num, oneOf } from '../state/share';
+
+registerShare('curves', {
+  c: { store: useCurves, fields: { view: oneOf(['curves', 'charts'] as const), preset: oneOf(Object.keys(CURVES) as CurveId[]), a: num(0.3, 2.5), b: num(0, 2), u: num(0, 1), th: num(0, Math.PI), ph: num(0, 2 * Math.PI) } },
+});
 
 const VIEWS = [['curves', 'Curves', 'Curvas'], ['charts', 'Charts', 'Cartas']] as const;
 const PRESETS: CurveId[] = ['circle', 'helix', 'trefoil', 'viviani', 'ellipse', 'twisted', 'inflect'];

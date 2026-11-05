@@ -7,6 +7,7 @@ import SurfaceMesh from '../scene/SurfaceMesh';
 import TransportPath, {
   STEPS, availableKinds, frame, loopSlider, useDraw, useTransportData,
 } from '../scene/TransportPath';
+import { nearestImage, periodsOf } from '../math/curves';
 import { foldSample, holonomyAngle, normSq } from '../math/transport';
 import type { Vec2 } from '../math/types';
 import { SumsToggle } from './MetricModule';
@@ -30,9 +31,10 @@ export function TransportScene() {
   const onDown = drawing
     ? (uv: Vec2, e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation();
-        // shortcut: points kept as clicked, no unwrapping across periodic seams; draw loops away from the seam
-        const st = useStore.getState();
-        st.set({ freePoints: [...st.freePoints, uv], progress: 0, playing: false });
+        // nearest periodic image of the click, so a loop drawn across a seam does not jump back across the chart
+        const st = useStore.getState(), last = st.freePoints[st.freePoints.length - 1];
+        const p = last ? nearestImage(uv, last, periodsOf(surface.domain)) : uv;
+        st.set({ freePoints: [...st.freePoints, p], progress: 0, playing: false });
       }
     : undefined;
   return (

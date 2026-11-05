@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { GlossaryText as Rich } from './Glossary';
-import { MathText } from '../panels/Tex';
+import { MathText, fmtSci } from '../panels/Tex';
 import { useStore, type ModuleId } from '../state/store';
 import { tasksForLang, type Predict, type Task } from './tasks';
 import { useLang, useTr } from '../i18n';
@@ -14,7 +14,8 @@ function save(ids: string[]) {
   window.dispatchEvent(new Event('manifoldlab:tasks'));
 }
 
-const fmtN = (x: number) => String(+x.toPrecision(3));
+// 3 significant figures; very large or small values in the house ×10ⁿ notation instead of toPrecision's 1e+22
+const fmtN = (x: number) => (x !== 0 && (Math.abs(x) >= 1e4 || Math.abs(x) < 1e-3) ? fmtSci(x, 2) : String(+x.toPrecision(3)));
 
 /** Type a number first; the answer and feedback appear after submitting. */
 function PredictBox({ p }: { p: Predict }) {
