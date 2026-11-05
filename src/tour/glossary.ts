@@ -114,6 +114,12 @@ export const GLOSSARY: GlossaryTerm[] = [
   { id: 'cosmic-censorship', term: 'cosmic censorship', termEs: 'censura cósmica', module: 'frontiers',
     def: 'The conjecture that singularities of generic gravitational collapse are hidden behind horizons (weak) and that spacetime is determined by its initial data (strong).',
     defEs: 'La conjetura de que las singularidades del colapso gravitatorio genérico quedan ocultas tras horizontes (débil) y de que el espaciotiempo queda determinado por sus datos iniciales (fuerte).' },
+  { id: 'dark-matter', term: 'dark matter', termEs: 'materia oscura', module: 'limits',
+    def: 'Matter that gravitates but does not emit or absorb light, inferred from rotation curves, lensing, clusters and the CMB. Its nature is unknown.',
+    defEs: 'Materia que gravita pero no emite ni absorbe luz, inferida de las curvas de rotación, las lentes, los cúmulos y el fondo cósmico de microondas. Se desconoce su naturaleza.' },
+  { id: 'cosmological-constant', term: 'cosmological constant', termEs: 'constante cosmológica', module: 'limits',
+    def: 'The constant $\\Lambda$ in $G_{\\mu\\nu}+\\Lambda g_{\\mu\\nu}=8\\pi G\\,T_{\\mu\\nu}$. It acts as a vacuum energy density $\\rho_\\Lambda=\\Lambda/(8\\pi G)$ and fits the observed accelerated expansion.',
+    defEs: 'La constante $\\Lambda$ en $G_{\\mu\\nu}+\\Lambda g_{\\mu\\nu}=8\\pi G\\,T_{\\mu\\nu}$. Actúa como una densidad de energía del vacío $\\rho_\\Lambda=\\Lambda/(8\\pi G)$ y ajusta la expansión acelerada observada.' },
 ];
 
 export const termById = (id: string) => GLOSSARY.find((g) => g.id === id);

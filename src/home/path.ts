@@ -13,6 +13,7 @@ export const PATH: PathStep[] = [
   { id: 'relativity', needs: ['geodesics', 'curvature'] },
   { id: 'spacetime', needs: ['curvature', 'relativity'] },
   { id: 'cosmos', needs: ['relativity'] },
+  { id: 'limits', needs: ['relativity', 'cosmos'] },
   { id: 'frontiers', needs: ['curvature', 'relativity'] },
 ];
 
@@ -26,7 +27,7 @@ export const EXTRA_COPY: Record<string, { label: string; labelEs: string; blurb:
 /** Short names for the "Needs:" line. */
 export const SHORT: Record<string, [string, string]> = {
   curves: ['Curves', 'Curvas'], metric: ['Metric', 'Métrica'], transport: ['Transport', 'Transporte'], geodesics: ['Geodesics', 'Geodésicas'],
-  curvature: ['Curvature', 'Curvatura'], fields: ['Fields', 'Campos'], relativity: ['Relativity', 'Relatividad'], spacetime: ['4D curvature', 'Curvatura 4D'], cosmos: ['Cosmos', 'Cosmos'], frontiers: ['Frontiers', 'Fronteras'],
+  curvature: ['Curvature', 'Curvatura'], fields: ['Fields', 'Campos'], relativity: ['Relativity', 'Relatividad'], spacetime: ['4D curvature', 'Curvatura 4D'], cosmos: ['Cosmos', 'Cosmos'], limits: ['Limits', 'Límites'], frontiers: ['Frontiers', 'Fronteras'],
 };
 
 export const TASKS_KEY = 'manifoldlab.tasksDone';

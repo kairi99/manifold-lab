@@ -1,3 +1,4 @@
+import { LIMITS_TOUR, LIMITS_TOUR_ES } from '../limits/content';
 import { FRONTIERS_TOUR, FRONTIERS_TOUR_ES } from '../frontiers/content';
 import { CURVES_TOUR, CURVES_TOUR_ES } from './curves.content';
 import type { ModuleId } from '../state/store';
@@ -26,6 +27,7 @@ const THEORY_STEP: TourStep = { target: 'theory', title: 'Motivation & theory',
 export const TOURS: Record<ModuleId, TourStep[]> = {
   curves: CURVES_TOUR,
   frontiers: FRONTIERS_TOUR,
+  limits: LIMITS_TOUR,
   metric: [
     { target: null, title: 'Metric & tangent spaces',
       body: 'At every point $p$ of a surface sits a tangent plane $T_pM$ spanned by $\\partial_u, \\partial_v$. The [[metric|metric]] $g_{ij} = \\partial_i \\cdot \\partial_j$ measures lengths and angles there, and the [[christoffel|Christoffel symbols]] $\\Gamma^k_{ij}$ say how the basis turns as $p$ moves.' },
@@ -117,6 +119,7 @@ const THEORY_STEP_ES: TourStep = { target: 'theory', title: 'Motivación y teor�
 export const TOURS_ES: Record<ModuleId, TourStep[]> = {
   curves: CURVES_TOUR_ES,
   frontiers: FRONTIERS_TOUR_ES,
+  limits: LIMITS_TOUR_ES,
   metric: [
     { target: null, title: 'Métrica y espacios tangentes',
       body: 'En cada punto $p$ de una superficie hay un plano tangente $T_pM$ generado por $\\partial_u, \\partial_v$. La [[metric|métrica]] $g_{ij} = \\partial_i \\cdot \\partial_j$ mide allí longitudes y ángulos, y los [[christoffel|símbolos de Christoffel]] $\\Gamma^k_{ij}$ indican cómo gira la base al moverse $p$.' },

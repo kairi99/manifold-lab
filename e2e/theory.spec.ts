@@ -1,6 +1,6 @@
 import { test, expect } from './fixtures'
 
-for (const m of ['metric', 'transport', 'geodesics', 'curvature', 'fields', 'relativity', 'spacetime', 'cosmos', 'frontiers']) {
+for (const m of ['metric', 'transport', 'geodesics', 'curvature', 'fields', 'relativity', 'spacetime', 'cosmos', 'limits', 'frontiers']) {
   test(`theory: ${m} dialog opens, renders its math, closes`, async ({ app }) => {
     if (m !== 'metric') await app.goto(`/#${m}`)
     await app.getByRole('button', { name: 'Motivation & theory' }).click()

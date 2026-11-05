@@ -7,7 +7,7 @@ test('sphere latitude loop: holonomy 180° at 60°, ~0 at the equator', async ({
   await tab(app, 'Parallel Transport')
   await expect(app.getByText('θ0 (latitude): 60°')).toBeVisible()
   await app.locator('[data-tour="transport-controls"] input[type=range]').fill('1')
-  await expect(app.getByText('Progress 100%')).toBeVisible()
+  await expect(app.getByText('Progress 100%', { exact: true })).toBeVisible()
   await expect(readout(app, 'measured')).toContainText('180.00°')
   await expect(readout(app, 'predicted')).toContainText('180.00°')
 

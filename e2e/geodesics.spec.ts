@@ -5,7 +5,7 @@ test('central geodesic of the default fan ends at the antipode of p', async ({ a
   const m = /=\s*\(([-\d.]+),\s*([-\d.]+)\)/.exec(t)!
   const th = parseFloat(m[1]), ph = parseFloat(m[2])
   await tab(app, 'Geodesics')
-  await expect(app.getByText('Progress 100%')).toBeVisible()
+  await expect(app.getByText('Progress 100%', { exact: true })).toBeVisible()
   const [a, b] = (await readout(app, '(θ, φ)').textContent())!.match(/-?\d+\.\d+/g)!.map(Number)
   const TAU = 2 * Math.PI
   expect(Math.abs(a - (Math.PI - th))).toBeLessThan(1e-2)
